@@ -5,7 +5,7 @@ const initialState = {
   isAuthenticated: false,
   loading: false,
   error: null,
-};  
+};
 
 const authSlice = createSlice({
   name: "auth",
@@ -20,20 +20,31 @@ const authSlice = createSlice({
     loginSuccess: (state, action) => {
       state.user = action.payload;
       state.isAuthenticated = true;
-      state.loading = false;  
+      state.loading = false;
       state.error = null;
+
+      
+      localStorage.setItem("user", JSON.stringify(action.payload));
+      localStorage.setItem("token", action.payload.token); // If backend sends token
     },
     logoutSuccess: (state) => {
       state.user = null;
       state.isAuthenticated = false;
       state.loading = false;
       state.error = null;
+
+      // Clear persisted auth data
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
     },
     registerSuccess: (state, action) => {
       state.user = action.payload;
       state.isAuthenticated = true;
       state.loading = false;
       state.error = null;
+
+      localStorage.setItem("user", JSON.stringify(action.payload));
+      localStorage.setItem("token", action.payload.token);
     },
     currentUserSuccess: (state, action) => {
       state.user = action.payload;
@@ -41,18 +52,25 @@ const authSlice = createSlice({
       state.loading = false;
       state.error = null;
     },
-  }
+    loadFromStorage: (state) => {
+      const storedUser = localStorage.getItem("user");
+      const token = localStorage.getItem("token");
+      if (storedUser && token) {
+        state.user = JSON.parse(storedUser);
+        state.isAuthenticated = true;
+      }
+    },
+  },
 });
 
-// Export actions by name
 export const {
   setLoading,
   setError,
   loginSuccess,
   logoutSuccess,
   registerSuccess,
-  currentUserSuccess
+  currentUserSuccess,
+  loadFromStorage,
 } = authSlice.actions;
 
-// Export reducer as default
 export default authSlice.reducer;

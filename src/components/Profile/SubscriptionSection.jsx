@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "../../api";
+import axios from "axios";
 
 export default function SubscriptionSection({ userId }) {
   const [subscriptions, setSubscriptions] = useState([]);

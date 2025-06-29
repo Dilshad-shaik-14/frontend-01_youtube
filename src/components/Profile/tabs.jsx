@@ -3,8 +3,10 @@ import CommentSection from "../Profile/CommentSection"
 import TweetSection from "../Profile/TweetSection"
 import VideoSection from "../Profile/VideoSection"
 import LikeSection from "../Profile/LikeSection"
+import PlaylistSection from "../Profile/PlaylistSection"
+import SubscriptionSection from "../Profile/SubscriptionSection"
 
-const TABS = ["Tweets", "Videos", "Comments", "Likes"];
+const TABS = ["Tweets", "Videos", "Comments", "Likes", "Playlists", "Subscriptions"];
 
 export default function Tabs({ userId }) {
   const [activeTab, setActiveTab] = useState("Tweets");
@@ -34,6 +36,8 @@ export default function Tabs({ userId }) {
         {activeTab === "Videos" && <VideoSection userId={userId} />}
         {activeTab === "Comments" && <CommentSection userId={userId} />}
         {activeTab === "Likes" && <LikeSection userId={userId} />}
+        {activeTab === "Playlists" && <PlaylistSection userId={userId} />}
+        {activeTab === "Subscriptions" && <SubscriptionSection userId={userId} />}
       </div>
     </div>
   );

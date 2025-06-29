@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import axios from "../../src/api";
+import axios from "axios";
 import TweetCard from "../components/TweetCard";
 
 export default function TweetDetail() {

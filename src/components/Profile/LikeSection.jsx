@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "../../api/axios";
+import axios from "axios";
 import TweetCard from "../TweetCard";
 import VideoCard from "../VideoCard";
 import Comment from "../Comment";

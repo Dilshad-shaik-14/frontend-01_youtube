@@ -66,11 +66,11 @@ export const updateAccount = (credentials) => handleApiResponse(
 );
 
 export const updateAvatar = (credentials) => handleApiResponse(
-    apiClient2.patch(`${baseURL}/users/update-avatar`, credentials, { withCredentials: true })
+    apiClient2.patch(`${baseURL}/users/avatar-update`, credentials, { withCredentials: true })
 );
 
 export const updateCoverImage = (credentials) => handleApiResponse(
-    apiClient2.patch(`${baseURL}/users/update-coverImage`, credentials, { withCredentials: true })
+    apiClient2.patch(`${baseURL}/users/coverImage-update`, credentials, { withCredentials: true })
 );
 
 export const getUserChannelProfile = (userName) => handleApiResponse(
@@ -78,11 +78,11 @@ export const getUserChannelProfile = (userName) => handleApiResponse(
 );
 
 export const getWatchHistory = () => handleApiResponse(
-    apiClient.get(`${baseURL}/users/history`, { withCredentials: true })
+    apiClient.get(`${baseURL}/users/watch-history`, { withCredentials: true })
 );
 
 export const deleteHistory = () => handleApiResponse(
-    apiClient.delete(`${baseURL}/users/delete-history`, { withCredentials: true })
+    apiClient.delete(`${baseURL}/users/delete-watchhistory`, { withCredentials: true })
 );
 
 export const deleteAvatar = () => handleApiResponse(
@@ -96,6 +96,10 @@ export const deleteCoverImage = () => handleApiResponse(
 export const getRegisteredUsers = ({limit = 10,page = 1}) => handleApiResponse(
     apiClient.get(`${baseURL}/users/registered-users`, { withCredentials: true, params : {page , limit} })
 );
+
+export const suggestUsers = () => handleApiResponse(
+    apiClient.get(`${baseURL}/users/suggestions`, {withCredentials: true})
+)
 
 export const getAllVideos = ({limit = 10 ,page=1 , query = null , userId = null}) => handleApiResponse(
     apiClient.get(`${baseURL}/videos/`, { withCredentials: true , params : {page , query , userId , limit}})
