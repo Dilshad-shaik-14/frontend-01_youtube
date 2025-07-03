@@ -3,19 +3,22 @@ import axios from "axios";
 
 const baseURL = import.meta.env.VITE_URI;
 
-const apiClient2 = axios.create({
-    baseURL: baseURL,
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
+const apiClient = axios.create({
+  baseURL: baseURL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  withCredentials: true,
 });
 
-const apiClient = axios.create({
-    baseURL : baseURL,
-    headers:{
-        'Content-Type' : 'application/json'
-    }
-})
+const apiClient2 = axios.create({
+  baseURL: baseURL,
+  headers: {
+    'Content-Type': 'multipart/form-data',
+  },
+  withCredentials: true,
+});
+
 
 const handleApiResponse = (apiCall) => {
     return new Promise((resolve, reject) => {

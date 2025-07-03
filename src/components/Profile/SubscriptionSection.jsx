@@ -9,9 +9,12 @@ export default function SubscriptionSection({ userId }) {
     const fetchSubscriptions = async () => {
       try {
         const res = await axios.get(`/subscriptions?subscriber=${userId}`);
-        setSubscriptions(res.data);
+        console.log("Subscriptions API response:", res.data);
+
+        setSubscriptions(Array.isArray(res.data) ? res.data : res.data.subscriptions || []);
       } catch (err) {
         console.error("Failed to fetch subscriptions:", err);
+        setSubscriptions([]); // fallback to avoid crash
       } finally {
         setLoading(false);
       }

@@ -10,7 +10,7 @@ const TweetSection = ({ userId }) => {
     const fetchUserTweets = async () => {
       try{
         const res =  await axios.get(`/tweet?owner=${userId}`);
-        setTweets(res)
+        setTweets(res.data || [])
       }
       catch(error){
         console.error(`Failed to fetch tweets:${error}`)

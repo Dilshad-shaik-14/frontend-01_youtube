@@ -1,23 +1,33 @@
-import React from 'react'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import './App.css'
-import Login from '../src/pages/Login'
-import Home from './pages/Home'
-import VideoDetail from './pages/videoDetails'
-import TweetDetail from './pages/TweetDetail'
+// App.jsx
+import React, { useEffect } from "react";
+import { BrowserRouter as Router } from "react-router-dom";
+import AppRoutes from "./AppRoutes";
+import { useDispatch } from "react-redux";
+import { currentUserSuccess } from "./utils/authSlice";
+import { currentUser } from "./api";
 
-function App() {
+const App = () => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+  const fetchCurrentUser = async () => {
+    try {
+      const res = await currentUser(); 
+      dispatch(currentUserSuccess(res));
+    } catch (err) {
+      console.error("Auth fetch failed:", err);
+    }
+  };
+
+  fetchCurrentUser();
+}, [dispatch]);
+
+
   return (
     <Router>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/" element={<Home />} />
-        <Route path="/videos/:id" element={<VideoDetail />} />
-        <Route path="/tweets/:id" element={<TweetDetail />} />
-        {/* Add more routes as needed */}
-      </Routes>
+      <AppRoutes />
     </Router>
-  )
-}
+  );
+};
 
-export default App
+export default App;

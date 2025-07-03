@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
 import axios from "axios";
 import Comment from "../Comment";
 
@@ -10,9 +10,13 @@ const CommentSection = ({ userId }) => {
     const fetchUserComments = async () => {
       try {
         const res = await axios.get(`/comments?owner=${userId}`);
-        setComments(res.data);
+        console.log("Comment API response:", res.data);
+
+        // Fix: Always ensure an array
+        setComments(Array.isArray(res.data) ? res.data : res.data.comments || []);
       } catch (err) {
         console.error("Failed to fetch comments:", err);
+        setComments([]); // fallback on error
       } finally {
         setLoading(false);
       }
@@ -33,4 +37,4 @@ const CommentSection = ({ userId }) => {
   );
 }
 
-export default CommentSection
+export default CommentSection;

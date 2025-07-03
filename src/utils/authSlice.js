@@ -17,15 +17,12 @@ const authSlice = createSlice({
     setError: (state, action) => {
       state.error = action.payload;
     },
-    loginSuccess: (state, action) => {
+     loginSuccess: (state, action) => {
       state.user = action.payload;
       state.isAuthenticated = true;
       state.loading = false;
       state.error = null;
-
-      
       localStorage.setItem("user", JSON.stringify(action.payload));
-      localStorage.setItem("token", action.payload.token); // If backend sends token
     },
     logoutSuccess: (state) => {
       state.user = null;

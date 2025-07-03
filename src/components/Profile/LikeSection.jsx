@@ -10,7 +10,7 @@ export default function LikeSection({ userId }) {
 
   useEffect(() => {
     axios.get(`/likes?likedBy=${userId}`).then((res) => {
-      setLikes(res.data);
+      setLikes(Array.isArray(res.data) ? res.data : res.data.likes || []);
       setLoading(false);
     });
   }, [userId]);

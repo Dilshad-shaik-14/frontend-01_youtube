@@ -10,7 +10,7 @@ export default function PlaylistSection({ userId }) {
     const fetchPlaylists = async () => {
       try {
         const res = await axios.get(`/playlists?owner=${userId}`);
-        setPlaylists(res.data);
+        setPlaylists(Array.isArray(res.data) ? res.data : res.data.playlists || []);
       } catch (err) {
         console.error("Failed to fetch playlists:", err);
       } finally {
