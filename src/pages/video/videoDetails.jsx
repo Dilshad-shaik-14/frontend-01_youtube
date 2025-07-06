@@ -1,30 +1,28 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
-import Comment from "../components/Comment";
-import VideoCard from "../components/VideoCard";
+import { getVideoById, getVideoComments } from "../../Index/api";
+import Comment from "../../components/Comment";
+import VideoCard from "../../components/VideoCard";
 
 export default function VideoDetail() {
-  const { id } = useParams(); // video ID from URL
+  const { id } = useParams();
   const [video, setVideo] = useState(null);
   const [comments, setComments] = useState([]);
 
   useEffect(() => {
-    // Fetch video detail
     const fetchVideo = async () => {
       try {
-        const res = await axios.get(`/videos/${id}`);
-        setVideo(res.data);
+        const res = await getVideoById(id);
+        setVideo(res.video);
       } catch (err) {
         console.error("Failed to fetch video:", err);
       }
     };
 
-    // Fetch comments for this video
     const fetchComments = async () => {
       try {
-        const res = await axios.get(`/videos/${id}/comments`);
-        setComments(res.data);
+        const res = await getVideoComments({ videoId: id, page: 1 });
+        setComments(res.comments || []);
       } catch (err) {
         console.error("Failed to fetch comments:", err);
       }
@@ -36,7 +34,7 @@ export default function VideoDetail() {
 
   const handleCommentClick = (comment) => {
     console.log("Clicked comment:", comment);
-    // Navigate to comment thread or reply form
+    // Handle comment click (reply, navigate, etc.)
   };
 
   return (
@@ -51,7 +49,7 @@ export default function VideoDetail() {
       {comments.length > 0 ? (
         comments.map((comment) => (
           <Comment
-            key={comment.id}
+            key={comment._id}
             comment={comment}
             onClick={handleCommentClick}
           />

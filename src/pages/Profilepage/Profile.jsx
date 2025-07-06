@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
-import Header from "../components/Profile/Header";
-import Tabs from "../components/Profile/Tabs";
-import EditProfileModal from "../components/Profile/EditProfileModal";
 import { useSelector } from "react-redux";
+import { getChannelStats } from "../../Index/api";
+import Header from "../../Profile/Header";
+import Tabs from "../../Profile/Tabs";
+import EditProfileModal from "../../Profile/EditProfileModal";
 
 export default function Profile() {
   const { id } = useParams();
@@ -15,7 +15,16 @@ export default function Profile() {
   const isOwnProfile = loggedInUser?._id === id;
 
   useEffect(() => {
-    axios.get(`/users/${id}`).then((res) => setUser(res.data));
+    const fetchUser = async () => {
+      try {
+        const data = await getChannelStats(id);
+        setUser(data.user || data); // adjust based on API response shape
+      } catch (err) {
+        console.error("Error fetching user:", err);
+      }
+    };
+
+    fetchUser();
   }, [id]);
 
   const handleProfileUpdate = (updatedUser) => {

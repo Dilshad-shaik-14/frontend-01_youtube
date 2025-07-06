@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import TweetCard from "../TweetCard";
-import VideoCard from "../VideoCard";
-import Comment from "../Comment";
+import TweetCard from "../components/TweetCard";
+import VideoCard from "../components/VideoCard";
+import Comment from "../components/Comment";
 
 export default function LikeSection({ userId }) {
   const [likes, setLikes] = useState([]);

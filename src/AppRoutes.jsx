@@ -2,15 +2,16 @@ import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-import Home from "../src/pages/Home";
-import VideoDetail from "../src/pages/videoDetails";
-import TweetDetail from "../src/pages/TweetDetail";
-import Login from "../src/pages/Login";
-import Profile from "../src/pages/Profile";
-import Playlists from "../src/pages/Playlist";
-import Subscriptions from "../src/pages/Subscriptions";
-import MyUploads from "../src/pages/MyUploads";
+import Home from "./pages/home/Home";
+import VideoDetail from "./pages/video/videoDetails";
+import TweetDetail from "./pages/Tweets/TweetDetail";
+import Login from "./pages/Login";
+import Profile from "./pages/Profilepage/Profile";
+import Playlists from "./pages/Playlist/Playlist";
+import Subscriptions from "./pages/Subscriptions";
+import MyUploads from "./pages/MyUploads";
 import Layout from "./layout/Layout";
+import Upload from "./pages/Upload";
 //import Explore from "../src/pages/Explore";
 //import Settings from "../src/pages/Settings";
 
@@ -82,10 +83,19 @@ const AppRoutes = () => {
         />
 
         <Route
-          path="/uploads"
+          path="/myuploads"
           element={
             <ProtectedRoute>
               <MyUploads />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/uploads"
+          element = {
+            <ProtectedRoute>
+              <Upload />
             </ProtectedRoute>
           }
         />

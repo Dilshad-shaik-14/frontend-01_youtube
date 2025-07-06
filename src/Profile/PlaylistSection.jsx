@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import VideoCard from "../VideoCard";
+import VideoCard from "../components/VideoCard";
 
 export default function PlaylistSection({ userId }) {
   const [playlists, setPlaylists] = useState([]);

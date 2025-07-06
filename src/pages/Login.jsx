@@ -8,7 +8,7 @@ import {
   loginSuccess,
   registerSuccess,
 } from "../utils/authSlice";
-import { login as loginApi, register as registerApi } from "../api";
+import { login as loginApi, register as registerApi } from "../Index/api";
 import { useNavigate } from "react-router-dom";
 
 export default function Login() {

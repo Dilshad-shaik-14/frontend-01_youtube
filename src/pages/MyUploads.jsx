@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import { getAllVideos, getUserTweets } from "../Index/api";
 import VideoCard from "../components/VideoCard";
 import TweetCard from "../components/TweetCard";
 
@@ -11,13 +11,13 @@ export default function UploadsPage({ userId }) {
   useEffect(() => {
     const fetchUploads = async () => {
       try {
-        const [videoRes, tweetRes] = await Promise.all([
-          axios.get(`/api/v1/videos?owner=${userId}`),
-          axios.get(`/api/v1/tweets?owner=${userId}`),
+        const [videoData, tweetData] = await Promise.all([
+          getAllVideos({ userId }),
+          getUserTweets(userId),
         ]);
 
-        setVideos(videoRes.data || []);
-        setTweets(tweetRes.data || []);
+        setVideos(Array.isArray(videoData) ? videoData : []);
+        setTweets(Array.isArray(tweetData) ? tweetData : []);
       } catch (err) {
         console.error("Failed to fetch uploads:", err);
       } finally {

@@ -1,10 +1,16 @@
+// utils/authSlice.js
 import { createSlice } from "@reduxjs/toolkit";
+
+const initialTheme =
+  localStorage.getItem("theme") ||
+  (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
 
 const initialState = {
   user: null,
   isAuthenticated: false,
   loading: false,
   error: null,
+  theme: initialTheme, // ✅ add theme state
 };
 
 const authSlice = createSlice({
@@ -17,7 +23,7 @@ const authSlice = createSlice({
     setError: (state, action) => {
       state.error = action.payload;
     },
-     loginSuccess: (state, action) => {
+    loginSuccess: (state, action) => {
       state.user = action.payload;
       state.isAuthenticated = true;
       state.loading = false;
@@ -29,8 +35,6 @@ const authSlice = createSlice({
       state.isAuthenticated = false;
       state.loading = false;
       state.error = null;
-
-      // Clear persisted auth data
       localStorage.removeItem("user");
       localStorage.removeItem("token");
     },
@@ -39,7 +43,6 @@ const authSlice = createSlice({
       state.isAuthenticated = true;
       state.loading = false;
       state.error = null;
-
       localStorage.setItem("user", JSON.stringify(action.payload));
       localStorage.setItem("token", action.payload.token);
     },
@@ -57,6 +60,18 @@ const authSlice = createSlice({
         state.isAuthenticated = true;
       }
     },
+
+    toggleTheme: (state) => {
+      const newTheme = state.theme === "dark" ? "light" : "dark";
+      state.theme = newTheme;
+      localStorage.setItem("theme", newTheme);
+
+      if (newTheme === "dark") {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+    },
   },
 });
 
@@ -68,6 +83,7 @@ export const {
   registerSuccess,
   currentUserSuccess,
   loadFromStorage,
+  toggleTheme, 
 } = authSlice.actions;
 
 export default authSlice.reducer;

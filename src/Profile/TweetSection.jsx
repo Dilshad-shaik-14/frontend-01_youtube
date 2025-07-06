@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import TweetCard from "../TweetCard";
+import TweetCard from "../components/TweetCard";
 
 const TweetSection = ({ userId }) => {
   const [tweets, setTweets] = useState([]);

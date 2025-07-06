@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import {
+  getSubscribedChannels,
+  getChannelSubscribers,
+} from "../Index/api";
 
 const SubscriptionCard = ({ user }) => (
   <div className="flex items-center gap-4 p-4 bg-white dark:bg-zinc-900 rounded-lg shadow">
@@ -30,13 +33,13 @@ export default function SubscriptionPage({ userId }) {
   useEffect(() => {
     const fetchSubs = async () => {
       try {
-        const [res1, res2] = await Promise.all([
-          axios.get(`/api/v1/subscriptions?subscriber=${userId}`),
-          axios.get(`/api/v1/subscribers?channel=${userId}`),
+        const [subTo, subs] = await Promise.all([
+          getSubscribedChannels(userId),
+          getChannelSubscribers(userId),
         ]);
 
-        setSubscribedTo(Array.isArray(res1.data) ? res1.data : res1.data.users || []);
-        setSubscribers(Array.isArray(res2.data) ? res2.data : res2.data.users || []);
+        setSubscribedTo(Array.isArray(subTo) ? subTo : subTo.users || []);
+        setSubscribers(Array.isArray(subs) ? subs : subs.users || []);
       } catch (err) {
         console.error("Error fetching subscriptions/subscribers", err);
       } finally {
@@ -79,4 +82,3 @@ export default function SubscriptionPage({ userId }) {
     </div>
   );
 }
-
