@@ -12,15 +12,30 @@ import Subscriptions from "./pages/Subscriptions";
 import MyUploads from "./pages/MyUploads";
 import Layout from "./layout/Layout";
 import Upload from "./pages/Upload";
+import Like from './pages/Likes/Like'
 //import Explore from "../src/pages/Explore";
 //import Settings from "../src/pages/Settings";
 
 const ProtectedRoute = ({ children }) => {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-  return isAuthenticated ? children : <Navigate to="/login" />;
+  return isAuthenticated ? children : <Navigate to="/login" replace/>;
 };
 
+
+
 const AppRoutes = () => {
+
+  const currentUser = useSelector((state) => state.auth.currentUser);
+  const userId = currentUser?._id;
+  const userName = currentUser?.userName;
+
+  console.log("currentUser from Redux:", currentUser);
+  console.log("userId:", currentUser?._id);
+  console.log("userName:", currentUser?.userName);
+
+
+
+
   return (
     <Routes>
       {/* Public Route */}
@@ -82,14 +97,19 @@ const AppRoutes = () => {
           }
         />
 
-        <Route
-          path="/myuploads"
-          element={
+       {currentUser ? (
+          <Route
+            path="/myuploads"
+            element={
             <ProtectedRoute>
-              <MyUploads />
+            <MyUploads
+              userId={currentUser._id}
+              userName={currentUser.userName}
+            />
             </ProtectedRoute>
-          }
-        />
+            }
+            />
+            ) : null}
 
         <Route
           path="/uploads"
@@ -99,16 +119,16 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
         />
-{/*
+
         <Route
-          path="/explore"
+          path="/likes"
           element={
             <ProtectedRoute>
-              <Explore />
+              <Like />
             </ProtectedRoute>
           }
         />
-
+{/*
         <Route
           path="/settings"
           element={

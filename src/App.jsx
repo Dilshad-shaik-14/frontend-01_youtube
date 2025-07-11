@@ -1,33 +1,45 @@
 // App.jsx
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router } from "react-router-dom";
 import AppRoutes from "./AppRoutes";
 import { useDispatch, useSelector } from "react-redux";
-import { currentUserSuccess } from "./utils/authSlice";
-import { currentUser } from "./Index/api";
+import {
+  currentUserSuccess,
+  loadFromStorage,
+  logoutSuccess,
+} from "./utils/authSlice";
+import { currentUser as fetchCurrentUser } from "./Index/api";
 
 const App = () => {
   const dispatch = useDispatch();
-  const { theme } = useSelector((state) => state.auth);
+  const { theme, currentUser } = useSelector((state) => state.auth);
+  const [appReady, setAppReady] = useState(false); 
 
-    useEffect(() => {
+  useEffect(() => {
     document.documentElement.classList.toggle("dark", theme === "dark");
   }, [theme]);
 
   useEffect(() => {
-    const fetchCurrentUser = async () => {
+    const initAuth = async () => {
+      dispatch(loadFromStorage());
+
       try {
-        const res = await currentUser();
+        const res = await fetchCurrentUser();
         dispatch(currentUserSuccess(res));
       } catch (err) {
-        console.error("Auth fetch failed:", err);
+        dispatch(logoutSuccess()); 
+        console.error("Auth check failed:", err);
+      } finally {
+        setAppReady(true);
       }
     };
 
-    fetchCurrentUser();
+    initAuth();
   }, [dispatch]);
 
-
+  if (!appReady) {
+    return <div className="text-center mt-10 text-zinc-500">Checking authentication...</div>;
+  }
 
   return (
     <Router>

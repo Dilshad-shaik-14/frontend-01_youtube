@@ -49,7 +49,7 @@ export default function Sidebar({ isOpen }) {
       <nav className="space-y-2">
         <SidebarLink to="/" icon={<Home size={18} />} label="Home" />
         <SidebarLink to="/playlists" icon={<ListVideo size={18} />} label="My Playlists" />
-        <SidebarLink to="/liked" icon={<Heart size={18} />} label="Liked" />
+        <SidebarLink to="/likes" icon={<Heart size={18} />} label="Liked" />
         <SidebarLink to="/myuploads" icon={<Star size={18} />} label="My Uploads" />
         <SidebarLink to="/subscriptions" icon={<UserCircle size={18} />} label="Subscriptions" />
         <SidebarLink to="/uploads" icon={<FileUp size={18} />} label="Upload" />

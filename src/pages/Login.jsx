@@ -26,17 +26,17 @@ export default function Login() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { user, loading, error } = useSelector((state) => state.auth);
+  const { currentUser, loading, error } = useSelector((state) => state.auth);
 
   
   useEffect(() => {
-    if (user && !loading && !error && isLogin) {
+    if (currentUser && !loading && !error && isLogin) {
       navigate("/");
     }
-  }, [user, loading, error, isLogin, navigate]);
+  }, [currentUser, loading, error, isLogin, navigate]);
 
   useEffect(() => {
-    if (user && !loading && !error && !isLogin) {
+    if (currentUser && !loading && !error && !isLogin) {
       setIsLogin(true);
       setRegisterStep(1);
       setEmail("");
@@ -46,7 +46,7 @@ export default function Login() {
       setAvatar(null);
       setCoverImage(null);
     }
-  }, [user, loading, error, isLogin]);
+  }, [currentUser, loading, error, isLogin]);
 
   const handleRegister = async (e) => {
     e.preventDefault();
