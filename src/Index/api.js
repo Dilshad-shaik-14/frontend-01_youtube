@@ -109,8 +109,8 @@ export const getVideoDetails = (videoId) =>
 export const deleteVideo = (videoId) =>
   handleApiResponse(apiClient.delete(`/videos/${videoId}`));
 
-export const updateVideo = (videoId, credentials) =>
-  handleApiResponse(apiClient2.patch(`/videos/${videoId}`, credentials));
+export const updateVideo = (videoId, formData, onUploadProgress) =>
+  handleApiResponse(apiClient2.patch(`/videos/${videoId}`, formData, { onUploadProgress }));
 
 export const togglePublishStatus = (videoId) =>
   handleApiResponse(apiClient.patch(`/videos/toggle/publish/${videoId}`));
@@ -155,7 +155,7 @@ export const addVideoToPlaylist = (videoId, playlistId) =>
   handleApiResponse(apiClient.patch(`/playlist/add/${videoId}/${playlistId}`));
 
 export const removeVideoFromPlaylist = (videoId, playlistId) =>
-  handleApiResponse(apiClient.patch(`/playlist/remove/${videoId}/${playlistId}`));
+  handleApiResponse(apiClient.delete(`/playlist/remove/${videoId}/${playlistId}`));
 
 export const getUserPlaylists = (userId) =>
   handleApiResponse(apiClient.get(`/playlist/user/${userId}`));
@@ -172,6 +172,13 @@ export const toggleTweetLike = (tweetId) =>
 export const getLikedVideos = () =>
   handleApiResponse(apiClient.get(`/likes/videos`));
 
+export const getLikedTweets = () =>
+  handleApiResponse(apiClient.get('/likes/tweets'));
+
+export const getLikedComments = () =>
+  handleApiResponse(apiClient.get('/likes/comments'));
+
+
 export const healthCheck = () =>
   handleApiResponse(apiClient.get(`/healthcheck`));
 
@@ -184,11 +191,11 @@ export const getChannelVideos = (channel) =>
 export const getVideoComments = ({ videoId, page, limit = 10 }) =>
   handleApiResponse(apiClient.get(`/comments/${videoId}`, { params: { page, limit } }));
 
-export const addComment = (videoId, credentials) =>
-  handleApiResponse(apiClient.post(`/comments/${videoId}`, credentials));
+export const addComment = (videoId, content) =>
+  apiClient.post(`/comments/${videoId}`, { content }); 
 
 export const deleteComment = (commentId) =>
   handleApiResponse(apiClient.delete(`/comments/c/${commentId}`));
 
-export const updateComment = (commentId, credentials) =>
-  handleApiResponse(apiClient.patch(`/comments/c/${commentId}`, credentials));
+export const updateComment = (commentId, content) =>
+  handleApiResponse(apiClient.patch(`/comments/c/${commentId}`, { content }));

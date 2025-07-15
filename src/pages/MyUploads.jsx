@@ -1,81 +1,146 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { getChannelVideos, getUserTweets } from "../Index/api";
-import VideoCard from "../components/VideoCard";
-import TweetCard from "../components/TweetCard";
+import {
+  getChannelVideos,
+  getUserTweets,
+  deleteVideo,
+  deleteTweet,
+} from "../Index/api";
+import EditableVideoCard from "../components/EditableVideoCard";
+import EditableTweetCard from "../components/EditableTweetCard";
 import VideoPlayerModal from "../components/VideoPlayerModal";
 
 export default function MyUploads() {
   const user = useSelector((state) => state.auth.currentUser);
   const [videos, setVideos] = useState([]);
   const [tweets, setTweets] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [selectedVideo, setSelectedVideo] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("videos");
+
+  const fetchUploads = async () => {
+    if (!user?._id) return;
+
+    setLoading(true);
+    try {
+      const [videoRes, tweetRes] = await Promise.all([
+        getChannelVideos(user._id),
+        getUserTweets(user._id),
+      ]);
+      setVideos(videoRes?.data?.videos || []);
+      setTweets(tweetRes?.data?.tweets || []);
+    } catch (error) {
+      console.error("❌ Error fetching uploads:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchUploads = async () => {
-      if (!user || !user._id) return;
-
-      try {
-        const [videoRes, tweetRes] = await Promise.all([
-          getChannelVideos(user._id), // ✅ channelId = user._id
-          getUserTweets(user._id),    // ✅ userId = user._id
-        ]);
-
-        // Debug logs (optional)
-        console.log("Videos Response:", videoRes);
-        console.log("Tweets Response:", tweetRes);
-
-        // ✅ Fix: videos are inside videoRes.data.videos
-        setVideos(videoRes?.data?.videos || []);
-        setTweets(tweetRes?.data?.tweets || []);
-      } catch (error) {
-        console.error("Error fetching uploads:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchUploads();
   }, [user]);
 
-  if (loading) return <div className="text-center p-4">Loading...</div>;
+  const handleDeleteVideo = async (id) => {
+    try {
+      await deleteVideo(id);
+      fetchUploads();
+    } catch (err) {
+      console.error("❌ Failed to delete video:", err);
+    }
+  };
+
+  const handleDeleteTweet = async (id) => {
+    try {
+      await deleteTweet(id);
+      fetchUploads();
+    } catch (err) {
+      console.error("❌ Failed to delete tweet:", err);
+    }
+  };
+
+  const SkeletonCard = () => (
+    <div className="h-[180px] bg-zinc-800 rounded-lg animate-pulse" />
+  );
+
+  const renderTabContent = () => {
+    if (loading) {
+      return (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {Array.from({ length: 6 }).map((_, idx) => (
+            <SkeletonCard key={idx} />
+          ))}
+        </div>
+      );
+    }
+
+    if (activeTab === "videos") {
+      return videos.length ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {videos.map((video) => (
+            <EditableVideoCard
+              key={video._id}
+              video={video}
+              onClick={() => setSelectedVideo(video)}
+              onDelete={handleDeleteVideo}
+              onRefresh={fetchUploads}
+            />
+          ))}
+        </div>
+      ) : (
+        <p className="text-zinc-400 text-center">No videos uploaded.</p>
+      );
+    }
+
+    if (activeTab === "tweets") {
+      return tweets.length ? (
+        <div className="space-y-4">
+          {tweets.map((tweet) => (
+            <EditableTweetCard
+              key={tweet._id}
+              tweet={tweet}
+              onDelete={handleDeleteTweet}
+              onRefresh={fetchUploads}
+            />
+          ))}
+        </div>
+      ) : (
+        <p className="text-zinc-400 text-center">No tweets posted.</p>
+      );
+    }
+  };
 
   return (
-    <div className="p-4 space-y-6">
-      <h2 className="text-2xl font-bold mb-4">My Uploads</h2>
+    <div className="p-4 max-w-6xl mx-auto">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold text-white">My Uploads</h2>
+        <button
+          onClick={fetchUploads}
+          className="bg-zinc-800 hover:bg-zinc-700 px-4 py-2 rounded text-sm text-white"
+        >
+          Refresh
+        </button>
+      </div>
 
-      {/* Videos Section */}
-      <section>
-        <h3 className="text-xl font-semibold mb-2">My Videos</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {videos.length > 0 ? (
-            videos.map((video) => (
-              <VideoCard
-                key={video._id}
-                video={video}
-                onClick={() => setSelectedVideo(video)}
-              />
-            ))
-          ) : (
-            <p>No videos uploaded.</p>
-          )}
-        </div>
-      </section>
+      {/* Tabs */}
+      <div className="flex gap-4 mb-6 border-b border-zinc-700">
+        {["videos", "tweets"].map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`pb-2 px-4 text-sm font-medium ${
+              activeTab === tab
+                ? "text-white border-b-2 border-red-500"
+                : "text-zinc-400 hover:text-white"
+            }`}
+          >
+            {tab === "videos" ? "Videos" : "Tweets"}
+          </button>
+        ))}
+      </div>
 
-      {/* Tweets Section */}
-      <section>
-        <h3 className="text-xl font-semibold mb-2">My Tweets</h3>
-        <div className="space-y-2">
-          {tweets.length > 0 ? (
-            tweets.map((tweet) => (
-              <TweetCard key={tweet._id} tweet={tweet} />
-            ))
-          ) : (
-            <p>No tweets posted.</p>
-          )}
-        </div>
-      </section>
+      {/* Content */}
+      {renderTabContent()}
 
       {/* Video Modal */}
       {selectedVideo && (

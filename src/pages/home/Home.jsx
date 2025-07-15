@@ -3,7 +3,8 @@ import {
   getAllVideos,
   getTweets,
   suggestUsers
-} from "../../Index/api"; 
+} from "../../Index/api";
+
 import VideoCard from "../../components/VideoCard";
 import TweetCard from "../../components/TweetCard";
 import {
@@ -11,20 +12,7 @@ import {
   SkeletonTweetCard,
   SkeletonVideoCard
 } from "../../layout/SkeletonCard";
-
-const UserCard = ({ user }) => (
-  <div className="p-3 rounded-lg shadow bg-white dark:bg-zinc-800 flex items-center gap-3 border border-zinc-200 dark:border-zinc-700">
-    <img
-      src={user.avatar || "/default-avatar.png"}
-      alt={user.username}
-      className="w-10 h-10 rounded-full object-cover border border-red-500"
-    />
-    <div>
-      <div className="font-semibold text-zinc-800 dark:text-zinc-100">{user.fullName}</div>
-      <div className="text-xs text-zinc-500">@{user.username}</div>
-    </div>
-  </div>
-);
+import UserCard from "../../components/UserCard";
 
 export default function Home() {
   const [videos, setVideos] = useState([]);
@@ -34,27 +22,33 @@ export default function Home() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const fetchContent = async () => {
-      try {
-        const [videoRes, tweetRes, userRes] = await Promise.all([
-          getAllVideos({ limit: 6, page: 1 }),
-          getTweets({ page: 1 }),
-          suggestUsers()
-        ]);
+  const fetchContent = async () => {
+    try {
+      const [videoRes, tweetRes, userRes] = await Promise.all([
+        getAllVideos({ limit: 6, page: 1 }),
+        getTweets({ page: 1 }),
+        suggestUsers()
+      ]);
 
-        setVideos(videoRes.videos || []);
-        setTweets(tweetRes.tweets || []);
-        setSuggestedUsers(userRes.users || []);
-      } catch (err) {
-        console.error("Error loading home feed:", err);
-        setError("Failed to load content. Please try again later.");
-      } finally {
-        setLoading(false);
-      }
-    };
+      console.log("videos:", videoRes);
+      console.log("tweets:", tweetRes);
+      console.log("users:", userRes);
 
-    fetchContent();
-  }, []);
+      // ✅ FIXED: Access .data.videos, .data.tweets
+      setVideos(videoRes?.data?.videos || []);
+      setTweets(tweetRes?.data?.tweets || []);
+      setSuggestedUsers(userRes?.data || []);
+    } catch (err) {
+      console.error("Error loading home feed:", err);
+      setError("Failed to load content. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchContent();
+}, []);
+
 
   if (loading) {
     return (
@@ -95,7 +89,7 @@ export default function Home() {
     );
   }
 
-  if (error) {
+  if (error && videos.length === 0 && tweets.length === 0 && suggestedUsers.length === 0) {
     return (
       <div className="text-center mt-10 text-red-500 dark:text-red-400">
         {error}
@@ -117,7 +111,9 @@ export default function Home() {
             ))}
           </div>
         ) : (
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">No suggestions right now.</p>
+          <p className="text-sm text-zinc-500 dark:text-zinc-400">
+            No suggestions right now.
+          </p>
         )}
       </section>
 

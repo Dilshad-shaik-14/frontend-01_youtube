@@ -1,170 +1,250 @@
-import React, { useState, useEffect } from "react";
-import { X, ThumbsUp, Share2, Send } from "lucide-react";
-import { AnimatePresence, motion } from "framer-motion";
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
-import { useSelector } from "react-redux";
-import { addComment, getVideoComments } from "../Index/api";
-
-dayjs.extend(relativeTime);
+import React, { useEffect, useState } from "react";
+import {
+  X, ThumbsUp, Share2
+} from "lucide-react";
+import moment from "moment";
+import {
+  getVideoById,
+  getVideoComments,
+  addComment,
+  toggleVideoLike,
+  toggleCommentLike
+} from "../Index/api";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function VideoPlayerModal({ video, onClose }) {
-  const [liked, setLiked] = useState(false);
-  const [comment, setComment] = useState("");
+  const [fullVideo, setFullVideo] = useState(null);
   const [comments, setComments] = useState([]);
-  const user = useSelector((state) => state.auth?.user || state.user || null);
+  const [newComment, setNewComment] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [isPostingComment, setIsPostingComment] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
 
-  // ✅ Fetch Comments
   useEffect(() => {
     if (video?._id) {
-      getVideoComments({ videoId: video._id, page: 1, limit: 10 })
-        .then((res) => setComments(res))
-        .catch((err) => {
-          console.error("❌ Error fetching comments:", err);
-        });
+      fetchVideoDetails();
+      fetchComments();
     }
-  }, [video]);
+  }, [video?._id]);
 
-  // ✅ Submit new comment
-  const handleCommentSubmit = async () => {
-    if (!comment.trim() || !user) return;
-
+  const fetchVideoDetails = async () => {
     try {
-      const newComment = await addComment(video._id, { text: comment });
-
-      // Enrich comment with frontend user info
-      const enriched = {
-        ...newComment,
-        user: {
-          avatar: user.avatar || "/default-avatar.png",
-          username: user.username || "anonymous",
-        },
-      };
-
-      setComments((prev) => [...prev, enriched]);
-      setComment("");
-    } catch (err) {
-      console.error("❌ Error adding comment:", err);
-      alert("Something went wrong while adding your comment.");
+      const res = await getVideoById(video._id);
+      setFullVideo(res.data);
+      setIsLiked(res.data?.isLiked);
+      setLikeCount(res.data?.totalLikes || 0);
+    } catch (e) {
+      console.error("Failed to fetch video:", e.message);
+    } finally {
+      setLoading(false);
     }
   };
 
-  if (!video) return null;
+  const fetchComments = async () => {
+    try {
+      const res = await getVideoComments({ videoId: video._id });
+      setComments(res?.data?.comments || []);
+    } catch (e) {
+      console.error("Failed to fetch comments:", e.message);
+    }
+  };
+
+  const handlePostComment = async () => {
+    if (!newComment.trim()) return;
+    try {
+      setIsPostingComment(true);
+      await addComment(video._id, newComment);
+      setNewComment("");
+      await fetchComments();
+    } catch (e) {
+      console.error("Posting comment failed:", e.message);
+    } finally {
+      setIsPostingComment(false);
+    }
+  };
+
+  const handleLikeToggle = async () => {
+    try {
+      setIsLiked((prev) => !prev);
+      setLikeCount((prev) => isLiked ? prev - 1 : prev + 1);
+      await toggleVideoLike(video._id);
+    } catch (e) {
+      console.error("Like toggle failed:", e.message);
+    }
+  };
+
+  const handleCommentLike = async (id, index) => {
+    try {
+      const updated = [...comments];
+      const liked = updated[index].isLiked;
+      updated[index].isLiked = !liked;
+      updated[index].totalLikes += liked ? -1 : 1;
+      setComments(updated);
+      await toggleCommentLike(id);
+    } catch (e) {
+      console.error("Comment like failed:", e.message);
+    }
+  };
+
+  const duration = fullVideo?.duration || 0;
+  const durationText = duration >= 60
+    ? `${Math.floor(duration / 60)}m ${duration % 60}s`
+    : `${duration}s`;
 
   return (
     <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center px-4"
-      >
+      {video && (
         <motion.div
-          initial={{ scale: 0.9, y: 50 }}
-          animate={{ scale: 1, y: 0 }}
-          exit={{ scale: 0.95, y: 20, opacity: 0 }}
-          transition={{ duration: 0.3 }}
-          className="relative w-full max-w-5xl rounded-3xl bg-gradient-to-br from-[#0e0e0e] to-[#1c1c1c] border border-zinc-800 shadow-[0_0_50px_#00000080] overflow-hidden"
+          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex justify-center items-center px-2"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.95 }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
         >
-          {/* ❌ Close Button */}
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 bg-white/10 hover:bg-white/20 text-white p-2 rounded-full z-50"
-          >
-            <X size={20} />
-          </button>
+          <div className="relative w-full max-w-7xl h-[90vh] bg-zinc-900 text-white rounded-lg shadow-2xl overflow-hidden flex flex-col md:flex-row">
 
-          {/* 🎥 Video Player */}
-          <div className="bg-black rounded-t-3xl overflow-hidden">
-            <video
-              src={video.videoFile}
-              autoPlay
-              controls
-              className="w-full h-[70vh] object-contain"
-            />
-          </div>
+            {/* Close Button */}
+            <button
+              onClick={onClose}
+              className="absolute top-4 right-4 bg-zinc-800 hover:bg-zinc-700 text-white p-2 rounded-full z-50"
+            >
+              <X size={20} />
+            </button>
 
-          {/* 📄 Video Content */}
-          <div className="p-6 space-y-6 text-white bg-black/40 backdrop-blur-2xl">
-            <div>
-              <h2 className="text-3xl font-bold mb-1">{video.title}</h2>
-              <p className="text-zinc-300 text-sm">{video.description}</p>
-            </div>
-
-            {/* ❤️ Actions */}
-            <div className="flex gap-3 items-center">
-              <button
-                onClick={() => setLiked(!liked)}
-                className={`flex items-center gap-2 px-5 py-2 rounded-full font-medium text-sm transition-all ${
-                  liked ? "bg-blue-600 hover:bg-blue-700" : "bg-white/10 hover:bg-white/20"
-                }`}
-              >
-                <ThumbsUp size={16} /> {liked ? "Liked" : "Like"}
-              </button>
-
-              <button
-                onClick={() => {
-                  navigator.clipboard.writeText(window.location.href);
-                  alert("🔗 Link copied!");
-                }}
-                className="flex items-center gap-2 px-5 py-2 rounded-full bg-white/10 hover:bg-white/20 text-sm"
-              >
-                <Share2 size={16} /> Share
-              </button>
-            </div>
-
-            {/* 💬 Comment Input */}
-            {user ? (
-              <div className="flex items-center gap-3">
-                <input
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
-                  placeholder="Leave a comment..."
-                  className="flex-1 px-4 py-2 rounded-full bg-white/10 text-white placeholder:text-zinc-400 border border-zinc-700 focus:outline-none"
+            {/* Left Section - Video + Details */}
+            <div className="w-full md:w-2/3 h-1/2 md:h-full flex flex-col">
+              {/* Video */}
+              {loading ? (
+                <div className="flex-1 flex items-center justify-center">
+                  Loading video...
+                </div>
+              ) : fullVideo?.videoFile ? (
+                <video
+                  src={fullVideo.videoFile}
+                  controls
+                  className="w-full h-full object-contain bg-black"
                 />
-                <button
-                  onClick={handleCommentSubmit}
-                  className="p-2 bg-blue-600 hover:bg-blue-700 rounded-full"
-                >
-                  <Send size={18} />
-                </button>
-              </div>
-            ) : (
-              <div className="text-zinc-400 text-sm">Login to add comments.</div>
-            )}
-
-            {/* 📜 Comments List */}
-            <div className="max-h-60 overflow-y-auto space-y-4 pr-2">
-              {comments.length === 0 ? (
-                <p className="text-sm text-zinc-400">No comments yet.</p>
               ) : (
-                comments.map((c, i) => (
-                  <div key={i} className="flex items-start gap-3">
-                    <img
-                      src={c.user?.avatar || "/default-avatar.png"}
-                      alt={c.user?.username || "user"}
-                      className="w-10 h-10 rounded-full object-cover border border-zinc-600"
-                    />
-                    <div
-                      className={`bg-white/5 p-3 rounded-xl w-full ${
-                        c.user?.username === user?.username ? "border border-blue-700" : ""
-                      }`}
-                    >
-                      <div className="text-sm font-semibold text-white">
-                        @{c.user?.username || "anonymous"}
-                      </div>
-                      <p className="text-sm text-zinc-300">{c.text}</p>
-                      <div className="text-xs text-zinc-500 mt-1">
-                        {dayjs(c.createdAt).fromNow()}
-                      </div>
-                    </div>
-                  </div>
-                ))
+                <div className="flex-1 flex items-center justify-center text-red-500">
+                  ⚠️ Video source missing
+                </div>
               )}
+
+              {/* Metadata */}
+              <div className="p-4 space-y-2 border-t border-zinc-800">
+                <h2 className="text-xl font-bold">{fullVideo?.title}</h2>
+
+                {/* User Info */}
+                <div className="flex items-center gap-3">
+                  <img
+                    src={fullVideo?.owner?.avatar || "/default-avatar.png"}
+                    className="w-10 h-10 rounded-full border"
+                    alt="User avatar"
+                  />
+                  <div>
+                    <p className="text-base font-semibold">
+                      {fullVideo?.owner?.fullName || "Anonymous"}
+                    </p>
+                    <p className="text-sm text-zinc-400">
+                      @{fullVideo?.owner?.userName || "user"}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Description */}
+                <p className="text-sm text-zinc-300">{fullVideo?.description}</p>
+                <p className="text-xs text-zinc-500">
+                  Duration: {durationText} | Views: {fullVideo?.views || 0}
+                </p>
+
+                {/* Actions */}
+                <div className="flex gap-4 mt-2">
+                  <button
+                    onClick={handleLikeToggle}
+                    className={`px-4 py-2 rounded-full flex items-center gap-2 transition-all duration-200 hover:scale-105 ${
+                      isLiked ? "bg-blue-600 text-white" : "bg-zinc-700 text-zinc-300"
+                    }`}
+                  >
+                    <ThumbsUp size={18} /> {likeCount}
+                  </button>
+
+                  <button className="px-4 py-2 rounded-full bg-zinc-700 text-zinc-300 hover:bg-zinc-600 flex items-center gap-2 transition-all duration-200 hover:scale-105">
+                    <Share2 size={18} /> Share
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Section - Comments */}
+            <div className="w-full md:w-1/3 bg-zinc-950 border-l border-zinc-800 p-4 flex flex-col">
+              {/* Add Comment */}
+              <textarea
+                rows={2}
+                placeholder="Add a comment..."
+                className="w-full p-2 rounded bg-zinc-800 text-sm resize-none placeholder:text-zinc-500"
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    handlePostComment();
+                  }
+                }}
+              />
+              <button
+                onClick={handlePostComment}
+                disabled={!newComment.trim() || isPostingComment}
+                className="mt-2 w-full py-1.5 bg-blue-600 hover:bg-blue-500 rounded text-sm font-medium disabled:bg-zinc-700"
+              >
+                {isPostingComment ? "Posting..." : "Post"}
+              </button>
+
+              {/* Comments */}
+              <div className="mt-4 overflow-y-auto flex-1 scrollbar-thin scrollbar-thumb-blue-700 hover:scrollbar-thumb-blue-600 scrollbar-track-transparent">
+                {comments.length === 0 ? (
+                  <p className="text-sm text-zinc-500">No comments yet.</p>
+                ) : (
+                  comments.map((c, i) => (
+                    <div
+                      key={c._id}
+                      className="p-3 rounded-lg bg-zinc-800 mb-3 hover:bg-zinc-700 transition"
+                    >
+                      <div className="flex items-start gap-3 mb-1">
+                        <img
+                          src={c.user?.avatar || "/default-avatar.png"}
+                          className="w-8 h-8 rounded-full border"
+                          alt="User"
+                        />
+                        <div>
+                          <p className="text-sm font-medium">
+                            @{c.user?.userName}
+                          </p>
+                          <p className="text-xs text-zinc-400">
+                            {moment(c.createdAt).fromNow()}
+                          </p>
+                        </div>
+                      </div>
+                      <p className="text-sm mt-1 text-zinc-300">{c.content}</p>
+                      <button
+                        onClick={() => handleCommentLike(c._id, i)}
+                        className={`mt-2 text-xs px-3 py-1 rounded-full flex items-center gap-1 transition-all duration-200 hover:scale-105 ${
+                          c.isLiked
+                            ? "bg-blue-600 text-white"
+                            : "bg-zinc-700 text-zinc-300"
+                        }`}
+                      >
+                        <ThumbsUp size={14} />
+                        {c.totalLikes}
+                      </button>
+                    </div>
+                  ))
+                )}
+              </div>
             </div>
           </div>
         </motion.div>
-      </motion.div>
+      )}
     </AnimatePresence>
   );
 }

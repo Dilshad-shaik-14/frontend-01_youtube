@@ -7,12 +7,13 @@ import VideoDetail from "./pages/video/videoDetails";
 import TweetDetail from "./pages/Tweets/TweetDetail";
 import Login from "./pages/Login";
 import Profile from "./pages/Profilepage/Profile";
-import Playlists from "./pages/Playlist/Playlist";
 import Subscriptions from "./pages/Subscriptions";
 import MyUploads from "./pages/MyUploads";
 import Layout from "./layout/Layout";
 import Upload from "./pages/Upload";
-import Like from './pages/Likes/Like'
+import Like from './pages/Likes/Like';
+import PlaylistDetailPage from "./pages/Playlist/PlaylistDetailPage";
+import AllPlaylists from "./pages/Playlist/AllPlaylists";
 //import Explore from "../src/pages/Explore";
 //import Settings from "../src/pages/Settings";
 
@@ -83,10 +84,19 @@ const AppRoutes = () => {
           path="/playlists"
           element={
             <ProtectedRoute>
-              <Playlists />
+              <AllPlaylists />
             </ProtectedRoute>
           }
         />
+
+          <Route
+            path="/playlists/:playlistId"
+            element={
+              <ProtectedRoute>
+                <PlaylistDetailPage />
+              </ProtectedRoute>
+            }
+          />
 
         <Route
           path="/subscriptions"
