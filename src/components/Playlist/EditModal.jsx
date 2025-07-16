@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { updatePlaylist } from '../../services/playlistAPI';
+import { updatePlaylist } from '../../Index/api';
 import toast from 'react-hot-toast';
 
 const EditModal = ({ playlist, close, refresh }) => {

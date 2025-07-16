@@ -12,8 +12,7 @@ import MyUploads from "./pages/MyUploads";
 import Layout from "./layout/Layout";
 import Upload from "./pages/Upload";
 import Like from './pages/Likes/Like';
-import PlaylistDetailPage from "./pages/Playlist/PlaylistDetailPage";
-import AllPlaylists from "./pages/Playlist/AllPlaylists";
+import PlaylistsPage from "./pages/Playlist/PlaylistPage";
 //import Explore from "../src/pages/Explore";
 //import Settings from "../src/pages/Settings";
 
@@ -84,19 +83,12 @@ const AppRoutes = () => {
           path="/playlists"
           element={
             <ProtectedRoute>
-              <AllPlaylists />
+              <PlaylistsPage />
             </ProtectedRoute>
           }
         />
 
-          <Route
-            path="/playlists/:playlistId"
-            element={
-              <ProtectedRoute>
-                <PlaylistDetailPage />
-              </ProtectedRoute>
-            }
-          />
+          
 
         <Route
           path="/subscriptions"

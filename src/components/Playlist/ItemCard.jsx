@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { deletePlaylist } from '../../services/playlistAPI';
+import { deletePlaylist } from '../../Index/api';
 import toast from 'react-hot-toast';
 import EditModal from './EditModal';
 

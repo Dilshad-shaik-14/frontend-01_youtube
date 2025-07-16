@@ -146,7 +146,7 @@ export const getPlaylistById = (playlistId) =>
   handleApiResponse(apiClient.get(`/playlist/${playlistId}`));
 
 export const updatePlaylist = (playlistId, credentials) =>
-  handleApiResponse(apiClient.patch(`/playlist/${playlistId}`, credentials));
+  handleApiResponse(apiClient.patch(`/playlist/${playlistId}`, credentials)); 
 
 export const deletePlaylist = (playlistId) =>
   handleApiResponse(apiClient.delete(`/playlist/${playlistId}`));
