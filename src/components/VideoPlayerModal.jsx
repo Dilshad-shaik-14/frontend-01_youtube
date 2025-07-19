@@ -87,6 +87,11 @@ export default function VideoPlayerModal({ video, onClose }) {
     }
   };
 
+
+  useEffect(() => {
+  console.log("Opening modal for video:", video);
+}, [video]);
+
   const duration = fullVideo?.duration || 0;
   const durationText = duration >= 60
     ? `${Math.floor(duration / 60)}m ${duration % 60}s`

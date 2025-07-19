@@ -20,7 +20,7 @@ const playListSlice = createSlice({
 
     removePlaylist: (state, action) => {
       state.playlists = state.playlists.filter(
-        (p) => p.id !== action.payload
+        (p) => p._id !== action.payload
       );
     },
 
@@ -34,23 +34,24 @@ const playListSlice = createSlice({
 
     addVideoToPlaylist: (state, action) => {
       const { playlistId, video } = action.payload;
-      const playlist = state.playlists.find((p) => p.id === playlistId);
-      if (playlist && !playlist.videos.find((v) => v.id === video.id)) {
+      const playlist = state.playlists.find((p) => p._id === playlistId);
+      if (playlist && !playlist.videos.find((v) => v._id === video._id)) {
         playlist.videos.push(video);
       }
     },
 
-    removeVideoFromPlaylist: (state, action) => {
-      const { playlistId, videoId } = action.payload;
-      const playlist = state.playlists.find((p) => p.id === playlistId);
-      if (playlist) {
-        playlist.videos = playlist.videos.filter((v) => v.id !== videoId);
-      }
-    },
+    removeVideoFromPlaylistRedux: (state, action) => {
+  const { playlistId, videoId } = action.payload;
+  const playlist = state.playlists.find((p) => p._id === playlistId);
+  if (playlist) {
+    playlist.videos = playlist.videos.filter((v) => v._id !== videoId);
+  }
+},
+
 
     updatePlaylist: (state, action) => {
       const updated = action.payload;
-      const index = state.playlists.findIndex((p) => p.id === updated.id);
+      const index = state.playlists.findIndex((p) => p._id === updated._id);
       if (index !== -1) {
         state.playlists[index] = updated;
       }
@@ -58,12 +59,20 @@ const playListSlice = createSlice({
 
     reorderVideos: (state, action) => {
       const { playlistId, oldIndex, newIndex } = action.payload;
-      const playlist = state.playlists.find((p) => p.id === playlistId);
+      const playlist = state.playlists.find((p) => p._id === playlistId);
       if (playlist && playlist.videos.length > 1) {
         const reordered = [...playlist.videos];
         const [moved] = reordered.splice(oldIndex, 1);
         reordered.splice(newIndex, 0, moved);
         playlist.videos = reordered;
+      }
+    },
+
+    setPlaylistVideos: (state, action) => {
+      const { playlistId, videos } = action.payload;
+      const playlist = state.playlists.find((p) => p._id === playlistId);
+      if (playlist) {
+        playlist.videos = videos;
       }
     },
 
@@ -80,9 +89,10 @@ export const {
   setCurrentPlaylistId,
   togglePlaylist,
   addVideoToPlaylist,
-  removeVideoFromPlaylist,
+  removeVideoFromPlaylistRedux,
   updatePlaylist,
   reorderVideos,
+  setPlaylistVideos,
   resetPlaylistState,
 } = playListSlice.actions;
 
