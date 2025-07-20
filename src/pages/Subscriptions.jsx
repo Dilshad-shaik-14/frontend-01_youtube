@@ -1,84 +1,103 @@
-import React, { useEffect, useState } from "react";
-import {
-  getSubscribedChannels,
-  getChannelSubscribers,
-} from "../Index/api";
+import { useEffect, useState } from "react";
+import { getSubscribedChannels, getChannelSubscribers } from "../Index/api";
+import { useSelector } from "react-redux";
+import UserCard from "../components/UserCard";
 
-const SubscriptionCard = ({ user }) => (
-  <div className="flex items-center gap-4 p-4 bg-white dark:bg-zinc-900 rounded-lg shadow">
-    <img
-      src={user.avatar || "/default-avatar.png"}
-      alt={user.fullName}
-      className="w-12 h-12 rounded-full object-cover"
-    />
-    <div>
-      <h3 className="font-semibold">{user.fullName}</h3>
-      <p className="text-sm text-zinc-500">@{user.userName}</p>
-      <p className="text-xs text-zinc-400">
-        Joined{" "}
-        {new Date(user.createdAt).toLocaleDateString("en-US", {
-          month: "long",
-          year: "numeric",
-        })}
-      </p>
-    </div>
-  </div>
-);
-
-export default function SubscriptionPage({ userId }) {
-  const [subscribedTo, setSubscribedTo] = useState([]);
+const Subscriptions = () => {
   const [subscribers, setSubscribers] = useState([]);
+  const [subscriptions, setSubscriptions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const user = useSelector((state) => state.auth.currentUser);
 
   useEffect(() => {
-    const fetchSubs = async () => {
+    const fetchData = async () => {
+      if (!user?._id) return;
+
       try {
-        const [subTo, subs] = await Promise.all([
-          getSubscribedChannels(userId),
-          getChannelSubscribers(userId),
+        setLoading(true);
+        setError("");
+
+        const [subResult, subsResult] = await Promise.all([
+          getSubscribedChannels(user._id),
+          getChannelSubscribers(user._id),
         ]);
 
-        setSubscribedTo(Array.isArray(subTo) ? subTo : subTo.users || []);
-        setSubscribers(Array.isArray(subs) ? subs : subs.users || []);
+        const subsData = subResult?.data?.subscriptions || [];
+        const subbersData = subsResult?.data?.subscribers || [];
+
+        // Mark subscriptions with isSubscribed = true for toggle button
+        const subscriptionsWithFlag = subsData.map((u) => ({
+          ...u,
+          isSubscribed: true,
+        }));
+
+        setSubscriptions(subscriptionsWithFlag);
+        setSubscribers(subbersData);
       } catch (err) {
-        console.error("Error fetching subscriptions/subscribers", err);
+        console.error("Error fetching data:", err);
+        setError("Failed to load subscriptions or subscribers.");
       } finally {
         setLoading(false);
       }
     };
 
-    if (userId) fetchSubs();
-  }, [userId]);
+    fetchData();
+  }, [user?._id]);
 
-  if (loading) return <p className="text-zinc-500">Loading subscriptions...</p>;
+  if (!user?._id) {
+    return (
+      <div className="text-white p-6">
+        Please log in to view subscriptions.
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-4xl mx-auto p-4 space-y-8">
+    <div className="min-h-screen bg-black px-4 py-10 space-y-14">
       <section>
-        <h2 className="text-xl font-semibold mb-4 text-red-500">Subscribed To</h2>
-        {subscribedTo.length === 0 ? (
-          <p className="text-zinc-500">You haven't subscribed to anyone yet.</p>
-        ) : (
-          <div className="grid sm:grid-cols-2 gap-4">
-            {subscribedTo.map((user) => (
-              <SubscriptionCard key={user._id} user={user} />
+        <h1 className="text-3xl font-bold text-[#FF0000] mb-6">
+          My Subscriptions
+        </h1>
+
+        {loading ? (
+          <p className="text-gray-400">Loading subscriptions...</p>
+        ) : error ? (
+          <p className="text-red-500">{error}</p>
+        ) : subscriptions.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+            {subscriptions.map((user) => (
+              <UserCard key={user._id} user={user} />
             ))}
           </div>
+        ) : (
+          <p className="text-gray-500">You haven't subscribed to any channels.</p>
         )}
       </section>
 
       <section>
-        <h2 className="text-xl font-semibold mb-4 text-red-500">Subscribers</h2>
-        {subscribers.length === 0 ? (
-          <p className="text-zinc-500">You have no subscribers yet.</p>
-        ) : (
-          <div className="grid sm:grid-cols-2 gap-4">
+        <h1 className="text-3xl font-bold text-[#00E676] mb-6">
+          My Subscribers
+        </h1>
+
+        {loading ? (
+          <p className="text-gray-400">Loading subscribers...</p>
+        ) : error ? (
+          <p className="text-red-500">{error}</p>
+        ) : subscribers.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
             {subscribers.map((user) => (
-              <SubscriptionCard key={user._id} user={user} />
+              <UserCard key={user._id} user={user} />
             ))}
           </div>
+        ) : (
+          <p className="text-gray-500">
+            No one has subscribed to your channel yet.
+          </p>
         )}
       </section>
     </div>
   );
-}
+};
+
+export default Subscriptions;

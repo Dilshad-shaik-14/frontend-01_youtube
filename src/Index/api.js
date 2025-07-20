@@ -104,7 +104,7 @@ export const getVideoById = (videoId) =>
   handleApiResponse(apiClient.get(`/videos/${videoId}`));
 
 export const getVideoDetails = (videoId) =>
-  handleApiResponse(apiClient.get(`/videos/b/${videoId}`));
+  handleApiResponse(apiClient.get(`/videos/details/${videoId}`));
 
 export const deleteVideo = (videoId) =>
   handleApiResponse(apiClient.delete(`/videos/${videoId}`));
@@ -130,14 +130,14 @@ export const updateTweet = (tweetId, credentials) =>
 export const deleteTweet = (tweetId) =>
   handleApiResponse(apiClient.delete(`/tweets/${tweetId}`));
 
-export const getSubscribedChannels = (channelId) =>
-  handleApiResponse(apiClient.get(`/subscriptions/c/${channelId}`));
-
 export const toggleSubscription = (channelId) =>
-  handleApiResponse(apiClient.post(`/subscriptions/c/${channelId}`));
+  handleApiResponse(apiClient.post(`/subscriptions/toggle/${channelId}`));
 
-export const getChannelSubscribers = (subscriberId) =>
-  handleApiResponse(apiClient.get(`/subscriptions/u/${subscriberId}`));
+export const getSubscribedChannels = (userId) =>
+  handleApiResponse(apiClient.get(`/subscriptions/user/${userId}/channels`));
+
+export const getChannelSubscribers = (channelId) =>
+  handleApiResponse(apiClient.get(`/subscriptions/channel/${channelId}/subscribers`));
 
 export const createPlaylist = (credentials) =>
   handleApiResponse(apiClient.post(`/playlist`, credentials));
@@ -177,7 +177,6 @@ export const getLikedTweets = () =>
 
 export const getLikedComments = () =>
   handleApiResponse(apiClient.get('/likes/comments'));
-
 
 export const healthCheck = () =>
   handleApiResponse(apiClient.get(`/healthcheck`));

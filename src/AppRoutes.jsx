@@ -33,9 +33,6 @@ const AppRoutes = () => {
   console.log("userId:", currentUser?._id);
   console.log("userName:", currentUser?.userName);
 
-
-
-
   return (
     <Routes>
       {/* Public Route */}
@@ -88,13 +85,11 @@ const AppRoutes = () => {
           }
         />
 
-          
-
         <Route
           path="/subscriptions"
           element={
             <ProtectedRoute>
-              <Subscriptions />
+              <Subscriptions userId={currentUser?._id} />
             </ProtectedRoute>
           }
         />

@@ -22,69 +22,63 @@ export default function Home() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-  const fetchContent = async () => {
-    try {
-      const [videoRes, tweetRes, userRes] = await Promise.all([
-        getAllVideos({ limit: 6, page: 1 }),
-        getTweets({ page: 1 }),
-        suggestUsers()
-      ]);
+    const fetchContent = async () => {
+      try {
+        const [videoRes, tweetRes, userRes] = await Promise.all([
+          getAllVideos({ limit: 6, page: 1 }),
+          getTweets({ page: 1 }),
+          suggestUsers()
+        ]);
 
-      console.log("videos:", videoRes);
-      console.log("tweets:", tweetRes);
-      console.log("users:", userRes);
+        setVideos(videoRes?.data?.videos || []);
+        setTweets(tweetRes?.data?.tweets || []);
+        setSuggestedUsers(userRes?.data || []);
+      } catch (err) {
+        console.error("Error loading home feed:", err);
+        setError("Failed to load content. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-      // ✅ FIXED: Access .data.videos, .data.tweets
-      setVideos(videoRes?.data?.videos || []);
-      setTweets(tweetRes?.data?.tweets || []);
-      setSuggestedUsers(userRes?.data || []);
-    } catch (err) {
-      console.error("Error loading home feed:", err);
-      setError("Failed to load content. Please try again later.");
-    } finally {
-      setLoading(false);
-    }
-  };
+    fetchContent();
+  }, []);
 
-  fetchContent();
-}, []);
-
+  const SectionWrapper = ({ title, children }) => (
+    <section className="bg-white/90 dark:bg-zinc-900/70 backdrop-blur-md rounded-2xl p-6 shadow-lg border border-zinc-200 dark:border-zinc-700 space-y-4">
+      <h2 className="text-2xl font-semibold text-zinc-800 dark:text-zinc-100 mb-2">
+        {title}
+      </h2>
+      {children}
+    </section>
+  );
 
   if (loading) {
     return (
-      <div className="max-w-6xl mx-auto px-4 py-6 space-y-12">
-        <section>
-          <h2 className="text-xl font-semibold mb-4 text-zinc-800 dark:text-zinc-100">
-            Suggested Users
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div className="max-w-7xl mx-auto px-4 py-8 space-y-10">
+        <SectionWrapper title="Suggested Users">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {Array.from({ length: 6 }).map((_, i) => (
               <SkeletonCard key={i} />
             ))}
           </div>
-        </section>
+        </SectionWrapper>
 
-        <section>
-          <h2 className="text-xl font-semibold mb-4 text-zinc-800 dark:text-zinc-100">
-            Latest Videos
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <SectionWrapper title="Latest Videos">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {Array.from({ length: 6 }).map((_, i) => (
               <SkeletonVideoCard key={i} />
             ))}
           </div>
-        </section>
+        </SectionWrapper>
 
-        <section>
-          <h2 className="text-xl font-semibold mb-4 text-zinc-800 dark:text-zinc-100">
-            Tweets Feed
-          </h2>
-          <div className="flex flex-col gap-4">
+        <SectionWrapper title="Tweets Feed">
+          <div className="flex flex-col gap-6">
             {Array.from({ length: 4 }).map((_, i) => (
               <SkeletonTweetCard key={i} />
             ))}
           </div>
-        </section>
+        </SectionWrapper>
       </div>
     );
   }
@@ -98,14 +92,11 @@ export default function Home() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-6 space-y-12">
+    <div className="max-w-7xl mx-auto px-4 py-8 space-y-10">
       {/* Suggested Users */}
-      <section>
-        <h2 className="text-xl font-semibold mb-4 text-zinc-800 dark:text-zinc-100">
-          Suggested Users
-        </h2>
+      <SectionWrapper title="Suggested Users">
         {suggestedUsers.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {suggestedUsers.map((user) => (
               <UserCard key={user._id} user={user} />
             ))}
@@ -115,15 +106,12 @@ export default function Home() {
             No suggestions right now.
           </p>
         )}
-      </section>
+      </SectionWrapper>
 
       {/* Videos */}
-      <section>
-        <h2 className="text-xl font-semibold mb-4 text-zinc-800 dark:text-zinc-100">
-          Latest Videos
-        </h2>
+      <SectionWrapper title="Latest Videos">
         {videos.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {videos.map((video) => (
               <VideoCard key={video._id} video={video} />
             ))}
@@ -131,15 +119,12 @@ export default function Home() {
         ) : (
           <p className="text-sm text-zinc-500 dark:text-zinc-400">No videos yet.</p>
         )}
-      </section>
+      </SectionWrapper>
 
       {/* Tweets */}
-      <section>
-        <h2 className="text-xl font-semibold mb-4 text-zinc-800 dark:text-zinc-100">
-          Tweets Feed
-        </h2>
+      <SectionWrapper title="Tweets Feed">
         {tweets.length > 0 ? (
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-6">
             {tweets.map((tweet) => (
               <TweetCard key={tweet._id} tweet={tweet} />
             ))}
@@ -147,7 +132,7 @@ export default function Home() {
         ) : (
           <p className="text-sm text-zinc-500 dark:text-zinc-400">No tweets yet.</p>
         )}
-      </section>
+      </SectionWrapper>
     </div>
   );
 }
