@@ -1,4 +1,3 @@
-// tailwind.config.js
 /** @type {import('tailwindcss').Config} */
 export const darkMode = 'class';
 export const content = [

@@ -1,18 +1,26 @@
-import React, { useState } from "react";
-import { Pencil, Trash2, X, Check } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Pencil, Trash2, X, Check, Heart } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { updateTweet, deleteTweet } from "../Index/api";
+import { updateTweet, deleteTweet, toggleTweetLike } from "../Index/api";
 
 dayjs.extend(relativeTime);
 
-export default function EditableTweetCard({ tweet, onRefresh }) {
+export default function EditableTweetCard({ tweet, onRefresh, editable = false }) {
   const [editing, setEditing] = useState(false);
   const [editText, setEditText] = useState(tweet.content || "");
   const [updating, setUpdating] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [likeCount, setLikeCount] = useState(tweet.likesCount || tweet.likes?.length || 0);
+const [liked, setLiked] = useState(tweet.isLikedByCurrentUser || false);
+
+useEffect(() => {
+  setLiked(tweet.isLikedByCurrentUser ?? false);
+  setLikeCount(tweet.likesCount ?? tweet.likes?.length ?? 0);
+}, [tweet]);
+
 
   const handleUpdate = async () => {
     setUpdating(true);
@@ -27,8 +35,27 @@ export default function EditableTweetCard({ tweet, onRefresh }) {
   const handleDelete = async () => {
     await deleteTweet(tweet._id);
     setShowConfirm(false);
-    onRefresh?.();
   };
+
+const handleLikeToggle = async () => {
+  try {
+    setLiked((prev) => !prev);
+    setLikeCount((prev) => liked ? prev - 1 : prev + 1);
+
+    const res = await toggleTweetLike(tweet._id);
+    const updated = res?.data?.tweet;
+
+    if (updated?.likes) {
+      setLiked(updated.isLikedByCurrentUser ?? updated.likes.includes(user._id));
+      setLikeCount(updated.likes.length);
+    }
+  } catch (error) {
+    console.error("Error toggling like:", error);
+    setLiked((prev) => !prev);
+    setLikeCount((prev) => liked ? prev + 1 : prev - 1);
+  }
+};
+
 
   return (
     <motion.div
@@ -54,25 +81,46 @@ export default function EditableTweetCard({ tweet, onRefresh }) {
           </div>
         </div>
 
-        <div className="hidden group-hover:flex gap-2">
-          <button
-            onClick={() => setEditing(true)}
-            className="bg-white/80 dark:bg-zinc-800/80 p-1.5 rounded hover:text-blue-500 shadow"
-          >
-            <Pencil size={16} />
-          </button>
-          <button
-            onClick={() => setShowConfirm(true)}
-            className="bg-white/80 dark:bg-zinc-800/80 p-1.5 rounded hover:text-red-500 shadow"
-          >
-            <Trash2 size={16} />
-          </button>
-        </div>
+        {/* Edit/Delete Controls */}
+        {editable && (
+          <div className="hidden group-hover:flex gap-2">
+            <button
+              onClick={() => setEditing(true)}
+              className="bg-white/80 dark:bg-zinc-800/80 p-1.5 rounded hover:text-blue-500 shadow"
+            >
+              <Pencil size={16} />
+            </button>
+            <button
+              onClick={() => setShowConfirm(true)}
+              className="bg-white/80 dark:bg-zinc-800/80 p-1.5 rounded hover:text-red-500 shadow"
+            >
+              <Trash2 size={16} />
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Content */}
-      <div className="text-sm text-zinc-700 dark:text-zinc-200 whitespace-pre-wrap leading-relaxed">
+      <div className="text-sm text-zinc-700 dark:text-zinc-200 whitespace-pre-wrap leading-relaxed mb-3">
         {tweet.content}
+      </div>
+
+      {/* Likes */}
+      <div className="text-xs text-zinc-500 mt-2 relative">
+        <span className="text-xs text-zinc-500 dark:text-zinc-400 block mb-1">
+          ❤️ {likeCount} {likeCount === 1 ? "Like" : "Likes"}
+        </span>
+        <button
+          onClick={handleLikeToggle}
+          className="absolute top-0 right-0 bg-zinc-800 p-2 rounded-full hover:bg-zinc-700 transition"
+          title="Toggle Like"
+        >
+          <Heart
+            size={16}
+            className={`${liked ? "text-pink-500" : "text-zinc-400 hover:text-pink-400"}`}
+            fill={liked ? "currentColor" : "none"}
+          />
+        </button>
       </div>
 
       {/* Success Toast */}
@@ -131,7 +179,7 @@ export default function EditableTweetCard({ tweet, onRefresh }) {
         )}
       </AnimatePresence>
 
-      {/* Delete Confirm */}
+      {/* Delete Modal */}
       <AnimatePresence>
         {showConfirm && (
           <motion.div

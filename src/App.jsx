@@ -1,4 +1,3 @@
-// App.jsx
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router } from "react-router-dom";
 import AppRoutes from "./AppRoutes";
@@ -9,14 +8,16 @@ import {
   logoutSuccess,
 } from "./utils/authSlice";
 import { currentUser as fetchCurrentUser } from "./Index/api";
+import { applyTheme } from "./utils/applyTheme"; // ✅ Import this
 
 const App = () => {
   const dispatch = useDispatch();
-  const { theme, currentUser } = useSelector((state) => state.auth);
-  const [appReady, setAppReady] = useState(false); 
+  const [appReady, setAppReady] = useState(false);
+  const theme = useSelector((state) => state.auth.theme); // ✅ Grab theme from redux
 
+  // Apply theme whenever it changes
   useEffect(() => {
-    document.documentElement.classList.toggle("dark", theme === "dark");
+    applyTheme(theme);
   }, [theme]);
 
   useEffect(() => {
@@ -27,8 +28,8 @@ const App = () => {
         const res = await fetchCurrentUser();
         dispatch(currentUserSuccess(res));
       } catch (err) {
-        dispatch(logoutSuccess()); 
         console.error("Auth check failed:", err);
+        dispatch(logoutSuccess());
       } finally {
         setAppReady(true);
       }
@@ -38,7 +39,11 @@ const App = () => {
   }, [dispatch]);
 
   if (!appReady) {
-    return <div className="text-center mt-10 text-zinc-500">Checking authentication...</div>;
+    return (
+      <div className="h-screen flex items-center justify-center text-zinc-500 dark:text-zinc-400">
+        Checking authentication...
+      </div>
+    );
   }
 
   return (

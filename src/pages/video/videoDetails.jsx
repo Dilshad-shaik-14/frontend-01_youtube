@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getVideoById, getVideoComments } from "../../Index/api";
 import Comment from "../../components/Comment";
-import VideoCard from "../../components/VideoCard";
-
+import EditableVideoCard from "../../components/EditableVideoCard";
 export default function VideoDetail() {
   const { id } = useParams();
   const [video, setVideo] = useState(null);
@@ -41,7 +40,7 @@ export default function VideoDetail() {
     <div className="max-w-3xl mx-auto p-4">
       {video && (
         <div className="mb-4">
-          <VideoCard video={video} />
+          <EditableVideoCard video={video} editable={true} />
         </div>
       )}
 

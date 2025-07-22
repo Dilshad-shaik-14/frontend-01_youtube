@@ -1,18 +1,16 @@
 import React, { useEffect, useState } from "react";
-import {
-  getAllVideos,
-  getTweets,
-  suggestUsers
-} from "../../Index/api";
+import { getAllVideos, getTweets, suggestUsers } from "../../Index/api";
 
-import VideoCard from "../../components/VideoCard";
-import TweetCard from "../../components/TweetCard";
+import EditableVideoCard from "../../components/EditableVideoCard";
+import EditableTweetCard from "../../components/EditableTweetCard";
 import {
   SkeletonCard,
   SkeletonTweetCard,
-  SkeletonVideoCard
+  SkeletonVideoCard,
 } from "../../layout/SkeletonCard";
+
 import UserCard from "../../components/UserCard";
+import { useSelector } from "react-redux";
 
 export default function Home() {
   const [videos, setVideos] = useState([]);
@@ -20,6 +18,7 @@ export default function Home() {
   const [suggestedUsers, setSuggestedUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [expandedUserId, setExpandedUserId] = useState(null); // 🆕 for expandable cards
 
   useEffect(() => {
     const fetchContent = async () => {
@@ -27,7 +26,7 @@ export default function Home() {
         const [videoRes, tweetRes, userRes] = await Promise.all([
           getAllVideos({ limit: 6, page: 1 }),
           getTweets({ page: 1 }),
-          suggestUsers()
+          suggestUsers(),
         ]);
 
         setVideos(videoRes?.data?.videos || []);
@@ -44,93 +43,92 @@ export default function Home() {
     fetchContent();
   }, []);
 
+  const theme = useSelector((state) => state.auth.theme);
+
   const SectionWrapper = ({ title, children }) => (
-    <section className="bg-white/90 dark:bg-zinc-900/70 backdrop-blur-md rounded-2xl p-6 shadow-lg border border-zinc-200 dark:border-zinc-700 space-y-4">
-      <h2 className="text-2xl font-semibold text-zinc-800 dark:text-zinc-100 mb-2">
+    <section className="bg-white/80 dark:bg-zinc-900/70 backdrop-blur-lg rounded-3xl px-6 py-8 shadow-xl border border-zinc-200 dark:border-zinc-700 w-full space-y-6 transition-all duration-300">
+      <h2 className="text-2xl sm:text-3xl font-bold text-zinc-800 dark:text-white tracking-tight mb-4 border-b-2 border-red-500 pb-2 w-fit">
         {title}
       </h2>
       {children}
     </section>
   );
 
-  if (loading) {
-    return (
-      <div className="max-w-7xl mx-auto px-4 py-8 space-y-10">
-        <SectionWrapper title="Suggested Users">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <SkeletonCard key={i} />
-            ))}
-          </div>
-        </SectionWrapper>
+  return (
+    <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-16">
+      {error && (
+        <div className="text-red-600 bg-red-100 p-4 rounded-xl shadow border border-red-200">
+          {error}
+        </div>
+      )}
 
-        <SectionWrapper title="Latest Videos">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {Array.from({ length: 6 }).map((_, i) => (
+      {/* Videos Section */}
+      <SectionWrapper title="Recommended Videos">
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
               <SkeletonVideoCard key={i} />
             ))}
           </div>
-        </SectionWrapper>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {videos.map((video) => (
+              <EditableVideoCard key={video._id} video={video} editable={false} />
+            ))}
+          </div>
+        )}
+      </SectionWrapper>
 
-        <SectionWrapper title="Tweets Feed">
-          <div className="flex flex-col gap-6">
-            {Array.from({ length: 4 }).map((_, i) => (
+      {/* Tweets Section */}
+      <SectionWrapper title="Latest Tweets">
+        {loading ? (
+          <div className="space-y-4">
+            {[...Array(4)].map((_, i) => (
               <SkeletonTweetCard key={i} />
             ))}
           </div>
-        </SectionWrapper>
-      </div>
-    );
-  }
+        ) : (
+          <div className="space-y-6">
+            {tweets.map((tweet) => (
+              <EditableTweetCard
+              key={tweet._id}
+              tweet={tweet}
+              editable={false}
+              onRefresh={() => {
+      // Option 1: Re-fetch tweets after like toggle
+              getTweets({ page: 1 }).then((res) =>
+              setTweets(res?.data?.tweets || [])
+            );
+          }}
+            />
+          ))}
+        </div>
+      )}
+      </SectionWrapper>
 
-  if (error && videos.length === 0 && tweets.length === 0 && suggestedUsers.length === 0) {
-    return (
-      <div className="text-center mt-10 text-red-500 dark:text-red-400">
-        {error}
-      </div>
-    );
-  }
-
-  return (
-    <div className="max-w-7xl mx-auto px-4 py-8 space-y-10">
       {/* Suggested Users */}
       <SectionWrapper title="Suggested Users">
-        {suggestedUsers.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <SkeletonCard key={i} />
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {suggestedUsers.map((user) => (
-              <UserCard key={user._id} user={user} />
+              <UserCard
+                key={user._id}
+                user={user}
+                isExpanded={expandedUserId === user._id}
+                onToggleExpand={() =>
+                  setExpandedUserId(prev =>
+                    prev === user._id ? null : user._id
+                  )
+                }
+              />
             ))}
           </div>
-        ) : (
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">
-            No suggestions right now.
-          </p>
-        )}
-      </SectionWrapper>
-
-      {/* Videos */}
-      <SectionWrapper title="Latest Videos">
-        {videos.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {videos.map((video) => (
-              <VideoCard key={video._id} video={video} />
-            ))}
-          </div>
-        ) : (
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">No videos yet.</p>
-        )}
-      </SectionWrapper>
-
-      {/* Tweets */}
-      <SectionWrapper title="Tweets Feed">
-        {tweets.length > 0 ? (
-          <div className="flex flex-col gap-6">
-            {tweets.map((tweet) => (
-              <TweetCard key={tweet._id} tweet={tweet} />
-            ))}
-          </div>
-        ) : (
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">No tweets yet.</p>
         )}
       </SectionWrapper>
     </div>

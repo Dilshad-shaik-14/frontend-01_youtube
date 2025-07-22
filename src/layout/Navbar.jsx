@@ -1,4 +1,3 @@
-// src/components/Navbar.jsx
 import { Moon, Sun, Video } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -6,31 +5,42 @@ import { toggleTheme } from "../utils/authSlice";
 
 export default function Navbar({ toggleSidebar }) {
   const dispatch = useDispatch();
-  const { user, theme } = useSelector((state) => state.auth);
+  const { currentUser, theme } = useSelector((state) => state.auth);
 
   return (
-    <header className="sticky top-0 z-40 flex items-center justify-between px-4 py-3 bg-white/70 dark:bg-black/30 backdrop-blur-lg border-b border-zinc-200 dark:border-zinc-700 shadow-md">
+    <header className="sticky top-0 z-50 flex items-center justify-between px-4 py-2 bg-white/80 dark:bg-zinc-900/70 backdrop-blur-md shadow-sm border-b border-zinc-200 dark:border-zinc-700">
+      {/* Left Section - Logo + Sidebar Toggle */}
       <div className="flex items-center gap-4">
-        {/* Mobile toggle button */}
-        <button className="md:hidden text-red-500 text-xl" onClick={toggleSidebar}>
+        {/* Mobile Hamburger */}
+        <button
+          className="md:hidden text-zinc-800 dark:text-white text-2xl"
+          onClick={toggleSidebar}
+        >
           ☰
         </button>
 
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 font-bold text-lg text-red-500">
-          <Video size={22} /> MyTube
+        <Link
+          to="/"
+          className="flex items-center gap-2 font-semibold text-lg text-zinc-800 dark:text-white"
+        >
+          <Video size={22} className="text-red-500" />
+          MyTube
         </Link>
       </div>
 
-      <div className="flex items-center gap-4">
-        {/* Search */}
+      {/* Center Section - Search */}
+      <div className="flex-grow max-w-md mx-4 hidden sm:flex">
         <input
           type="text"
-          placeholder="Search..."
-          className="px-3 py-1 rounded-md text-sm bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-600 w-48 md:w-64 transition-all duration-300 focus:ring-2 focus:ring-red-400"
+          placeholder="Search"
+          className="w-full px-4 py-1.5 rounded-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-600 focus:ring-2 focus:ring-red-400 text-sm"
         />
+      </div>
 
-        {/* Theme toggle */}
+      {/* Right Section - Theme Toggle + Avatar */}
+      <div className="flex items-center gap-4">
+        {/* Theme Toggle */}
         <button
           onClick={() => dispatch(toggleTheme())}
           className="p-2 rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-700 transition"
@@ -38,13 +48,13 @@ export default function Navbar({ toggleSidebar }) {
           {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
         </button>
 
-        {/* User profile */}
-        {user && (
-          <Link to={`/profile/${user._id}`}>
+        {/* Current User Avatar */}
+        {currentUser && (
+          <Link to={`/profile/${currentUser._id}`}>
             <img
-              src={user.avatar}
-              alt={user.userName}
-              className="w-8 h-8 rounded-full object-cover border-2 border-red-500 shadow-md"
+              src={currentUser.avatar || "/default-avatar.png"}
+              alt={currentUser.userName || "User"}
+              className="w-8 h-8 rounded-full object-cover"
             />
           </Link>
         )}

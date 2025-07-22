@@ -6,7 +6,7 @@ import Home from "./pages/home/Home";
 import VideoDetail from "./pages/video/videoDetails";
 import TweetDetail from "./pages/Tweets/TweetDetail";
 import Login from "./pages/Login";
-import Profile from "./pages/Profilepage/Profile";
+//import Profile from "./pages/Profilepage/Profile";
 import Subscriptions from "./pages/Subscriptions";
 import MyUploads from "./pages/MyUploads";
 import Layout from "./layout/Layout";
@@ -67,6 +67,7 @@ const AppRoutes = () => {
           }
         />
 
+        {/*
         <Route
           path="/profile/:id"
           element={
@@ -74,7 +75,7 @@ const AppRoutes = () => {
               <Profile />
             </ProtectedRoute>
           }
-        />
+        />*/}
 
         <Route
           path="/playlists"

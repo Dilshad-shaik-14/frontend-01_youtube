@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getUserTweets } from "../../Index/api";
-import TweetCard from "../../components/TweetCard";
+import EditableTweetCard from "../../components/EditableTweetCard";
 
 export default function TweetDetail() {
   const { id } = useParams();
@@ -33,7 +33,7 @@ export default function TweetDetail() {
 
   return (
     <div className="max-w-2xl mx-auto p-4">
-      <TweetCard tweet={tweet} />
+      <EditableTweetCard tweet={tweet} editable={true} />
     </div>
   );
 }

@@ -5,6 +5,7 @@ import {
   getUserTweets,
   deleteVideo,
   deleteTweet,
+  toggleTweetLike,
 } from "../Index/api";
 import EditableVideoCard from "../components/EditableVideoCard";
 import EditableTweetCard from "../components/EditableTweetCard";
@@ -27,8 +28,8 @@ export default function MyUploads() {
         getChannelVideos(user._id),
         getUserTweets(user._id),
       ]);
-      setVideos(videoRes?.data?.videos || []);
-      setTweets(tweetRes?.data?.tweets || []);
+      setVideos((videoRes?.data?.videos || []).filter(Boolean));
+      setTweets((tweetRes?.data?.tweets || []).filter(Boolean));
     } catch (error) {
       console.error("❌ Error fetching uploads:", error);
     } finally {
@@ -58,6 +59,25 @@ export default function MyUploads() {
     }
   };
 
+  const handleToggleTweetLike = async (id) => {
+  try {
+    const updated = await toggleTweetLike(id);
+    const updatedTweet = updated?.data?.tweet;
+
+    if (!updatedTweet) {
+      console.warn("No updated tweet returned from API");
+      return;
+    }
+
+    setTweets((prev) =>
+      prev.map((t) => (t._id === id ? updatedTweet : t))
+    );
+  } catch (err) {
+    console.error("Failed to toggle like:", err);
+  }
+};
+
+
   const SkeletonCard = () => (
     <div className="h-[180px] bg-zinc-800 rounded-lg animate-pulse" />
   );
@@ -76,15 +96,18 @@ export default function MyUploads() {
     if (activeTab === "videos") {
       return videos.length ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {videos.map((video) => (
-            <EditableVideoCard
-              key={video._id}
-              video={video}
-              onClick={() => setSelectedVideo(video)}
-              onDelete={handleDeleteVideo}
-              onRefresh={fetchUploads}
-            />
-          ))}
+          {videos.map((video) =>
+            video?._id ? (
+              <EditableVideoCard
+                key={video._id}
+                video={video}
+                onClick={() => setSelectedVideo(video)}
+                onDelete={handleDeleteVideo}
+                onRefresh={fetchUploads}
+                editable={true}
+              />
+            ) : null
+          )}
         </div>
       ) : (
         <p className="text-zinc-400 text-center">No videos uploaded.</p>
@@ -100,6 +123,8 @@ export default function MyUploads() {
               tweet={tweet}
               onDelete={handleDeleteTweet}
               onRefresh={fetchUploads}
+              isEditable={true}
+              onToggleLike={handleToggleTweetLike}
             />
           ))}
         </div>

@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { applyTheme } from "./applyTheme";
 
 const initialTheme =
   localStorage.getItem("theme") ||
@@ -75,19 +76,14 @@ const authSlice = createSlice({
         state.currentUser = JSON.parse(storedUser);
         state.token = token;
         state.isAuthenticated = true;
+        applyTheme(state.theme);
       }
     },
 
-    toggleTheme: (state) => {
+     toggleTheme: (state) => {
       const newTheme = state.theme === "dark" ? "light" : "dark";
       state.theme = newTheme;
-      localStorage.setItem("theme", newTheme);
-
-      if (newTheme === "dark") {
-        document.documentElement.classList.add("dark");
-      } else {
-        document.documentElement.classList.remove("dark");
-      }
+      applyTheme(newTheme);
     },
   },
 });

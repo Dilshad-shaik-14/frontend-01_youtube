@@ -17,7 +17,7 @@ const formatDuration = (seconds) => {
   return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
 };
 
-export default function EditableVideoCard({ video, onRefresh }) {
+export default function EditableVideoCard({ video, onRefresh, editable }) {
   const [editing, setEditing] = useState(false);
   const [editData, setEditData] = useState({
     title: video.title,
@@ -86,6 +86,7 @@ export default function EditableVideoCard({ video, onRefresh }) {
     },
   });
 
+
   return (
     <>
       <motion.div
@@ -120,32 +121,35 @@ export default function EditableVideoCard({ video, onRefresh }) {
           <div className="text-xs text-zinc-500">{video.views || 0} views</div>
         </div>
 
-        <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setEditing(true);
-            }}
-            className="text-blue-400 hover:text-blue-500"
-            title="Edit"
-          >
-            <Pencil size={18} />
-          </button>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setShowConfirm(true);
-            }}
-            className="text-red-400 hover:text-red-500"
-            title="Delete"
-          >
-            <Trash2 size={18} />
-          </button>
-        </div>
+        {/* ✅ Only show edit/delete if editable */}
+        {editable && (
+          <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setEditing(true);
+              }}
+              className="text-blue-400 hover:text-blue-500"
+              title="Edit"
+            >
+              <Pencil size={18} />
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowConfirm(true);
+              }}
+              className="text-red-400 hover:text-red-500"
+              title="Delete"
+            >
+              <Trash2 size={18} />
+            </button>
+          </div>
+        )}
       </motion.div>
 
-      {/* Edit Modal */}
-      {editing && (
+      {/* ✅ Edit Modal */}
+      {editable && editing && (
         <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center px-4">
           <div className="bg-zinc-900 w-full max-w-lg rounded-xl p-6 relative">
             <button
@@ -232,8 +236,8 @@ export default function EditableVideoCard({ video, onRefresh }) {
         </div>
       )}
 
-      {/* Confirm Delete */}
-      {showConfirm && (
+      {/* ✅ Confirm Delete */}
+      {editable && showConfirm && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center">
           <div className="bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 p-6 rounded-xl w-full max-w-sm text-center">
             <h2 className="text-lg font-semibold text-zinc-800 dark:text-white mb-4">
@@ -260,7 +264,7 @@ export default function EditableVideoCard({ video, onRefresh }) {
         </div>
       )}
 
-      {/* Video Preview Modal */}
+      {/* ✅ Always show preview modal */}
       {selectedVideo && (
         <VideoPlayerModal
           video={selectedVideo}
