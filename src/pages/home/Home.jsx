@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getAllVideos, getTweets, suggestUsers } from "../../Index/api";
+import { getAllVideos, getAllTweets, suggestUsers } from "../../Index/api";
 
 import EditableVideoCard from "../../components/EditableVideoCard";
 import EditableTweetCard from "../../components/EditableTweetCard";
@@ -18,14 +18,16 @@ export default function Home() {
   const [suggestedUsers, setSuggestedUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [expandedUserId, setExpandedUserId] = useState(null); // 🆕 for expandable cards
+  const [expandedUserId, setExpandedUserId] = useState(null);
+
+const user = useSelector((state) => state.auth.currentUser); // ✅
 
   useEffect(() => {
     const fetchContent = async () => {
       try {
         const [videoRes, tweetRes, userRes] = await Promise.all([
           getAllVideos({ limit: 6, page: 1 }),
-          getTweets({ page: 1 }),
+          getAllTweets({ limit: 4, page: 1, userId: user?._id }), // ✅ pass userId
           suggestUsers(),
         ]);
 
@@ -40,8 +42,8 @@ export default function Home() {
       }
     };
 
-    fetchContent();
-  }, []);
+    if (user?._id) fetchContent(); // ✅ ensure user is available
+  }, [user?._id]);
 
   const theme = useSelector((state) => state.auth.theme);
 
@@ -91,19 +93,18 @@ export default function Home() {
           <div className="space-y-6">
             {tweets.map((tweet) => (
               <EditableTweetCard
-              key={tweet._id}
-              tweet={tweet}
-              editable={false}
-              onRefresh={() => {
-      // Option 1: Re-fetch tweets after like toggle
-              getTweets({ page: 1 }).then((res) =>
-              setTweets(res?.data?.tweets || [])
-            );
-          }}
-            />
-          ))}
-        </div>
-      )}
+                key={tweet._id}
+                tweet={tweet}
+                editable={false}
+                onRefresh={() => {
+                  getUserTweets(user._id).then((res) =>
+                    setTweets(res?.data?.tweets || [])
+                  );
+                }}
+              />
+            ))}
+          </div>
+        )}
       </SectionWrapper>
 
       {/* Suggested Users */}
@@ -122,7 +123,7 @@ export default function Home() {
                 user={user}
                 isExpanded={expandedUserId === user._id}
                 onToggleExpand={() =>
-                  setExpandedUserId(prev =>
+                  setExpandedUserId((prev) =>
                     prev === user._id ? null : user._id
                   )
                 }

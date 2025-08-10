@@ -8,14 +8,13 @@ import {
   logoutSuccess,
 } from "./utils/authSlice";
 import { currentUser as fetchCurrentUser } from "./Index/api";
-import { applyTheme } from "./utils/applyTheme"; // ✅ Import this
+import { applyTheme } from "./utils/applyTheme";
 
 const App = () => {
   const dispatch = useDispatch();
   const [appReady, setAppReady] = useState(false);
-  const theme = useSelector((state) => state.auth.theme); // ✅ Grab theme from redux
+  const theme = useSelector((state) => state.auth.theme);
 
-  // Apply theme whenever it changes
   useEffect(() => {
     applyTheme(theme);
   }, [theme]);
@@ -23,6 +22,12 @@ const App = () => {
   useEffect(() => {
     const initAuth = async () => {
       dispatch(loadFromStorage());
+      // use the same key as the axios interceptor and authSlice
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setAppReady(true);
+        return;
+      }
 
       try {
         const res = await fetchCurrentUser();

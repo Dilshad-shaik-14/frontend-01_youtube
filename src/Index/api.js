@@ -13,14 +13,14 @@ const attachAuthToken = (config) => {
 
 const apiClient = axios.create({
   baseURL: baseURL,
-  headers: { "Content-Type": "application/json" },
+  //headers: { "Content-Type": "application/json" },
   withCredentials: true,
 });
 
 
 const apiClient2 = axios.create({
   baseURL: baseURL,
-  headers: { "Content-Type": "multipart/form-data" },
+ // headers: { "Content-Type": "multipart/form-data" },
   withCredentials: true,
 });
 
@@ -39,32 +39,34 @@ const handleApiResponse = (apiCall) =>
       });
   });
 
-
-export const login = (credentials) =>
-  handleApiResponse(apiClient.post(`/users/login`, credentials));
-
-export const logout = () =>
-  handleApiResponse(apiClient.post(`/users/logout`, {}));
+export const login = (credentials) => {
+  console.log("Login API URL:", `${baseURL}/users/login`);
+  console.log("Login payload:", credentials);
+  return handleApiResponse(apiClient.post(`/users/login`, credentials));
+};
 
 export const register = (credentials) =>
   handleApiResponse(apiClient2.post(`/users/register`, credentials));
 
+export const logout = () =>
+  handleApiResponse(apiClient.post(`/users/logout`, {}));
+
 export const forgetPassword = (credentials) =>
   handleApiResponse(apiClient.post(`/users/forget-password`, { email: credentials.email }));
 
-export const newPassword = (credentials) =>
-  handleApiResponse(apiClient.post(`/users/new-password`, credentials));
+export const resetPassword = (credentials) =>
+  handleApiResponse(apiClient.post(`/users/reset-password`, credentials));
 
 export const refreshToken = () =>
   handleApiResponse(apiClient.post(`/users/refresh-token`, {}));
 
-export const changePassword = (credentials) =>
+export const changeCurrentPassword = (credentials) =>
   handleApiResponse(apiClient.post(`/users/change-password`, credentials));
 
 export const currentUser = () =>
   handleApiResponse(apiClient.get(`/users/current-user`));
 
-export const updateAccount = (credentials) =>
+export const updateAccountDetails = (credentials) =>
   handleApiResponse(apiClient.patch(`/users/update-account`, credentials));
 
 export const updateAvatar = (credentials) =>
@@ -129,6 +131,9 @@ export const updateTweet = (tweetId, credentials) =>
 
 export const deleteTweet = (tweetId) =>
   handleApiResponse(apiClient.delete(`/tweets/${tweetId}`));
+
+export const getAllTweets = ({ page = 1, limit = 10 }) =>
+  handleApiResponse(apiClient.get(`/tweets/`, { params: { page, limit } }));
 
 export const toggleSubscription = (channelId) =>
   handleApiResponse(apiClient.post(`/subscriptions/toggle/${channelId}`));

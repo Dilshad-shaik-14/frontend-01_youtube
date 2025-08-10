@@ -54,6 +54,7 @@ export default function EditableVideoCard({ video, onRefresh, editable }) {
       setUpdating(false);
       setUploadProgress(0);
     }
+    
   };
 
   const handleDelete = async () => {
@@ -85,7 +86,6 @@ export default function EditableVideoCard({ video, onRefresh, editable }) {
       setEditData((prev) => ({ ...prev, videoFile: files[0] }));
     },
   });
-
 
   return (
     <>
@@ -121,7 +121,6 @@ export default function EditableVideoCard({ video, onRefresh, editable }) {
           <div className="text-xs text-zinc-500">{video.views || 0} views</div>
         </div>
 
-        {/* ✅ Only show edit/delete if editable */}
         {editable && (
           <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition">
             <button
@@ -148,7 +147,7 @@ export default function EditableVideoCard({ video, onRefresh, editable }) {
         )}
       </motion.div>
 
-      {/* ✅ Edit Modal */}
+      {/* Edit Modal */}
       {editable && editing && (
         <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center px-4">
           <div className="bg-zinc-900 w-full max-w-lg rounded-xl p-6 relative">
@@ -236,7 +235,7 @@ export default function EditableVideoCard({ video, onRefresh, editable }) {
         </div>
       )}
 
-      {/* ✅ Confirm Delete */}
+      {/* Confirm Delete */}
       {editable && showConfirm && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center">
           <div className="bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 p-6 rounded-xl w-full max-w-sm text-center">
@@ -264,7 +263,7 @@ export default function EditableVideoCard({ video, onRefresh, editable }) {
         </div>
       )}
 
-      {/* ✅ Always show preview modal */}
+      {/* Video Preview Modal */}
       {selectedVideo && (
         <VideoPlayerModal
           video={selectedVideo}

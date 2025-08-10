@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   getChannelVideos,
   getUserTweets,
@@ -10,12 +10,20 @@ import {
 import EditableVideoCard from "../components/EditableVideoCard";
 import EditableTweetCard from "../components/EditableTweetCard";
 import VideoPlayerModal from "../components/VideoPlayerModal";
+import {
+  setCurrentVideo,
+  setHasEnded,
+  togglePlay,
+  setIsBuffering,
+} from "../utils/videoSlice";
 
 export default function MyUploads() {
+  const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.currentUser);
+  const currentVideo = useSelector((state) => state.video.currentVideo);
+
   const [videos, setVideos] = useState([]);
   const [tweets, setTweets] = useState([]);
-  const [selectedVideo, setSelectedVideo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("videos");
 
@@ -60,23 +68,29 @@ export default function MyUploads() {
   };
 
   const handleToggleTweetLike = async (id) => {
-  try {
-    const updated = await toggleTweetLike(id);
-    const updatedTweet = updated?.data?.tweet;
+    try {
+      const updated = await toggleTweetLike(id);
+      const updatedTweet = updated?.data?.tweet;
 
-    if (!updatedTweet) {
-      console.warn("No updated tweet returned from API");
-      return;
+      if (!updatedTweet) {
+        console.warn("No updated tweet returned from API");
+        return;
+      }
+
+      setTweets((prev) =>
+        prev.map((t) => (t._id === id ? updatedTweet : t))
+      );
+    } catch (err) {
+      console.error("Failed to toggle like:", err);
     }
+  };
 
-    setTweets((prev) =>
-      prev.map((t) => (t._id === id ? updatedTweet : t))
-    );
-  } catch (err) {
-    console.error("Failed to toggle like:", err);
-  }
-};
-
+  const handleVideoClick = (video) => {
+    dispatch(setCurrentVideo(video));
+    dispatch(setHasEnded(false));
+    dispatch(togglePlay()); // Start playing
+    dispatch(setIsBuffering(true)); // Assume buffering starts
+  };
 
   const SkeletonCard = () => (
     <div className="h-[180px] bg-zinc-800 rounded-lg animate-pulse" />
@@ -101,7 +115,7 @@ export default function MyUploads() {
               <EditableVideoCard
                 key={video._id}
                 video={video}
-                onClick={() => setSelectedVideo(video)}
+                onClick={() => handleVideoClick(video)}
                 onDelete={handleDeleteVideo}
                 onRefresh={fetchUploads}
                 editable={true}
@@ -168,10 +182,10 @@ export default function MyUploads() {
       {renderTabContent()}
 
       {/* Video Modal */}
-      {selectedVideo && (
+      {currentVideo && (
         <VideoPlayerModal
-          video={selectedVideo}
-          onClose={() => setSelectedVideo(null)}
+          video={currentVideo}
+          onClose={() => dispatch(setCurrentVideo(null))}
         />
       )}
     </div>

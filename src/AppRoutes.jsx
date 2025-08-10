@@ -14,7 +14,9 @@ import Upload from "./pages/Upload";
 import Like from './pages/Likes/Like';
 import PlaylistsPage from "./pages/Playlist/PlaylistPage";
 //import Explore from "../src/pages/Explore";
-//import Settings from "../src/pages/Settings";
+import Settings from "./pages/settings/Settings";
+import ResetPassword from "./pages/ResetPassword";
+
 
 const ProtectedRoute = ({ children }) => {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -126,7 +128,6 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
         />
-{/*
         <Route
           path="/settings"
           element={
@@ -135,8 +136,9 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
         />
-        */}
-      </Route> 
+      </Route>
+
+      <Route path="/reset-password" element={<ResetPassword />} />
 
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>

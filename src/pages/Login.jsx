@@ -8,7 +8,7 @@ import {
   loginSuccess,
   registerSuccess,
 } from "../utils/authSlice";
-import { login as loginApi, register as registerApi } from "../Index/api";
+import { login as loginApi, register as registerApi, forgetPassword as forgetPasswordApi } from "../Index/api";
 import { useNavigate } from "react-router-dom";
 
 export default function Login() {
@@ -25,16 +25,16 @@ export default function Login() {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
   const { currentUser, loading, error } = useSelector((state) => state.auth);
 
-  
+  // Redirect after successful login
   useEffect(() => {
     if (currentUser && !loading && !error && isLogin) {
       navigate("/");
     }
   }, [currentUser, loading, error, isLogin, navigate]);
 
+  // Reset form after successful registration
   useEffect(() => {
     if (currentUser && !loading && !error && !isLogin) {
       setIsLogin(true);
@@ -79,8 +79,17 @@ export default function Login() {
       formData.append("avatar", avatar);
       if (coverImage) formData.append("coverImage", coverImage);
 
-      const newUser = await registerApi(formData);
-      dispatch(registerSuccess(newUser));
+      const newUserRes = await registerApi(formData);
+      const resData = newUserRes?.data;
+      const user = resData?.user ?? resData;
+      const token = resData?.accessToken ?? null;
+
+      dispatch(
+        registerSuccess({
+          data: user,
+          token,
+        })
+      );
     } catch (err) {
       dispatch(setError(err?.message || "Something went wrong"));
     } finally {
@@ -92,15 +101,47 @@ export default function Login() {
     e.preventDefault();
     dispatch(setError(""));
     dispatch(setLoading(true));
+
     try {
       const payload = { password };
       if (email.trim()) payload.email = email.trim();
       if (userName.trim()) payload.userName = userName.trim();
 
-      const loggedInUser = await loginApi(payload);
-      dispatch(loginSuccess(loggedInUser));
+      const loggedInRes = await loginApi(payload);
+
+      console.log("Login API Response:", loggedInRes);
+
+      const resData = loggedInRes?.data || {};
+      const user = resData.user ?? null;
+      const token = resData.accessToken ?? null;
+
+      dispatch(
+        loginSuccess({
+          data: user,
+          token,
+        })
+      );
     } catch (err) {
+      console.error("Login error:", err);
       dispatch(setError(err?.message || "Login failed"));
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
+
+  // New: Handle forgot password
+  const handleForgotPassword = async () => {
+    if (!email) {
+      dispatch(setError("Please enter your email to reset password."));
+      return;
+    }
+    dispatch(setError(""));
+    dispatch(setLoading(true));
+    try {
+      await forgetPasswordApi({ email });
+      dispatch(setError("Password reset email sent! Check your inbox."));
+    } catch (err) {
+      dispatch(setError(err?.message || "Failed to send reset email."));
     } finally {
       dispatch(setLoading(false));
     }
@@ -185,6 +226,18 @@ export default function Login() {
                     {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                   </span>
                 </div>
+              </div>
+
+              {/* Forgot Password Button */}
+              <div className="flex justify-end mb-4">
+                <button
+                  type="button"
+                  onClick={handleForgotPassword}
+                  className="text-red-400 hover:underline text-xs"
+                  disabled={loading}
+                >
+                  Forgot Password?
+                </button>
               </div>
 
               {/* Submit */}

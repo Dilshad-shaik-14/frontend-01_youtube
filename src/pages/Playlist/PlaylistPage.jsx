@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { getUserPlaylists } from "../../Index/api";
+
 import CreatePlaylistModal from "../../components/Playlist/CreatePlaylistModal";
 import ItemCard from "../../components/Playlist/ItemCard";
 import PlaylistVideoList from "../../components/Playlist/PlaylistVideoList";
 import VideoSelectionModal from "../../components/Playlist/VideoSelectionModal";
-import VideoPlayerModal from "../../components/VideoPlayerModal"; // ✅ Import
+import VideoPlayerModal from "../../components/VideoPlayerModal";
 
 import { PlusCircle } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -17,9 +18,7 @@ const PlaylistsPage = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showVideoModal, setShowVideoModal] = useState(false);
   const [selectedPlaylistId, setSelectedPlaylistId] = useState(null);
-
-  // ✅ Modal state for video player
-  const [selectedVideo, setSelectedVideo] = useState(null);
+  const [selectedVideo, setSelectedVideo] = useState(null); // ✅ modal state
 
   const fetchPlaylists = async () => {
     try {
@@ -39,6 +38,7 @@ const PlaylistsPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0f0f0f] via-[#1c1c1c] to-[#121212] text-white font-inter flex">
       <main className="flex-1 px-6 py-10 overflow-auto relative">
+        {/* Title */}
         <motion.h1
           className="text-4xl font-bold tracking-tight mb-10"
           initial={{ opacity: 0, y: -20 }}
@@ -48,6 +48,7 @@ const PlaylistsPage = () => {
           Your Playlists
         </motion.h1>
 
+        {/* Playlist Grid */}
         <div className="grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-10">
           {playlists.map((playlist) => (
             <motion.div
@@ -77,23 +78,23 @@ const PlaylistsPage = () => {
 
                 <div className="overflow-x-auto">
                   <PlaylistVideoList
-                  key={playlist._id + playlist.videos.length}
-                  videos={playlist.videos}
-                  playlistId={playlist._id}
-                  refresh={fetchPlaylists}
-                  onRemove={() => {
-                    toast.success("Removed video from playlist");
-                    fetchPlaylists();
-                  }}
-                  onVideoClick={(video) => setSelectedVideo(video)} // ✅ play modal
-                />
+                    key={playlist._id + playlist.videos.length}
+                    videos={playlist.videos}
+                    playlistId={playlist._id}
+                    refresh={fetchPlaylists}
+                    onRemove={() => {
+                      toast.success("Removed video from playlist");
+                      fetchPlaylists();
+                    }}
+                    onVideoClick={(video) => setSelectedVideo(video)}
+                  />
                 </div>
               </div>
             </motion.div>
           ))}
         </div>
 
-        {/* Floating Create Button */}
+        {/* Create Playlist Floating Button */}
         <motion.button
           whileTap={{ scale: 0.95 }}
           onClick={() => setShowCreateModal(true)}
@@ -124,14 +125,43 @@ const PlaylistsPage = () => {
           />
         )}
       </AnimatePresence>
+{selectedVideo && (
+  <div className="fixed inset-0 z-[9999] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+    <div className="relative w-full max-w-[1200px] sm:max-w-[90vw] rounded-xl overflow-hidden bg-[#121212] border border-zinc-800 shadow-2xl">
 
-      {/* ✅ Video Player Modal */}
-      {selectedVideo && (
-        <VideoPlayerModal
-          video={selectedVideo}
-          onClose={() => setSelectedVideo(null)}
+      {/* Close Button */}
+      <button
+        onClick={() => setSelectedVideo(null)}
+        className="absolute top-4 right-4 text-white bg-zinc-700 hover:bg-red-600 p-2 rounded-full text-xl z-50"
+      >
+        ✕
+      </button>
+
+      {/* Enlarged Responsive Video Player */}
+      <div className="w-full aspect-video bg-black">
+        <iframe
+          src={selectedVideo.url}
+          title={selectedVideo.title}
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+          className="w-full h-full rounded-none sm:rounded-xl"
         />
-      )}
+      </div>
+
+      {/* Video Info */}
+      <div className="p-6 border-t border-zinc-800">
+        <h2 className="text-2xl font-bold text-white">{selectedVideo.title}</h2>
+        {selectedVideo.description && (
+          <p className="text-base text-zinc-400 mt-2">
+            {selectedVideo.description}
+          </p>
+        )}
+      </div>
+    </div>
+  </div>
+)}
+
+
     </div>
   );
 };

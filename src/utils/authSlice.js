@@ -12,6 +12,10 @@ const initialState = {
   error: null,
   token: localStorage.getItem("token") || null,
   theme: initialTheme,
+
+  loadingResetPassword: false,
+  resetPasswordError: null,
+  resetPasswordSuccess: null,
 };
 
 const authSlice = createSlice({
@@ -35,7 +39,8 @@ const authSlice = createSlice({
       state.error = null;
 
       localStorage.setItem("user", JSON.stringify(data));
-      localStorage.setItem("token", token || "");
+      if (token) localStorage.setItem("token", token);
+      else localStorage.removeItem("token");
     },
 
     registerSuccess: (state, action) => {
@@ -47,7 +52,8 @@ const authSlice = createSlice({
       state.error = null;
 
       localStorage.setItem("user", JSON.stringify(data));
-      localStorage.setItem("token", token || "");
+      if (token) localStorage.setItem("token", token);
+      else localStorage.removeItem("token");
     },
 
     logoutSuccess: (state) => {
@@ -80,10 +86,27 @@ const authSlice = createSlice({
       }
     },
 
-     toggleTheme: (state) => {
+    toggleTheme: (state) => {
       const newTheme = state.theme === "dark" ? "light" : "dark";
       state.theme = newTheme;
       applyTheme(newTheme);
+    },
+
+    // Added reset password reducers
+    setResetPasswordLoading: (state, action) => {
+      state.loadingResetPassword = action.payload;
+    },
+
+    setResetPasswordSuccess: (state, action) => {
+      state.resetPasswordSuccess = action.payload;
+      state.resetPasswordError = null;
+      state.loadingResetPassword = false;
+    },
+
+    setResetPasswordError: (state, action) => {
+      state.resetPasswordError = action.payload;
+      state.resetPasswordSuccess = null;
+      state.loadingResetPassword = false;
     },
   },
 });
@@ -97,6 +120,9 @@ export const {
   currentUserSuccess,
   loadFromStorage,
   toggleTheme,
+  setResetPasswordLoading,
+  setResetPasswordSuccess,
+  setResetPasswordError,
 } = authSlice.actions;
 
 export default authSlice.reducer;

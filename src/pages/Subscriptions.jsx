@@ -8,6 +8,7 @@ const Subscriptions = () => {
   const [subscriptions, setSubscriptions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
   const user = useSelector((state) => state.auth.currentUser);
 
   useEffect(() => {
@@ -18,25 +19,19 @@ const Subscriptions = () => {
         setLoading(true);
         setError("");
 
-        const [subResult, subsResult] = await Promise.all([
-          getSubscribedChannels(user._id),
-          getChannelSubscribers(user._id),
+        const userId = user._id;
+        const channelId = user._id;
+
+        const [subscribedChannelsRes, channelSubscribersRes] = await Promise.all([
+          getSubscribedChannels(userId),
+          getChannelSubscribers(channelId),
         ]);
 
-        const subsData = subResult?.data?.subscriptions || [];
-        const subbersData = subsResult?.data?.subscribers || [];
-
-        // Mark subscriptions with isSubscribed = true for toggle button
-        const subscriptionsWithFlag = subsData.map((u) => ({
-          ...u,
-          isSubscribed: true,
-        }));
-
-        setSubscriptions(subscriptionsWithFlag);
-        setSubscribers(subbersData);
+        setSubscriptions(subscribedChannelsRes?.data || []);
+        setSubscribers(channelSubscribersRes?.data || []);
       } catch (err) {
-        console.error("Error fetching data:", err);
-        setError("Failed to load subscriptions or subscribers.");
+        console.error(err);
+        setError("Failed to load subscription data.");
       } finally {
         setLoading(false);
       }
@@ -47,53 +42,75 @@ const Subscriptions = () => {
 
   if (!user?._id) {
     return (
-      <div className="text-white p-6">
+      <div className="text-white p-6 text-lg">
         Please log in to view subscriptions.
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-black px-4 py-10 space-y-14">
+    <div className="min-h-screen bg-black text-white px-4 py-10 space-y-12">
+      {/* My Subscriptions */}
       <section>
-        <h1 className="text-3xl font-bold text-[#FF0000] mb-6">
-          My Subscriptions
-        </h1>
-
+        <h2 className="text-3xl font-bold text-[#FF0000] mb-6">My Subscriptions</h2>
         {loading ? (
           <p className="text-gray-400">Loading subscriptions...</p>
         ) : error ? (
           <p className="text-red-500">{error}</p>
         ) : subscriptions.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
-            {subscriptions.map((user) => (
-              <UserCard key={user._id} user={user} />
-            ))}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {subscriptions
+              .filter((item) => item?.channel?._id)
+              .map((item) => (
+                <UserCard
+                  key={item.channel._id}
+                  user={{
+                    _id: item.channel._id,
+                    userName: item.channel.userName,
+                    fullName: item.channel.fullName,
+                    avatar: item.channel.avatar,
+                    coverImage: item.channel.coverImage,
+                    email: item.channel.email,
+                    isSubscribed: true,
+                  }}
+                  showSubscribe={true}
+                />
+              ))}
           </div>
         ) : (
-          <p className="text-gray-500">You haven't subscribed to any channels.</p>
+          <p className="text-gray-500">You haven’t subscribed to any channels.</p>
         )}
       </section>
 
+      {/* My Subscribers */}
       <section>
-        <h1 className="text-3xl font-bold text-[#00E676] mb-6">
-          My Subscribers
-        </h1>
-
+        <h2 className="text-3xl font-bold text-[#00E676] mb-6">My Subscribers</h2>
         {loading ? (
           <p className="text-gray-400">Loading subscribers...</p>
         ) : error ? (
           <p className="text-red-500">{error}</p>
         ) : subscribers.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
-            {subscribers.map((user) => (
-              <UserCard key={user._id} user={user} />
-            ))}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {subscribers
+              .filter((item) => item?.subscriber?._id)
+              .map((item) => (
+                <UserCard
+                  key={item.subscriber._id}
+                  user={{
+                    _id: item.subscriber._id,
+                    userName: item.subscriber.userName,
+                    fullName: item.subscriber.fullName,
+                    avatar: item.subscriber.avatar,
+                    coverImage: item.subscriber.coverImage,
+                    email: item.subscriber.email,
+                    isSubscribed: false, // optional
+                  }}
+                  showSubscribe={false}
+                />
+              ))}
           </div>
         ) : (
-          <p className="text-gray-500">
-            No one has subscribed to your channel yet.
-          </p>
+          <p className="text-gray-500">No one has subscribed to your channel yet.</p>
         )}
       </section>
     </div>
