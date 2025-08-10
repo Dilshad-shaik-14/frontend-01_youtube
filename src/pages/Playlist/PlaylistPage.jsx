@@ -6,7 +6,6 @@ import CreatePlaylistModal from "../../components/Playlist/CreatePlaylistModal";
 import ItemCard from "../../components/Playlist/ItemCard";
 import PlaylistVideoList from "../../components/Playlist/PlaylistVideoList";
 import VideoSelectionModal from "../../components/Playlist/VideoSelectionModal";
-import VideoPlayerModal from "../../components/VideoPlayerModal";
 
 import { PlusCircle } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -18,7 +17,7 @@ const PlaylistsPage = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showVideoModal, setShowVideoModal] = useState(false);
   const [selectedPlaylistId, setSelectedPlaylistId] = useState(null);
-  const [selectedVideo, setSelectedVideo] = useState(null); // ✅ modal state
+  const [selectedVideo, setSelectedVideo] = useState(null);
 
   const fetchPlaylists = async () => {
     try {
@@ -36,11 +35,11 @@ const PlaylistsPage = () => {
   }, [user]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0f0f0f] via-[#1c1c1c] to-[#121212] text-white font-inter flex">
+    <div className="min-h-screen bg-[#0f0f0f] text-white font-inter flex">
       <main className="flex-1 px-6 py-10 overflow-auto relative">
         {/* Title */}
         <motion.h1
-          className="text-4xl font-bold tracking-tight mb-10"
+          className="text-4xl font-bold tracking-tight mb-10 text-white"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -53,7 +52,7 @@ const PlaylistsPage = () => {
           {playlists.map((playlist) => (
             <motion.div
               key={playlist._id}
-              className="bg-white/5 backdrop-blur-xl border border-zinc-700 rounded-2xl p-6 shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300 hover:border-indigo-500/80 focus-within:ring-2 focus-within:ring-indigo-500"
+              className="bg-[#181818] border border-[#303030] rounded-xl p-6 shadow-lg hover:scale-[1.02] transition-transform duration-300"
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -62,7 +61,7 @@ const PlaylistsPage = () => {
             >
               <ItemCard playlist={playlist} refresh={fetchPlaylists} />
 
-              <div className="mt-6 border-t border-zinc-700 pt-4 bg-zinc-900/50 rounded-xl px-3">
+              <div className="mt-6 border-t border-[#303030] pt-4 bg-[#0f0f0f]/50 rounded-xl px-3">
                 <div className="flex justify-between items-center mb-2">
                   <h4 className="font-semibold text-white/90">🎬 Videos</h4>
                   <button
@@ -70,7 +69,7 @@ const PlaylistsPage = () => {
                       setSelectedPlaylistId(playlist._id);
                       setShowVideoModal(true);
                     }}
-                    className="text-sm text-indigo-400 hover:underline"
+                    className="text-sm text-red-400 hover:text-red-300 transition"
                   >
                     + Add
                   </button>
@@ -98,7 +97,7 @@ const PlaylistsPage = () => {
         <motion.button
           whileTap={{ scale: 0.95 }}
           onClick={() => setShowCreateModal(true)}
-          className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-5 py-3 rounded-full bg-gradient-to-r from-indigo-500 to-pink-500 text-white shadow-xl hover:shadow-pink-500/30 hover:opacity-90 transition"
+          className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-5 py-3 rounded-full bg-red-600 hover:bg-red-500 text-white shadow-lg transition-colors"
         >
           <PlusCircle size={20} />
           <span className="hidden sm:inline-block">Create Playlist</span>
@@ -125,43 +124,41 @@ const PlaylistsPage = () => {
           />
         )}
       </AnimatePresence>
-{selectedVideo && (
-  <div className="fixed inset-0 z-[9999] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-    <div className="relative w-full max-w-[1200px] sm:max-w-[90vw] rounded-xl overflow-hidden bg-[#121212] border border-zinc-800 shadow-2xl">
 
-      {/* Close Button */}
-      <button
-        onClick={() => setSelectedVideo(null)}
-        className="absolute top-4 right-4 text-white bg-zinc-700 hover:bg-red-600 p-2 rounded-full text-xl z-50"
-      >
-        ✕
-      </button>
+      {selectedVideo && (
+        <div className="fixed inset-0 z-[9999] bg-black/95 flex items-center justify-center p-4 overflow-y-auto">
+          <div className="relative w-full max-w-[1200px] sm:max-w-[90vw] rounded-xl overflow-hidden bg-[#181818] border border-[#303030] shadow-2xl">
+            {/* Close Button */}
+            <button
+              onClick={() => setSelectedVideo(null)}
+              className="absolute top-4 right-4 text-white bg-[#303030] hover:bg-red-600 p-2 rounded-full text-xl z-50"
+            >
+              ✕
+            </button>
 
-      {/* Enlarged Responsive Video Player */}
-      <div className="w-full aspect-video bg-black">
-        <iframe
-          src={selectedVideo.url}
-          title={selectedVideo.title}
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-          className="w-full h-full rounded-none sm:rounded-xl"
-        />
-      </div>
+            {/* Video Player */}
+            <div className="w-full aspect-video bg-black">
+              <iframe
+                src={selectedVideo.url}
+                title={selectedVideo.title}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="w-full h-full"
+              />
+            </div>
 
-      {/* Video Info */}
-      <div className="p-6 border-t border-zinc-800">
-        <h2 className="text-2xl font-bold text-white">{selectedVideo.title}</h2>
-        {selectedVideo.description && (
-          <p className="text-base text-zinc-400 mt-2">
-            {selectedVideo.description}
-          </p>
-        )}
-      </div>
-    </div>
-  </div>
-)}
-
-
+            {/* Video Info */}
+            <div className="p-6 border-t border-[#303030]">
+              <h2 className="text-2xl font-bold text-white">{selectedVideo.title}</h2>
+              {selectedVideo.description && (
+                <p className="text-base text-gray-400 mt-2">
+                  {selectedVideo.description}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

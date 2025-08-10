@@ -16,6 +16,8 @@ import PlaylistsPage from "./pages/Playlist/PlaylistPage";
 //import Explore from "../src/pages/Explore";
 import Settings from "./pages/settings/Settings";
 import ResetPassword from "./pages/ResetPassword";
+import UserDashboard from "./pages/userDashboard";
+import ChannelPage from "./pages/ChannelPage";
 
 
 const ProtectedRoute = ({ children }) => {
@@ -69,15 +71,14 @@ const AppRoutes = () => {
           }
         />
 
-        {/*
-        <Route
-          path="/profile/:id"
+          <Route
+          path="/profile"
           element={
             <ProtectedRoute>
-              <Profile />
+              <UserDashboard />
             </ProtectedRoute>
           }
-        />*/}
+        />
 
         <Route
           path="/playlists"
@@ -136,9 +137,11 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
         />
+        
       </Route>
 
       <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/channel/:username" element={<ChannelPage />} />
 
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>

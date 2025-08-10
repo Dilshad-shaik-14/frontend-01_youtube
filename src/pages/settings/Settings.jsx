@@ -10,6 +10,8 @@ import {
   updateAccountDetails,
   updateAvatar,
   updateCoverImage,
+  deleteAvatar as apiDeleteAvatar,       // import your API calls for delete
+  deleteCoverImage as apiDeleteCoverImage,
 } from "../../Index/api";
 import { currentUserSuccess, logoutSuccess } from "../../utils/authSlice";
 
@@ -120,12 +122,10 @@ const Settings = () => {
       const formData = new FormData();
       formData.append("avatar", avatarFile);
       const res = await updateAvatar(formData);
-      // Update redux and localStorage with new user data
       dispatch(currentUserSuccess({ data: res.data }));
       localStorage.setItem("user", JSON.stringify(res.data));
       toast.success("Avatar updated successfully");
       setAvatarFile(null);
-      // Clear file input (optional)
       e.target.reset();
     } catch (err) {
       toast.error(err?.response?.data?.message || err.message || "Failed to update avatar");
@@ -150,13 +150,37 @@ const Settings = () => {
       const formData = new FormData();
       formData.append("coverImage", coverImageFile);
       const res = await updateCoverImage(formData);
-      dispatch(currentUserSuccess({ data: res.data.user || res.data })); // you returned { user } in response
+      dispatch(currentUserSuccess({ data: res.data.user || res.data }));
       localStorage.setItem("user", JSON.stringify(res.data.user || res.data));
       toast.success("Cover image updated successfully");
       setCoverImageFile(null);
       e.target.reset();
     } catch (err) {
       toast.error(err?.response?.data?.message || err.message || "Failed to update cover image");
+    }
+  };
+
+  // New handlers: Delete Avatar
+  const handleDeleteAvatar = async () => {
+    try {
+      const res = await apiDeleteAvatar();
+      dispatch(currentUserSuccess({ data: res.data }));
+      localStorage.setItem("user", JSON.stringify(res.data));
+      toast.success("Avatar deleted successfully");
+    } catch (err) {
+      toast.error(err?.response?.data?.message || err.message || "Failed to delete avatar");
+    }
+  };
+
+  // Delete Cover Image
+  const handleDeleteCoverImage = async () => {
+    try {
+      const res = await apiDeleteCoverImage();
+      dispatch(currentUserSuccess({ data: res.data }));
+      localStorage.setItem("user", JSON.stringify(res.data));
+      toast.success("Cover image deleted successfully");
+    } catch (err) {
+      toast.error(err?.response?.data?.message || err.message || "Failed to delete cover image");
     }
   };
 
@@ -184,7 +208,16 @@ const Settings = () => {
         className="space-y-4 bg-[#181818] p-5 rounded-xl shadow-lg"
         encType="multipart/form-data"
       >
-        <h3 className="text-xl font-semibold">Update Avatar</h3>
+        <h3 className="text-xl font-semibold flex justify-between items-center">
+          Update Avatar
+          <button
+            type="button"
+            onClick={handleDeleteAvatar}
+            className="text-sm bg-red-700 hover:bg-red-900 px-3 py-1 rounded-lg font-semibold"
+          >
+            Delete Avatar
+          </button>
+        </h3>
         <input
           type="file"
           accept="image/*"
@@ -209,7 +242,16 @@ const Settings = () => {
         className="space-y-4 bg-[#181818] p-5 rounded-xl shadow-lg"
         encType="multipart/form-data"
       >
-        <h3 className="text-xl font-semibold">Update Cover Image</h3>
+        <h3 className="text-xl font-semibold flex justify-between items-center">
+          Update Cover Image
+          <button
+            type="button"
+            onClick={handleDeleteCoverImage}
+            className="text-sm bg-red-700 hover:bg-red-900 px-3 py-1 rounded-lg font-semibold"
+          >
+            Delete Cover Image
+          </button>
+        </h3>
         <input
           type="file"
           accept="image/*"
@@ -224,9 +266,6 @@ const Settings = () => {
           Upload Cover Image
         </motion.button>
       </motion.form>
-
-      {/* Existing forms below: Change Password, Update Account, Forgot Password, Set New Password, Logout */}
-      {/* ... your existing JSX for those forms here ... */}
 
       {/* Change Password */}
       <motion.form

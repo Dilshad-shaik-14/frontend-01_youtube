@@ -20,14 +20,14 @@ export default function Home() {
   const [error, setError] = useState("");
   const [expandedUserId, setExpandedUserId] = useState(null);
 
-const user = useSelector((state) => state.auth.currentUser); // ✅
+const user = useSelector((state) => state.auth.currentUser); 
 
   useEffect(() => {
     const fetchContent = async () => {
       try {
         const [videoRes, tweetRes, userRes] = await Promise.all([
           getAllVideos({ limit: 6, page: 1 }),
-          getAllTweets({ limit: 4, page: 1, userId: user?._id }), // ✅ pass userId
+          getAllTweets({ limit: 4, page: 1, userId: user?._id }), 
           suggestUsers(),
         ]);
 
@@ -42,7 +42,7 @@ const user = useSelector((state) => state.auth.currentUser); // ✅
       }
     };
 
-    if (user?._id) fetchContent(); // ✅ ensure user is available
+    if (user?._id) fetchContent(); 
   }, [user?._id]);
 
   const theme = useSelector((state) => state.auth.theme);
@@ -57,12 +57,13 @@ const user = useSelector((state) => state.auth.currentUser); // ✅
   );
 
   return (
-    <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-16">
-      {error && (
-        <div className="text-red-600 bg-red-100 p-4 rounded-xl shadow border border-red-200">
-          {error}
-        </div>
-      )}
+  <div className="bg-black min-h-screen max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-16">
+    {error && (
+      <div className="text-red-600 bg-red-100 p-4 rounded-xl shadow border border-red-200">
+        {error}
+      </div>
+    )}
+
 
       {/* Videos Section */}
       <SectionWrapper title="Recommended Videos">

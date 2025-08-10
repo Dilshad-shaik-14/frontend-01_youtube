@@ -1,4 +1,3 @@
-// redux/slices/videoSlice.js
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
@@ -12,6 +11,11 @@ const initialState = {
   isFullScreen: false,
   hasEnded: false,
   isBuffering: false,
+
+  // Upload related state
+  isUploading: false,
+  uploadProgress: 0,
+  uploadError: null,
 };
 
 const videoSlice = createSlice({
@@ -51,6 +55,17 @@ const videoSlice = createSlice({
     setIsBuffering: (state, action) => {
       state.isBuffering = action.payload;
     },
+
+    // Upload actions
+    setIsUploading: (state, action) => {
+      state.isUploading = action.payload;
+    },
+    setUploadProgress: (state, action) => {
+      state.uploadProgress = action.payload;
+    },
+    setUploadError: (state, action) => {
+      state.uploadError = action.payload;
+    },
   },
 });
 
@@ -67,6 +82,9 @@ export const {
   setHasEnded,
   setIsBuffering,
 
+  setIsUploading,
+  setUploadProgress,
+  setUploadError,
 } = videoSlice.actions;
 
 export default videoSlice.reducer;

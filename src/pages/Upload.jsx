@@ -1,12 +1,6 @@
 import React, { useState } from "react";
 import { createTweet, publishAVideo } from "../Index/api";
-import {
-  Loader2,
-  Video,
-  MessageSquare,
-  UploadCloud,
-  Image as ImageIcon,
-} from "lucide-react";
+import { Loader2, Video, MessageSquare } from "lucide-react";
 import { useSelector } from "react-redux";
 
 const Upload = () => {
@@ -15,7 +9,7 @@ const Upload = () => {
   const [videoData, setVideoData] = useState({
     title: "",
     description: "",
-    file: null,
+    videoFile: null,
     thumbnail: null,
   });
   const [previewThumb, setPreviewThumb] = useState(null);
@@ -37,36 +31,37 @@ const Upload = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setMessage("");
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  setMessage("");
 
-    try {
-      if (activeTab === "video") {
-        const formData = new FormData();
-        formData.append("title", videoData.title);
-        formData.append("description", videoData.description);
-        formData.append("videoFile", videoData.file);
-        formData.append("thumbnail", videoData.thumbnail);
-        formData.append("duration", "120"); // Placeholder
+  try {
+    if (activeTab === "video") {
+      const formData = new FormData();
+      formData.append("title", videoData.title);
+      formData.append("description", videoData.description);
+      formData.append("videoFile", videoData.videoFile);
+      formData.append("thumbnail", videoData.thumbnail);
+      // Removed duration append
 
-        await publishAVideo(formData);
-        setMessage("✅ Video uploaded successfully!");
-        setVideoData({ title: "", description: "", file: null, thumbnail: null });
-        setPreviewThumb(null);
-      } else {
-        await createTweet({ content: tweetText });
-        setMessage("✅ Tweet posted successfully!");
-        setTweetText("");
-      }
-    } catch (err) {
-      console.error(err);
-      setMessage("❌ Upload failed. Please try again.");
-    } finally {
-      setLoading(false);
+      await publishAVideo(formData);
+      setMessage("✅ Video uploaded successfully!");
+      setVideoData({ title: "", description: "", videoFile: null, thumbnail: null });
+      setPreviewThumb(null);
+    } else {
+      await createTweet({ content: tweetText });
+      setMessage("✅ Tweet posted successfully!");
+      setTweetText("");
     }
-  };
+  } catch (err) {
+    console.error(err);
+    setMessage("❌ Upload failed. Please try again.");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="max-w-xl mx-auto px-6 py-10 rounded-3xl bg-gradient-to-br from-zinc-100 via-white to-zinc-50 dark:from-zinc-900 dark:via-zinc-800 dark:to-zinc-900 shadow-xl border dark:border-zinc-700 space-y-10">
@@ -118,7 +113,7 @@ const Upload = () => {
               </label>
               <input
                 type="file"
-                name="file"
+                name="videoFile" // changed name here
                 accept="video/*"
                 onChange={handleVideoChange}
                 required

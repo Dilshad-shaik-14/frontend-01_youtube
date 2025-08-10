@@ -22,7 +22,7 @@ const navLinks = [
   { to: "/myuploads", label: "My Uploads", icon: <Star size={18} /> },
   { to: "/subscriptions", label: "Subscriptions", icon: <UserCircle size={18} /> },
   { to: "/uploads", label: "Upload", icon: <FileUp size={18} /> },
-  { to: "/explore", label: "Explore", icon: <Compass size={18} /> },
+  { to: "/profile", label: "Profile", icon: <UserCircle size={18} /> },
   { to: "/settings", label: "Settings", icon: <Settings size={18} /> },
 ];
 

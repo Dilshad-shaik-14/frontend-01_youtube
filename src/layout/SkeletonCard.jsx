@@ -28,3 +28,11 @@ export const SkeletonTweetCard = () => (
     <div className="h-2 bg-zinc-200 dark:bg-zinc-600 rounded w-5/6"></div>
   </div>
 );
+
+export const Loader = () => {
+  return (
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+    </div>
+  );
+}

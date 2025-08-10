@@ -1,18 +1,28 @@
 import { Moon, Sun, Video } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleTheme } from "../utils/authSlice";
+import { useState } from "react";
 
 export default function Navbar({ toggleSidebar }) {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { currentUser, theme } = useSelector((state) => state.auth);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/channel/${searchQuery.trim()}`);
+      setSearchQuery("");
+    }
+  };
 
   return (
     <header className="sticky top-0 z-50 flex items-center justify-between px-4 py-3 bg-white/90 dark:bg-[#0f0f0f]/90 backdrop-blur-xl shadow-md border-b border-zinc-200 dark:border-zinc-800 transition-colors duration-300">
       
       {/* Left Section - Logo + Sidebar Toggle */}
       <div className="flex items-center gap-4">
-        
         {/* Sidebar Toggle Button for Mobile */}
         <button
           className="md:hidden text-zinc-800 dark:text-white text-2xl hover:scale-110 transition-transform duration-200 active:scale-95"
@@ -32,17 +42,21 @@ export default function Navbar({ toggleSidebar }) {
       </div>
 
       {/* Center Section - Search Input */}
-      <div className="flex-grow max-w-md mx-4 hidden sm:flex">
+      <form
+        onSubmit={handleSearch}
+        className="flex-grow max-w-md mx-4 hidden sm:flex"
+      >
         <input
           type="text"
           placeholder="Search"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full px-4 py-2 rounded-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 focus:ring-2 focus:ring-[#FF0000] text-sm text-zinc-800 dark:text-white placeholder:text-zinc-500 dark:placeholder:text-zinc-400 shadow-inner transition-all"
         />
-      </div>
+      </form>
 
       {/* Right Section - Theme Toggle + Avatar */}
       <div className="flex items-center gap-4">
-        
         {/* Theme Switcher */}
         <button
           onClick={() => dispatch(toggleTheme())}
