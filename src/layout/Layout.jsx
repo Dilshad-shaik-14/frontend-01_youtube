@@ -1,39 +1,39 @@
 // src/layout/Layout.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
 import { Outlet } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { toggleTheme } from "../utils/authSlice";
+import { applyTheme } from "../utils/applyTheme";
 
 export default function Layout() {
-  const [isSidebarOpen, setSidebarOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    const stored = localStorage.getItem("theme");
-    return stored ? stored === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
-  });
+  const dispatch = useDispatch();
+  const theme = useSelector((state) => state.auth.theme);
 
-  // Handle theme toggle
+
   useEffect(() => {
-    document.documentElement.classList.toggle("dark", isDarkMode);
-    localStorage.setItem("theme", isDarkMode ? "dark" : "light");
-  }, [isDarkMode]);
+    applyTheme(theme); 
+  }, [theme]);
 
-  const toggleSidebar = () => setSidebarOpen((prev) => !prev);
-  const toggleTheme = () => setIsDarkMode((prev) => !prev);
+  const handleToggleTheme = () => {
+    dispatch(toggleTheme());
+  };
 
   return (
-    <div className="flex h-screen bg-white dark:bg-zinc-900 text-black dark:text-white">
+    <div className="flex h-screen bg-white dark:bg-black text-black dark:text-white transition-colors duration-300">
       {/* Sidebar */}
-      <Sidebar isOpen={isSidebarOpen} toggle={toggleSidebar} />
+      <Sidebar isOpen={false} toggle={() => {}} />
 
       {/* Main Area */}
       <div className="flex-1 flex flex-col overflow-hidden">
         <Navbar
-          toggleSidebar={toggleSidebar}
-          darkMode={isDarkMode}
-          toggleTheme={toggleTheme}
+          toggleSidebar={() => {}}
+          darkMode={theme === "dark"}
+          toggleTheme={handleToggleTheme}
         />
 
-        <main className="flex-1 overflow-y-auto p-4 bg-white dark:bg-zinc-900 transition-colors duration-300">
+        <main className="flex-1 overflow-y-auto p-4 bg-white dark:bg-black transition-colors duration-300">
           <Outlet />
         </main>
       </div>

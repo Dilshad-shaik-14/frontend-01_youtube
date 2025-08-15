@@ -89,8 +89,10 @@ const authSlice = createSlice({
     toggleTheme: (state) => {
       const newTheme = state.theme === "dark" ? "light" : "dark";
       state.theme = newTheme;
+      localStorage.setItem("theme", newTheme); // <-- persist theme
       applyTheme(newTheme);
     },
+    
 
     // Added reset password reducers
     setResetPasswordLoading: (state, action) => {

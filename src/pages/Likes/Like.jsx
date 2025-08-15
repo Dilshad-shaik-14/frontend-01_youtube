@@ -135,7 +135,9 @@ export default function Liked() {
 
   return (
     <div className="p-6">
-      <h2 className="text-3xl font-bold mb-6 text-white">Liked Content</h2>
+      <h2 className="text-3xl sm:text-4xl font-bold mb-6 text-white border-b-4 border-red-500 pb-2 w-fit">
+          Liked Content
+      </h2>
 
       {/* Tabs */}
       <div className="flex gap-4 mb-6">

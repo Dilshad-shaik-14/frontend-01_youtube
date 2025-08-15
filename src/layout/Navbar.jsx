@@ -19,7 +19,7 @@ export default function Navbar({ toggleSidebar }) {
   };
 
   return (
-    <header className="sticky top-0 z-50 flex items-center justify-between px-4 py-3 bg-white/90 dark:bg-[#0f0f0f]/90 backdrop-blur-xl shadow-md border-b border-zinc-200 dark:border-zinc-800 transition-colors duration-300">
+    <header className="sticky top-0 z-50 flex items-center justify-between px-4 py-3 bg-white/90 dark:bg-black backdrop-blur-xl shadow-md border-b border-zinc-200 dark:border-zinc-800 transition-colors duration-300">
       
       {/* Left Section - Logo + Sidebar Toggle */}
       <div className="flex items-center gap-4">

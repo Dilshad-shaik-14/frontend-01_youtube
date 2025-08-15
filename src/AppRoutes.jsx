@@ -141,7 +141,7 @@ const AppRoutes = () => {
       </Route>
 
       <Route path="/reset-password" element={<ResetPassword />} />
-      <Route path="/channel/:username" element={<ChannelPage />} />
+      <Route path="/channel/:userName" element={<ChannelPage />} />
 
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>

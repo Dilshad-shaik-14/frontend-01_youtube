@@ -1,23 +1,21 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { getUserPlaylists } from "../../Index/api";
 
 import CreatePlaylistModal from "../../components/Playlist/CreatePlaylistModal";
 import ItemCard from "../../components/Playlist/ItemCard";
 import PlaylistVideoList from "../../components/Playlist/PlaylistVideoList";
-import VideoSelectionModal from "../../components/Playlist/VideoSelectionModal";
-
-import { PlusCircle } from "lucide-react";
+import { PlusCircle, ArrowLeft } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import toast from "react-hot-toast";
+import VideoSelectionModal from "../../components/Playlist/videoSelectionModal";
 
 const PlaylistsPage = () => {
-  const user = useSelector((state) => state.auth.currentUser);
+  const user = useSelector((state) => state.auth?.currentUser);
   const [playlists, setPlaylists] = useState([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [activePlaylist, setActivePlaylist] = useState(null);
   const [showVideoModal, setShowVideoModal] = useState(false);
-  const [selectedPlaylistId, setSelectedPlaylistId] = useState(null);
-  const [selectedVideo, setSelectedVideo] = useState(null);
 
   const fetchPlaylists = async () => {
     try {
@@ -36,75 +34,122 @@ const PlaylistsPage = () => {
 
   return (
     <div className="min-h-screen bg-[#0f0f0f] text-white font-inter flex">
-      <main className="flex-1 px-6 py-10 overflow-auto relative">
-        {/* Title */}
-        <motion.h1
-          className="text-4xl font-bold tracking-tight mb-10 text-white"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          Your Playlists
-        </motion.h1>
-
-        {/* Playlist Grid */}
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-10">
-          {playlists.map((playlist) => (
-            <motion.div
-              key={playlist._id}
-              className="bg-[#181818] border border-[#303030] rounded-xl p-6 shadow-lg hover:scale-[1.02] transition-transform duration-300"
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              tabIndex={0}
+      <main className="flex-1 px-6 py-8 overflow-auto relative max-w-[1600px] mx-auto w-full">
+        {!activePlaylist ? (
+          <>
+            {/* Page Heading */}
+            <motion.h1
+              className="text-5xl sm:text-4xl md:text-4xl font-bold text-white mb-10 border-b-4 border-red-600 pb-3 w-fit"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
             >
-              <ItemCard playlist={playlist} refresh={fetchPlaylists} />
+              Your Playlists
+            </motion.h1>
 
-              <div className="mt-6 border-t border-[#303030] pt-4 bg-[#0f0f0f]/50 rounded-xl px-3">
-                <div className="flex justify-between items-center mb-2">
-                  <h4 className="font-semibold text-white/90">🎬 Videos</h4>
-                  <button
-                    onClick={() => {
-                      setSelectedPlaylistId(playlist._id);
-                      setShowVideoModal(true);
-                    }}
-                    className="text-sm text-red-400 hover:text-red-300 transition"
-                  >
-                    + Add
-                  </button>
-                </div>
-
-                <div className="overflow-x-auto">
-                  <PlaylistVideoList
-                    key={playlist._id + playlist.videos.length}
-                    videos={playlist.videos}
-                    playlistId={playlist._id}
+            {/* Playlist Grid */}
+            <div className="grid gap-12 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
+              {playlists.map((playlist) => (
+                <motion.div
+                  key={playlist._id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.35 }}
+                >
+                  <ItemCard
+                    playlist={playlist}
                     refresh={fetchPlaylists}
-                    onRemove={() => {
-                      toast.success("Removed video from playlist");
-                      fetchPlaylists();
-                    }}
-                    onVideoClick={(video) => setSelectedVideo(video)}
+                    onClick={() => setActivePlaylist(playlist)}
+                    className="h-[40rem] md:h-[42rem] rounded-3xl shadow-4xl border border-zinc-700 hover:shadow-5xl hover:scale-[1.08] transition-all duration-300"
                   />
+                </motion.div>
+              ))}
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="mb-6">
+              <button
+                onClick={() => setActivePlaylist(null)}
+                className="inline-flex items-center gap-2 text-zinc-300 hover:text-white mb-4"
+              >
+                <ArrowLeft size={18} />
+                Back to Playlists
+              </button>
+
+              {/* Full-width cover image */}
+              <div className="relative w-full rounded-2xl overflow-hidden shadow-2xl">
+                {activePlaylist?.coverImage ? (
+                  <img
+                    src={activePlaylist.coverImage}
+                    alt={`${activePlaylist.name} cover`}
+                    className="w-full h-[300px] md:h-[500px] object-cover"
+                    loading="lazy"
+                  />
+                ) : (
+                  <div className="h-[300px] md:h-[500px] w-full grid place-items-center bg-zinc-800 text-zinc-500">
+                    No Cover Image
+                  </div>
+                )}
+
+                {/* Gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent"></div>
+
+                {/* Text content and Add Video button */}
+                <div className="absolute bottom-6 left-6 md:bottom-10 md:left-12 flex flex-col gap-4 max-w-lg">
+                  <h1 className="text-3xl md:text-5xl font-extrabold text-white leading-tight drop-shadow-lg">
+                    {activePlaylist?.name}
+                  </h1>
+                  {activePlaylist?.description && (
+                    <p className="text-sm md:text-lg text-white/80 line-clamp-3 drop-shadow-sm">
+                      {activePlaylist.description}
+                    </p>
+                  )}
+                  <div className="flex items-center gap-4">
+                    <span className="text-sm md:text-base text-white/80 drop-shadow-md">
+                      {Array.isArray(activePlaylist?.videos)
+                        ? `${activePlaylist.videos.length} video${
+                            activePlaylist.videos.length === 1 ? "" : "s"
+                          }`
+                        : "0 videos"}
+                    </span>
+                    <button
+                      onClick={() => setShowVideoModal(true)}
+                      className="bg-red-600 hover:bg-red-500 px-5 py-2 rounded-full font-bold text-white shadow-xl transition-transform duration-300 hover:scale-105"
+                    >
+                      Add Video
+                    </button>
+                  </div>
                 </div>
               </div>
-            </motion.div>
-          ))}
-        </div>
+            </div>
 
-        {/* Create Playlist Floating Button */}
-        <motion.button
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setShowCreateModal(true)}
-          className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-5 py-3 rounded-full bg-red-600 hover:bg-red-500 text-white shadow-lg transition-colors"
-        >
-          <PlusCircle size={20} />
-          <span className="hidden sm:inline-block">Create Playlist</span>
-        </motion.button>
+            {/* Playlist Videos */}
+            {activePlaylist?._id && (
+              <PlaylistVideoList
+                videos={Array.isArray(activePlaylist.videos) ? activePlaylist.videos : []}
+                playlistId={activePlaylist._id}
+                refresh={fetchPlaylists}
+              />
+            )}
+          </>
+        )}
+
+        {/* Floating Create Playlist Button */}
+        {!activePlaylist && (
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setShowCreateModal(true)}
+            className="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3 rounded-full bg-red-600 hover:bg-red-500 text-white shadow-lg shadow-red-900/70 transition-all text-base font-semibold"
+            aria-label="Create Playlist"
+          >
+            <PlusCircle size={20} />
+            Create Playlist
+          </motion.button>
+        )}
       </main>
 
-      {/* Modals */}
       <AnimatePresence>
         {showCreateModal && (
           <CreatePlaylistModal
@@ -116,49 +161,18 @@ const PlaylistsPage = () => {
           />
         )}
 
-        {showVideoModal && selectedPlaylistId && (
+        {showVideoModal && activePlaylist?._id && (
           <VideoSelectionModal
-            playlistId={selectedPlaylistId}
+            playlistId={activePlaylist._id}
             onClose={() => setShowVideoModal(false)}
-            onVideoAdded={fetchPlaylists}
+            onVideoAdded={(newVideo) => {
+              setActivePlaylist((prev) =>
+                prev ? { ...prev, videos: [...(prev.videos || []), newVideo] } : prev
+              );
+            }}
           />
         )}
       </AnimatePresence>
-
-      {selectedVideo && (
-        <div className="fixed inset-0 z-[9999] bg-black/95 flex items-center justify-center p-4 overflow-y-auto">
-          <div className="relative w-full max-w-[1200px] sm:max-w-[90vw] rounded-xl overflow-hidden bg-[#181818] border border-[#303030] shadow-2xl">
-            {/* Close Button */}
-            <button
-              onClick={() => setSelectedVideo(null)}
-              className="absolute top-4 right-4 text-white bg-[#303030] hover:bg-red-600 p-2 rounded-full text-xl z-50"
-            >
-              ✕
-            </button>
-
-            {/* Video Player */}
-            <div className="w-full aspect-video bg-black">
-              <iframe
-                src={selectedVideo.url}
-                title={selectedVideo.title}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                className="w-full h-full"
-              />
-            </div>
-
-            {/* Video Info */}
-            <div className="p-6 border-t border-[#303030]">
-              <h2 className="text-2xl font-bold text-white">{selectedVideo.title}</h2>
-              {selectedVideo.description && (
-                <p className="text-base text-gray-400 mt-2">
-                  {selectedVideo.description}
-                </p>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

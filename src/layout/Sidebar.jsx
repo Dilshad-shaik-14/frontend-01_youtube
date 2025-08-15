@@ -33,7 +33,7 @@ export default function Sidebar({ isOpen }) {
   return (
     <aside
       className={`fixed md:static top-0 left-0 z-50 h-full w-64 
-        bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md 
+        bg-white/80 dark:bg-black backdrop-blur-md 
         p-5 shadow-lg border-r border-zinc-200 dark:border-zinc-700 
         transition-transform duration-300 ease-in-out 
         ${isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}

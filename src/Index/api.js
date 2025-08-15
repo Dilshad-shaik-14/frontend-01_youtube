@@ -144,14 +144,26 @@ export const getSubscribedChannels = (userId) =>
 export const getChannelSubscribers = (channelId) =>
   handleApiResponse(apiClient.get(`/subscriptions/channel/${channelId}/subscribers`));
 
-export const createPlaylist = (credentials) =>
-  handleApiResponse(apiClient.post(`/playlist`, credentials));
 
 export const getPlaylistById = (playlistId) =>
   handleApiResponse(apiClient.get(`/playlist/${playlistId}`));
 
-export const updatePlaylist = (playlistId, credentials) =>
-  handleApiResponse(apiClient.patch(`/playlist/${playlistId}`, credentials)); 
+
+export const createPlaylist = (data, isMultipart = false) =>
+  handleApiResponse(
+    apiClient2.post(`/playlist`, data, {
+      headers: isMultipart ? { "Content-Type": "multipart/form-data" } : {},
+    })
+  );
+
+export const updatePlaylist = (id, data, isMultipart = false) =>
+  handleApiResponse(
+    apiClient2.patch(`/playlist/${id}`, data, {
+      headers: isMultipart ? { "Content-Type": "multipart/form-data" } : {},
+    })
+  );
+
+
 
 export const deletePlaylist = (playlistId) =>
   handleApiResponse(apiClient.delete(`/playlist/${playlistId}`));

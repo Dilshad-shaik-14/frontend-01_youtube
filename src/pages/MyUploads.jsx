@@ -88,8 +88,8 @@ export default function MyUploads() {
   const handleVideoClick = (video) => {
     dispatch(setCurrentVideo(video));
     dispatch(setHasEnded(false));
-    dispatch(togglePlay()); // Start playing
-    dispatch(setIsBuffering(true)); // Assume buffering starts
+    dispatch(togglePlay());
+    dispatch(setIsBuffering(true));
   };
 
   const SkeletonCard = () => (
@@ -130,17 +130,20 @@ export default function MyUploads() {
 
     if (activeTab === "tweets") {
       return tweets.length ? (
-        <div className="space-y-4">
-          {tweets.map((tweet) => (
-            <EditableTweetCard
-              key={tweet._id}
-              tweet={tweet}
-              onDelete={handleDeleteTweet}
-              onRefresh={fetchUploads}
-              isEditable={true}
-              onToggleLike={handleToggleTweetLike}
-            />
-          ))}
+        <div className="flex flex-wrap justify-center gap-6">
+          {tweets.map((tweet) =>
+            tweet?._id ? (
+              <div key={tweet._id} className="w-full sm:w-[48%] lg:w-[32%]">
+                <EditableTweetCard
+                  tweet={tweet}
+                  onDelete={handleDeleteTweet}
+                  onRefresh={fetchUploads}
+                  isEditable={true}
+                  onToggleLike={handleToggleTweetLike}
+                />
+              </div>
+            ) : null
+          )}
         </div>
       ) : (
         <p className="text-zinc-400 text-center">No tweets posted.</p>
@@ -149,45 +152,49 @@ export default function MyUploads() {
   };
 
   return (
-    <div className="p-4 max-w-6xl mx-auto">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-white">My Uploads</h2>
-        <button
-          onClick={fetchUploads}
-          className="bg-zinc-800 hover:bg-zinc-700 px-4 py-2 rounded text-sm text-white"
-        >
-          Refresh
-        </button>
-      </div>
-
-      {/* Tabs */}
-      <div className="flex gap-4 mb-6 border-b border-zinc-700">
-        {["videos", "tweets"].map((tab) => (
+    <div className="flex flex-1 min-h-screen bg-[#0f0f0f] text-white">
+      <main className="flex-1 px-6 sm:px-8 lg:px-10 py-8 overflow-auto max-w-[1600px] w-full mx-auto">
+        {/* Header */}
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-3xl sm:text-4xl font-bold text-white border-b-4 border-red-500 pb-3 w-fit">
+            My Uploads
+          </h2>
           <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`pb-2 px-4 text-sm font-medium ${
-              activeTab === tab
-                ? "text-white border-b-2 border-red-500"
-                : "text-zinc-400 hover:text-white"
-            }`}
+            onClick={fetchUploads}
+            className="bg-zinc-800 hover:bg-zinc-700 px-4 py-2 rounded text-sm text-white"
           >
-            {tab === "videos" ? "Videos" : "Tweets"}
+            Refresh
           </button>
-        ))}
-      </div>
+        </div>
 
-      {/* Content */}
-      {renderTabContent()}
+        {/* Tabs */}
+        <div className="flex gap-4 mb-6">
+          {["videos", "tweets"].map((t) => (
+            <button
+              key={t}
+              onClick={() => setActiveTab(t)}
+              className={`px-4 py-2 rounded font-medium transition ${
+                activeTab === t
+                  ? "bg-red-500 text-white"
+                  : "bg-zinc-700 text-zinc-300 hover:bg-zinc-600"
+              }`}
+            >
+              {t[0].toUpperCase() + t.slice(1)}
+            </button>
+          ))}
+        </div>
 
-      {/* Video Modal */}
-      {currentVideo && (
-        <VideoPlayerModal
-          video={currentVideo}
-          onClose={() => dispatch(setCurrentVideo(null))}
-        />
-      )}
+        {/* Content */}
+        {renderTabContent()}
+
+        {/* Video Modal */}
+        {currentVideo && (
+          <VideoPlayerModal
+            video={currentVideo}
+            onClose={() => dispatch(setCurrentVideo(null))}
+          />
+        )}
+      </main>
     </div>
   );
 }
