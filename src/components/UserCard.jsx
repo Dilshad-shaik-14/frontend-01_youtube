@@ -2,7 +2,12 @@ import React, { useState } from "react";
 import { toggleSubscription } from "../Index/api";
 import { toast } from "react-hot-toast";
 
-const UserCard = ({ user, isExpanded = false, onToggleExpand, showSubscribe = true }) => {
+const UserCard = ({
+  user,
+  isExpanded = false,
+  onToggleExpand,
+  showSubscribe = true,
+}) => {
   if (!user) return null;
 
   const [isSubscribed, setIsSubscribed] = useState(user?.isSubscribed || false);
@@ -24,20 +29,21 @@ const UserCard = ({ user, isExpanded = false, onToggleExpand, showSubscribe = tr
     <div
       onClick={() => !isExpanded && onToggleExpand?.()}
       className={`relative transition-all duration-300 ease-in-out overflow-hidden
-        rounded-xl border border-gray-200 dark:border-zinc-700 shadow-md w-full max-w-md mx-auto
+        rounded-2xl border border-base-200 shadow-lg w-full max-w-md mx-auto
         ${
           isExpanded
-            ? "bg-white dark:bg-zinc-900 cursor-default"
-            : "bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md hover:scale-[1.01] cursor-pointer"
+            ? "bg-base-100"
+            : "bg-base-100/80 backdrop-blur-md hover:scale-[1.01] cursor-pointer"
         }
       `}
+      data-theme="inherit"
     >
       {/* Cover Image */}
       <div className="relative h-32 sm:h-40 w-full">
         <img
           src={user?.coverImage?.trim() ? user.coverImage : "/default-cover.jpg"}
           alt="Cover"
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover rounded-t-2xl"
         />
 
         {/* Avatar */}
@@ -45,22 +51,22 @@ const UserCard = ({ user, isExpanded = false, onToggleExpand, showSubscribe = tr
           <img
             src={user?.avatar?.trim() ? user.avatar : "/default-avatar.png"}
             alt={user?.userName ?? "User"}
-            className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-full border-4 border-white dark:border-zinc-900 shadow-md"
+            className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-full border-4 border-base-100 shadow-md"
           />
         </div>
       </div>
 
       {/* Content */}
       <div className="pt-12 pb-4 px-4 sm:px-6">
-        <h3 className="font-semibold text-lg text-gray-900 dark:text-white">
+        <h3 className="font-semibold text-lg text-base-content">
           {user?.fullName ?? "Unnamed User"}
         </h3>
-        <p className="text-sm text-gray-500 dark:text-gray-400">@{user?.userName}</p>
+        <p className="text-sm text-base-content/70">@{user?.userName}</p>
 
         {isExpanded && (
-          <div className="mt-2 text-sm text-gray-600 dark:text-gray-300">
+          <div className="mt-2 text-sm text-base-content/80">
             <p>📧 {user?.email ?? "No email available"}</p>
-            <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
+            <p className="mt-1 text-xs text-base-content/60">
               Joined on:{" "}
               {user?.createdAt
                 ? new Date(user.createdAt).toLocaleDateString("en-US", {
@@ -74,29 +80,39 @@ const UserCard = ({ user, isExpanded = false, onToggleExpand, showSubscribe = tr
         )}
 
         {/* Buttons */}
-        <div className="mt-4 flex gap-3">
+        <div className="mt-6 flex gap-3">
           {showSubscribe && (
             <button
               onClick={handleSubscribe}
-              className={`py-2 px-5 text-sm font-semibold rounded-lg transition duration-300 ${
+              className={`btn btn-sm font-semibold rounded-full transition duration-300 ${
                 isSubscribed
-                  ? "bg-red-600 text-white hover:bg-red-700"
-                  : "bg-white text-black hover:bg-gray-100 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700"
+                  ? "bg-red-600 text-white hover:bg-red-700 border-none"
+                  : "bg-base-100 text-base-content hover:bg-base-200 border border-base-200"
               }`}
             >
               {isSubscribed ? "Unsubscribe" : "Subscribe"}
             </button>
           )}
 
-          {isExpanded && (
+          {isExpanded ? (
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 onToggleExpand?.();
               }}
-              className="text-sm text-gray-400 hover:text-red-500 underline"
+              className="btn btn-sm btn-outline rounded-full text-base-content/80 hover:text-red-500 border-base-200"
             >
               Collapse
+            </button>
+          ) : (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleExpand?.();
+              }}
+              className="btn btn-sm btn-outline rounded-full text-base-content/80 hover:text-red-500 border-base-200"
+            >
+              Expand
             </button>
           )}
         </div>

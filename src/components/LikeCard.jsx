@@ -26,55 +26,66 @@ const LikeCard = ({ item, type, onUnlike, onPlayVideo }) => {
       : content;
 
   return (
-    <div className="bg-zinc-900 p-4 rounded-lg border border-zinc-700 relative hover:shadow-lg transition">
+    <div className="card bg-base-100 border border-base-300 dark:bg-base-300 dark:border-base-700 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 relative overflow-hidden">
       {/* User Info */}
-      <div className="flex items-center gap-3 mb-2">
+      <div className="flex items-center gap-3 p-4">
         <img
           src={safeAvatar}
           alt={safeUserName}
-          className="w-8 h-8 rounded-full object-cover border border-zinc-600"
+          className="w-10 h-10 rounded-full object-cover border border-base-300 dark:border-base-700"
         />
-        <div>
-          <p className="text-sm font-semibold text-white">{safeFullName}</p>
-          <p className="text-xs text-zinc-400">@{safeUserName}</p>
-          <p className="text-xs text-zinc-500">
+        <div className="flex-1 min-w-0">
+          {/* Heading: Theme-aware contrast */}
+          <p className="text-base-content text-sm font-semibold truncate">
+            {safeFullName}
+          </p>
+          {/* Subtext */}
+          <p className="text-base-content/70 text-xs truncate">
+            @{safeUserName}
+          </p>
+          <p className="text-base-content/50 text-xs truncate">
             {new Date(createdAt).toLocaleString()}
           </p>
         </div>
+        <button
+          className="p-2 rounded-full hover:bg-base-200 dark:hover:bg-base-700 transition"
+          onClick={() => onUnlike(_id)}
+          title={`Unlike ${type}`}
+        >
+          <Heart size={16} className="text-pink-500" />
+        </button>
       </div>
 
       {/* Main Content */}
       {type === "videos" && (
-        <div className="mb-2 relative group cursor-pointer" onClick={onPlayVideo}>
+        <div className="relative cursor-pointer group" onClick={onPlayVideo}>
           <img
             src={thumbnail || "/default-thumbnail.jpg"}
             alt={title}
-            className="rounded-lg w-full h-auto max-h-48 object-cover mb-2 group-hover:brightness-75 transition duration-200"
+            className="w-full h-48 object-cover rounded-b-xl transition duration-200 group-hover:brightness-75"
           />
           <PlayCircle
             size={40}
             className="absolute inset-0 m-auto text-white opacity-0 group-hover:opacity-100 transition duration-200"
           />
-          <p className="text-sm font-medium text-white mt-1">{title}</p>
+          <div className="p-3">
+            <p className="text-base-content text-sm font-medium">{title}</p>
+          </div>
         </div>
       )}
 
       {type !== "videos" && (
-        <p className="text-sm text-white whitespace-pre-wrap">{preview}</p>
+        <div className="p-4">
+          <p className="text-base-content text-sm whitespace-pre-wrap">
+            {preview}
+          </p>
+        </div>
       )}
 
-      {/* Meta + Unlike */}
-      <div className="text-xs text-zinc-500 mt-2">
+      {/* Likes */}
+      <div className="px-4 py-2 text-xs text-base-content/70">
         ❤️ {totalLikes} {totalLikes === 1 ? "Like" : "Likes"}
       </div>
-
-      <button
-        className="absolute top-2 right-2 bg-zinc-800 p-2 rounded-full hover:bg-zinc-700 transition"
-        onClick={() => onUnlike(_id)}
-        title={`Unlike ${type}`}
-      >
-        <Heart size={16} className="text-pink-500" />
-      </button>
     </div>
   );
 };

@@ -62,109 +62,108 @@ const Upload = () => {
   };
 
   return (
-    <div className="max-w-xl mx-auto px-6 py-10 rounded-3xl bg-[#181818] shadow-xl border border-[#333] space-y-10">
-      {/* Tabs */}
-      <div className="flex items-center justify-center gap-4">
-        {["video", "tweet"].map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`flex items-center gap-2 px-5 py-2 rounded-full font-semibold transition-all text-sm
-              ${
-                activeTab === tab
-                  ? "bg-[#FF0000] text-white"
-                  : "bg-[#333] text-[#F9F9F9] hover:bg-[#444]"
-              }`}
-          >
-            {tab === "video" ? <Video size={18} /> : <MessageSquare size={18} />}
-            {tab === "video" ? "Upload Video" : "Post Tweet"}
-          </button>
-        ))}
-      </div>
-
-      {/* Form */}
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {activeTab === "video" ? (
-          <>
-            <input
-              name="title"
-              placeholder="🎬 Video Title"
-              required
-              value={videoData.title}
-              onChange={handleVideoChange}
-              className="w-full p-3 rounded-xl border bg-[#F9F9F9] text-black border-[#ccc] focus:outline-none focus:ring-2 focus:ring-[#FF0000]"
-            />
-
-            <textarea
-              name="description"
-              placeholder="📝 Description"
-              rows="3"
-              value={videoData.description}
-              onChange={handleVideoChange}
-              className="w-full p-3 rounded-xl border bg-[#F9F9F9] text-black border-[#ccc] focus:outline-none focus:ring-2 focus:ring-[#FF0000]"
-            />
-
-            <div className="space-y-3">
-              <label className="block text-sm font-medium text-[#ccc]">📹 Select Video File</label>
+    <div className="flex justify-center items-center min-h-screen bg-base-200 dark:bg-base-300 p-6">
+      <div className="w-full max-w-xl space-y-10 rounded-3xl bg-base-100 dark:bg-base-200 p-10 shadow-xl border border-base-300">
+        {/* Tabs */}
+  <div className="flex justify-center gap-4 mb-6">
+  {["video", "tweet"].map((tab) => (
+    <button
+      key={tab}
+      onClick={() => setActiveTab(tab)}
+      className={`flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-sm transition-all
+        ${activeTab === tab
+          ? "bg-red-500 text-white ring-2 ring-red-500"
+          : "bg-base-200 dark:bg-base-300 text-base-content hover:bg-red-500 hover:text-white"}`}
+    >
+      {tab === "video" ? <Video size={18} /> : <MessageSquare size={18} />}
+      {tab === "video" ? "Upload Video" : "Post Tweet"}
+    </button>
+  ))}
+</div>
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-6 flex flex-col items-center w-full">
+          {activeTab === "video" ? (
+            <>
               <input
-                type="file"
-                name="videoFile"
-                accept="video/*"
-                onChange={handleVideoChange}
+                name="title"
+                placeholder="🎬 Video Title"
                 required
-                className="block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#FF0000] file:text-white hover:file:bg-[#cc0000] transition"
+                value={videoData.title}
+                onChange={handleVideoChange}
+                className="input input-bordered w-full rounded-full text-base-content bg-base-100 dark:bg-base-200 focus:ring-red-500 focus:border-red-500"
               />
 
-              <label className="block text-sm font-medium text-[#ccc]">🖼️ Upload Thumbnail</label>
-              <input
-                type="file"
-                name="thumbnail"
-                accept="image/*"
+              <textarea
+                name="description"
+                placeholder="📝 Description"
+                rows="3"
+                value={videoData.description}
                 onChange={handleVideoChange}
-                required
-                className="block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#FF0000] file:text-white hover:file:bg-[#cc0000] transition"
+                className="textarea textarea-bordered w-full rounded-2xl text-base-content bg-base-100 dark:bg-base-200 focus:ring-red-500 focus:border-red-500"
               />
 
-              {previewThumb && (
-                <img
-                  src={previewThumb}
-                  alt="Thumbnail Preview"
-                  className="rounded-xl mt-2 w-full max-h-48 object-cover shadow"
+              <div className="space-y-3 w-full">
+                <label className="block text-sm font-medium text-base-content/70">📹 Select Video File</label>
+                <input
+                  type="file"
+                  name="videoFile"
+                  accept="video/*"
+                  onChange={handleVideoChange}
+                  required
+                  className="file-input file-input-bordered w-full file:bg-red-500 file:text-white file:border-none file:rounded-full hover:file:bg-red-600"
                 />
-              )}
-            </div>
-          </>
-        ) : (
-          <textarea
-            placeholder="💬 What's on your mind?"
-            value={tweetText}
-            onChange={(e) => setTweetText(e.target.value)}
-            rows="4"
-            maxLength="280"
-            required
-            className="w-full p-3 rounded-xl border bg-[#F9F9F9] text-black border-[#ccc] focus:outline-none focus:ring-2 focus:ring-[#FF0000]"
-          />
-        )}
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full py-3 rounded-xl bg-[#FF0000] text-white font-semibold flex justify-center items-center gap-2 shadow-md hover:opacity-90 transition-all"
-        >
-          {loading && <Loader2 className="animate-spin" size={18} />}
-          {loading ? "Processing..." : activeTab === "video" ? "Upload Video" : "Post Tweet"}
-        </button>
+                <label className="block text-sm font-medium text-base-content/70">🖼️ Upload Thumbnail</label>
+                <input
+                  type="file"
+                  name="thumbnail"
+                  accept="image/*"
+                  onChange={handleVideoChange}
+                  required
+                  className="file-input file-input-bordered w-full file:bg-red-500 file:text-white file:border-none file:rounded-full hover:file:bg-red-600"
+                />
 
-        {message && (
-          <p
-            className={`text-center text-sm mt-2 font-medium ${
-              message.startsWith("✅") ? "text-green-500 animate-pulse" : "text-red-500 animate-shake"
-            }`}
+                {previewThumb && (
+                  <img
+                    src={previewThumb}
+                    alt="Thumbnail Preview"
+                    className="rounded-2xl mt-2 w-full max-h-48 object-cover shadow"
+                  />
+                )}
+              </div>
+            </>
+          ) : (
+            <textarea
+              placeholder="💬 What's on your mind?"
+              value={tweetText}
+              onChange={(e) => setTweetText(e.target.value)}
+              rows="4"
+              maxLength="280"
+              required
+              className="textarea textarea-bordered w-full rounded-2xl text-base-content bg-base-100 dark:bg-base-200 focus:ring-red-500 focus:border-red-500"
+            />
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="btn bg-red-500 text-white btn-wide rounded-full flex justify-center items-center gap-2 hover:bg-red-600"
           >
-            {message}
-          </p>
-        )}
-      </form>
+            {loading && <Loader2 className="animate-spin" size={18} />}
+            {loading ? "Processing..." : activeTab === "video" ? "Upload Video" : "Post Tweet"}
+          </button>
+
+          {message && (
+            <p
+              className={`text-center text-sm mt-2 font-medium ${
+                message.startsWith("✅") ? "text-success animate-pulse" : "text-error animate-shake"
+              }`}
+            >
+              {message}
+            </p>
+          )}
+        </form>
+      </div>
     </div>
   );
 };

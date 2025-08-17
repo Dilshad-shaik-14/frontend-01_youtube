@@ -71,15 +71,8 @@ export default function MyUploads() {
     try {
       const updated = await toggleTweetLike(id);
       const updatedTweet = updated?.data?.tweet;
-
-      if (!updatedTweet) {
-        console.warn("No updated tweet returned from API");
-        return;
-      }
-
-      setTweets((prev) =>
-        prev.map((t) => (t._id === id ? updatedTweet : t))
-      );
+      if (!updatedTweet) return;
+      setTweets((prev) => prev.map((t) => (t._id === id ? updatedTweet : t)));
     } catch (err) {
       console.error("Failed to toggle like:", err);
     }
@@ -93,7 +86,7 @@ export default function MyUploads() {
   };
 
   const SkeletonCard = () => (
-    <div className="h-[180px] bg-zinc-800 rounded-lg animate-pulse" />
+    <div className="h-[180px] bg-base-300 rounded-lg animate-pulse" />
   );
 
   const renderTabContent = () => {
@@ -124,7 +117,7 @@ export default function MyUploads() {
           )}
         </div>
       ) : (
-        <p className="text-zinc-400 text-center">No videos uploaded.</p>
+        <p className="text-base-content/60 text-center">No videos uploaded.</p>
       );
     }
 
@@ -146,23 +139,20 @@ export default function MyUploads() {
           )}
         </div>
       ) : (
-        <p className="text-zinc-400 text-center">No tweets posted.</p>
+        <p className="text-base-content/60 text-center">No tweets posted.</p>
       );
     }
   };
 
   return (
-    <div className="flex flex-1 min-h-screen bg-[#0f0f0f] text-white">
+    <div className="flex flex-1 min-h-screen bg-base-200 dark:bg-base-300 text-base-content">
       <main className="flex-1 px-6 sm:px-8 lg:px-10 py-8 overflow-auto max-w-[1600px] w-full mx-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-3xl sm:text-4xl font-bold text-white border-b-4 border-red-500 pb-3 w-fit">
+          <h2 className="text-3xl sm:text-4xl font-bold border-b-4 border-red-600 pb-3 w-fit text-base-content">
             My Uploads
           </h2>
-          <button
-            onClick={fetchUploads}
-            className="bg-zinc-800 hover:bg-zinc-700 px-4 py-2 rounded text-sm text-white"
-          >
+          <button className="btn btn-sm btn-outline" onClick={fetchUploads}>
             Refresh
           </button>
         </div>
@@ -175,8 +165,8 @@ export default function MyUploads() {
               onClick={() => setActiveTab(t)}
               className={`px-4 py-2 rounded font-medium transition ${
                 activeTab === t
-                  ? "bg-red-500 text-white"
-                  : "bg-zinc-700 text-zinc-300 hover:bg-zinc-600"
+                  ? "bg-red-600 text-white"
+                  : "bg-base-300 dark:bg-base-200 text-base-content/70 hover:bg-red-100 dark:hover:bg-red-700"
               }`}
             >
               {t[0].toUpperCase() + t.slice(1)}

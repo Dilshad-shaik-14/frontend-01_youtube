@@ -1,7 +1,7 @@
+// utils/applyTheme.js
 export function applyTheme(theme) {
-  if (theme === "dark") {
-    document.documentElement.classList.add("dark");
-  } else {
-    document.documentElement.classList.remove("dark");
-  }
+  if (typeof window === "undefined") return;
+
+  const html = document.documentElement;
+  html.setAttribute("data-theme", theme); // DaisyUI uses this
 }

@@ -1,5 +1,5 @@
-// src/layout/Layout.jsx
-import React, { useEffect } from "react";
+// Layout.jsx (main refactor to match image layout)
+import React, { useEffect, useState } from "react";
 import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
 import { Outlet } from "react-router-dom";
@@ -10,30 +10,37 @@ import { applyTheme } from "../utils/applyTheme";
 export default function Layout() {
   const dispatch = useDispatch();
   const theme = useSelector((state) => state.auth.theme);
-
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
-    applyTheme(theme); 
+    applyTheme(theme);
   }, [theme]);
 
-  const handleToggleTheme = () => {
-    dispatch(toggleTheme());
-  };
-
   return (
-    <div className="flex h-screen bg-white dark:bg-black text-black dark:text-white transition-colors duration-300">
-      {/* Sidebar */}
-      <Sidebar isOpen={false} toggle={() => {}} />
+    <div
+      className={`flex flex-col h-screen transition-colors duration-300 ${
+        theme === "black"
+          ? "bg-[#000000] text-[#ffffff]"
+          : "bg-[#ffffff] text-[#000000]"
+      }`}
+    >
+      {/* Navbar fixed at top */}
+      <Navbar toggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
 
-      {/* Main Area */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <Navbar
-          toggleSidebar={() => {}}
-          darkMode={theme === "dark"}
-          toggleTheme={handleToggleTheme}
+      {/* Content below navbar */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* Sidebar */}
+        <Sidebar
+          isOpen={sidebarOpen}
+          toggleSidebar={() => setSidebarOpen(false)}
         />
 
-        <main className="flex-1 overflow-y-auto p-4 bg-white dark:bg-black transition-colors duration-300">
+        {/* Main Content */}
+        <main
+          className={`flex-1 overflow-y-auto p-4 transition-colors duration-300 ${
+            theme === "black" ? "bg-[#000000]" : "bg-[#ffffff]"
+          }`}
+        >
           <Outlet />
         </main>
       </div>

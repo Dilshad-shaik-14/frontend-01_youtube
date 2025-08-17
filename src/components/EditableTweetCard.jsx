@@ -14,13 +14,12 @@ export default function EditableTweetCard({ tweet, onRefresh, editable = false }
   const [showSuccess, setShowSuccess] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [likeCount, setLikeCount] = useState(tweet.likesCount || tweet.likes?.length || 0);
-const [liked, setLiked] = useState(tweet.isLikedByCurrentUser || false);
+  const [liked, setLiked] = useState(tweet.isLikedByCurrentUser || false);
 
-useEffect(() => {
-  setLiked(tweet.isLikedByCurrentUser ?? false);
-  setLikeCount(tweet.likesCount ?? tweet.likes?.length ?? 0);
-}, [tweet]);
-
+  useEffect(() => {
+    setLiked(tweet.isLikedByCurrentUser ?? false);
+    setLikeCount(tweet.likesCount ?? tweet.likes?.length ?? 0);
+  }, [tweet]);
 
   const handleUpdate = async () => {
     setUpdating(true);
@@ -37,31 +36,28 @@ useEffect(() => {
     setShowConfirm(false);
   };
 
-const handleLikeToggle = async () => {
-  try {
-    setLiked((prev) => !prev);
-    setLikeCount((prev) => liked ? prev - 1 : prev + 1);
-
-    const res = await toggleTweetLike(tweet._id);
-    const updated = res?.data?.tweet;
-
-    if (updated?.likes) {
-      setLiked(updated.isLikedByCurrentUser ?? updated.likes.includes(user._id));
-      setLikeCount(updated.likes.length);
+  const handleLikeToggle = async () => {
+    try {
+      setLiked((prev) => !prev);
+      setLikeCount((prev) => liked ? prev - 1 : prev + 1);
+      const res = await toggleTweetLike(tweet._id);
+      const updated = res?.data?.tweet;
+      if (updated?.likes) {
+        setLiked(updated.isLikedByCurrentUser ?? updated.likes.includes(user._id));
+        setLikeCount(updated.likes.length);
+      }
+    } catch (error) {
+      console.error("Error toggling like:", error);
+      setLiked((prev) => !prev);
+      setLikeCount((prev) => liked ? prev + 1 : prev - 1);
     }
-  } catch (error) {
-    console.error("Error toggling like:", error);
-    setLiked((prev) => !prev);
-    setLikeCount((prev) => liked ? prev + 1 : prev - 1);
-  }
-};
-
+  };
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="relative group rounded-xl shadow bg-white dark:bg-zinc-900 p-4 border border-zinc-200 dark:border-zinc-700"
+      className="relative group rounded-2xl shadow-lg bg-base-100 border border-base-200 p-4 transition-all duration-300"
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
@@ -69,13 +65,13 @@ const handleLikeToggle = async () => {
           <img
             src={tweet.owner.avatar || "/default-avatar.png"}
             alt={tweet.owner.userName || "User"}
-            className="w-10 h-10 rounded-full object-cover border border-zinc-700"
+            className="w-10 h-10 rounded-full object-cover border border-base-200"
           />
           <div>
-            <div className="font-semibold text-sm text-zinc-800 dark:text-white">
+            <div className="font-semibold text-sm text-base-content">
               {tweet.owner.fullName || "Unknown User"}
             </div>
-            <div className="text-xs text-zinc-500 dark:text-zinc-400">
+            <div className="text-xs text-zinc-500 block">
               @{tweet.owner.userName} · {dayjs(tweet.createdAt).fromNow()}
             </div>
           </div>
@@ -86,13 +82,13 @@ const handleLikeToggle = async () => {
           <div className="hidden group-hover:flex gap-2">
             <button
               onClick={() => setEditing(true)}
-              className="bg-white/80 dark:bg-zinc-800/80 p-1.5 rounded hover:text-blue-500 shadow"
+              className="bg-base-200/70 p-1.5 rounded hover:text-blue-500 shadow"
             >
               <Pencil size={16} />
             </button>
             <button
               onClick={() => setShowConfirm(true)}
-              className="bg-white/80 dark:bg-zinc-800/80 p-1.5 rounded hover:text-red-500 shadow"
+              className="bg-base-200/70 p-1.5 rounded hover:text-red-500 shadow"
             >
               <Trash2 size={16} />
             </button>
@@ -101,18 +97,18 @@ const handleLikeToggle = async () => {
       </div>
 
       {/* Content */}
-      <div className="text-sm text-zinc-700 dark:text-zinc-200 whitespace-pre-wrap leading-relaxed mb-3">
+      <div className="text-sm text-base-content whitespace-pre-wrap leading-relaxed mb-3">
         {tweet.content}
       </div>
 
       {/* Likes */}
       <div className="text-xs text-zinc-500 mt-2 relative">
-        <span className="text-xs text-zinc-500 dark:text-zinc-400 block mb-1">
+        <span className="block mb-1 text-base-content">
           ❤️ {likeCount} {likeCount === 1 ? "Like" : "Likes"}
         </span>
         <button
           onClick={handleLikeToggle}
-          className="absolute top-0 right-0 bg-zinc-800 p-2 rounded-full hover:bg-zinc-700 transition"
+          className="absolute top-0 right-0 bg-base-200/50 p-2 rounded-full hover:bg-base-200 transition"
           title="Toggle Like"
         >
           <Heart
@@ -150,11 +146,11 @@ const handleLikeToggle = async () => {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 p-6 rounded-xl max-w-md w-full relative shadow-xl"
+              className="bg-base-100 border border-base-200 p-6 rounded-2xl max-w-md w-full shadow-xl"
             >
               <button
                 onClick={() => setEditing(false)}
-                className="absolute top-3 right-3 text-zinc-400 hover:text-red-500"
+                className="absolute top-3 right-3 text-zinc-500 hover:text-red-500"
               >
                 <X size={20} />
               </button>
@@ -163,7 +159,7 @@ const handleLikeToggle = async () => {
                 value={editText}
                 onChange={(e) => setEditText(e.target.value)}
                 rows="5"
-                className="w-full mb-4 p-2 rounded bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-600 text-zinc-800 dark:text-white"
+                className="w-full mb-4 p-2 rounded-md border border-base-200 text-base-content bg-base-100"
                 placeholder="What's happening?"
               />
 
@@ -186,30 +182,30 @@ const handleLikeToggle = async () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center"
+            className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center px-4"
           >
             <motion.div
               initial={{ scale: 0.9 }}
               animate={{ scale: 1 }}
               exit={{ scale: 0.9 }}
-              className="bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 p-6 rounded-xl w-full max-w-sm text-center"
+              className="bg-base-100 border border-base-200 p-6 rounded-2xl w-full max-w-sm text-center shadow-lg"
             >
-              <h2 className="text-lg font-semibold text-zinc-800 dark:text-white mb-4">
+              <h2 className="text-lg font-semibold text-base-content mb-4">
                 Confirm Delete
               </h2>
-              <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-6">
+              <p className="text-sm text-zinc-500 mb-6">
                 Are you sure you want to delete this tweet?
               </p>
               <div className="flex justify-center gap-4">
                 <button
                   onClick={() => setShowConfirm(false)}
-                  className="px-4 py-1 rounded border dark:border-zinc-600 text-zinc-600 dark:text-white"
+                  className="px-4 py-1 rounded-md border border-base-200 text-base-content"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleDelete}
-                  className="px-4 py-1 rounded bg-red-600 text-white hover:bg-red-700"
+                  className="px-4 py-1 rounded-md bg-red-600 text-white hover:bg-red-700"
                 >
                   Delete
                 </button>

@@ -4,7 +4,7 @@ import { arrayMove, SortableContext, verticalListSortingStrategy } from "@dnd-ki
 import VideoPlayerModal from "../VideoPlayerModal";
 import SortableVideoRow from "./SortableVideoRow";
 import { removeVideoFromPlaylist } from "../../Index/api";
-import toast from "react-hot-toast"; // <-- added
+import toast from "react-hot-toast";
 
 const PlaylistVideoList = ({ videos = [], playlistId, refresh }) => {
   const [videoItems, setVideoItems] = useState([]);
@@ -21,17 +21,17 @@ const PlaylistVideoList = ({ videos = [], playlistId, refresh }) => {
     const updatedItems = videoItems.filter((v) => v?._id !== videoId);
     setVideoItems(updatedItems);
 
-    const toastId = toast.loading("Removing video..."); // <-- added
+    const toastId = toast.loading("Removing video...");
 
     try {
-      await removeVideoFromPlaylist(videoId, playlistId); // keep your API call
+      await removeVideoFromPlaylist(videoId, playlistId);
       await refresh?.();
       toast.dismiss(toastId);
-      toast.success("Video removed from playlist"); // <-- added
+      toast.success("Video removed from playlist");
     } catch (err) {
       setVideoItems(prevItems);
       toast.dismiss(toastId);
-      toast.error("Failed to remove video"); // <-- added
+      toast.error("Failed to remove video");
     }
   };
 
@@ -50,7 +50,7 @@ const PlaylistVideoList = ({ videos = [], playlistId, refresh }) => {
 
   if (!videoItems?.length) {
     return (
-      <div className="text-zinc-400 text-sm p-6 border border-dashed border-[#2a2a2a] rounded-lg">
+      <div className="card bg-base-100 dark:bg-base-200 border border-base-300 dark:border-base-700 text-base-content text-sm p-6 rounded-lg">
         This playlist doesn’t have any videos yet.
       </div>
     );

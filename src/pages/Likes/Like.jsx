@@ -14,19 +14,19 @@ function ConfirmModal({ isOpen, onConfirm, onCancel, message }) {
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center">
-      <div className="bg-zinc-900 text-white rounded-lg shadow-lg w-96 p-6 space-y-4">
-        <h3 className="text-lg font-semibold">Confirm Action</h3>
-        <p className="text-sm text-zinc-300">{message}</p>
+      <div className="bg-base-300 text-base-content rounded-lg shadow-lg w-96 p-6 space-y-4">
+        <h3 className="text-lg font-semibold text-base-content">Confirm Action</h3>
+        <p className="text-base-content/70 text-sm">{message}</p>
         <div className="flex justify-end gap-3 mt-4">
           <button
             onClick={onCancel}
-            className="px-4 py-2 rounded bg-zinc-700 hover:bg-zinc-600 text-sm"
+            className="px-4 py-2 rounded bg-base-200 hover:bg-base-100 text-sm"
           >
             Cancel
           </button>
           <button
             onClick={onConfirm}
-            className="px-4 py-2 rounded bg-red-600 hover:bg-red-500 text-sm font-semibold"
+            className="px-4 py-2 rounded bg-red-600 hover:bg-red-500 text-sm font-semibold text-white"
           >
             Yes, Unlike
           </button>
@@ -103,9 +103,9 @@ export default function Liked() {
         ? likedTweets
         : likedComments;
 
-    if (loading) return <p className="text-zinc-400">Loading...</p>;
+    if (loading) return <p className="text-base-content/50">Loading...</p>;
     if (data.length === 0)
-      return <p className="text-zinc-500">No liked {tab}.</p>;
+      return <p className="text-base-content/50">No liked {tab}.</p>;
 
     return (
       <div
@@ -116,18 +116,18 @@ export default function Liked() {
         }
       >
         {data.map((item) => (
-        <LikeCard
-        key={item._id}
-        item={item}
-        type={tab}
-        onUnlike={(id) => requestUnlike(id, tab.slice(0, -1))}
-        onPlayVideo={() => {
-          if (tab === "videos") {
-            setSelectedVideo(item);
-            setIsVideoModalOpen(true);
-            }
-          }}
-        />
+          <LikeCard
+            key={item._id}
+            item={item}
+            type={tab}
+            onUnlike={(id) => requestUnlike(id, tab.slice(0, -1))}
+            onPlayVideo={() => {
+              if (tab === "videos") {
+                setSelectedVideo(item);
+                setIsVideoModalOpen(true);
+              }
+            }}
+          />
         ))}
       </div>
     );
@@ -135,26 +135,28 @@ export default function Liked() {
 
   return (
     <div className="p-6">
-      <h2 className="text-3xl sm:text-4xl font-bold mb-6 text-white border-b-4 border-red-500 pb-2 w-fit">
-          Liked Content
-      </h2>
+      {/* Heading */}
+     <h2 className="text-3xl sm:text-4xl font-bold mb-6 text-base-content border-b-4 border-red-500 pb-2 w-fit">
+  Liked Content
+</h2>
 
-      {/* Tabs */}
-      <div className="flex gap-4 mb-6">
-        {["videos", "tweets", "comments"].map((t) => (
-          <button
-            key={t}
-            onClick={() => setTab(t)}
-            className={`px-4 py-2 rounded font-medium transition ${
-              tab === t
-                ? "bg-red-500 text-white"
-                : "bg-zinc-700 text-zinc-300 hover:bg-zinc-600"
-            }`}
-          >
-            {t[0].toUpperCase() + t.slice(1)}
-          </button>
-        ))}
-      </div>
+{/* Tabs */}
+<div className="flex gap-4 mb-6">
+  {["videos", "tweets", "comments"].map((t) => (
+    <button
+      key={t}
+      onClick={() => setTab(t)}
+      className={`px-4 py-2 rounded font-medium transition ${
+        tab === t
+          ? "bg-red-500 text-white"
+          : "bg-base-200 dark:bg-base-700 text-base-content/70 hover:bg-base-300 dark:hover:bg-base-600"
+      }`}
+    >
+      {t[0].toUpperCase() + t.slice(1)}
+    </button>
+  ))}
+</div>
+
 
       {renderContent()}
 
@@ -166,13 +168,12 @@ export default function Liked() {
       />
 
       <VideoPlayerModal
-      video={selectedVideo}
-      onClose={() => {
-      setIsVideoModalOpen(false);
-      setSelectedVideo(null); // ✅ This clears the modal
-  }}
-/>
-
+        video={selectedVideo}
+        onClose={() => {
+          setIsVideoModalOpen(false);
+          setSelectedVideo(null); // ✅ This clears the modal
+        }}
+      />
     </div>
   );
 }

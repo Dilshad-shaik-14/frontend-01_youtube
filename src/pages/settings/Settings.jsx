@@ -183,287 +183,254 @@ const Settings = () => {
   };
 
   return (
-    <div className="w-full h-full min-h-screen flex flex-col items-center justify-start bg-[#0f0f0f] text-white">
-      <div className="w-full max-w-3xl flex flex-col pt-4 px-2 md:px-0">
-        {/* Tabs Navigation */}
-        <nav className="flex flex-row border-b-4 border-[#FF0000] mb-0 space-x-2 bg-[#181818] rounded-t-xl">
-          {tabs.map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`px-4 py-3 font-medium rounded-t-lg transition-colors duration-200
-                ${activeTab === tab ? "bg-[#FF0000] text-white" : "bg-transparent text-gray-300 hover:bg-[#222]"}
-              `}
-            >
-              {tab}
-            </button>
-          ))}
-        </nav>
-
-        {/* Mobile Tabs */}
-        <nav className="md:hidden flex overflow-x-auto space-x-2 mb-0 mt-2">
-          {tabs.map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`flex-shrink-0 px-4 py-2 rounded-lg font-medium
-                ${activeTab === tab ? "bg-[#FF0000] text-white" : "bg-[#222] text-gray-300"}
-              `}
-            >
-              {tab}
-            </button>
-          ))}
-        </nav>
-
-        {/* Content Area */}
-        <div className="flex-1 flex flex-col justify-start items-stretch mt-0 pt-6">
-          {activeTab === "Account" && (
-            <motion.form
-              variants={cardVariants}
-              initial="hidden"
-              animate="visible"
-              onSubmit={handleUpdateAccountDetails}
-              className="space-y-4 bg-[#181818] p-6 rounded-b-xl shadow-lg"
-            >
-              <h3 className="text-xl font-semibold mb-2 text-[#FF0000]">Update Account</h3>
-              <input
-                type="text"
-                placeholder="Full Name"
-                className="w-full p-3 rounded-lg bg-[#121212] border border-[#FF0000] mb-2 text-white"
-                value={accountForm.fullName}
-                onChange={(e) =>
-                  setAccountForm({ ...accountForm, fullName: e.target.value })
-                }
-              />
-              <input
-                type="email"
-                placeholder="Email"
-                className="w-full p-3 rounded-lg bg-[#121212] border border-[#FF0000] mb-2 text-white"
-                value={accountForm.email}
-                onChange={(e) =>
-                  setAccountForm({ ...accountForm, email: e.target.value })
-                }
-              />
-              <motion.button
-                whileTap={{ scale: 0.95 }}
-                type="submit"
-                className="w-full bg-[#FF0000] hover:bg-[#e60000] p-3 rounded-lg font-semibold mt-2 text-white"
-              >
-                Update Account
-              </motion.button>
-            </motion.form>
-          )}
-
-          {activeTab === "Profile" && (
-            <>
-              {/* Avatar */}
-              <motion.form
-                variants={cardVariants}
-                initial="hidden"
-                animate="visible"
-                onSubmit={handleAvatarUpload}
-                className="space-y-4 bg-[#181818] p-6 rounded-b-xl shadow-lg mb-6"
-                encType="multipart/form-data"
-              >
-                <h3 className="text-xl font-semibold flex justify-between items-center mb-2 text-[#FF0000]">
-                  Update Avatar
-                  <button
-                    type="button"
-                    onClick={handleDeleteAvatar}
-                    className="text-sm bg-[#FF0000] hover:bg-[#e60000] px-3 py-1 rounded-lg font-semibold text-white"
-                  >
-                    Delete Avatar
-                  </button>
-                </h3>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleAvatarChange}
-                  className="w-full p-2 rounded-lg bg-[#121212] border border-[#FF0000] mb-2 text-white"
-                />
-                <motion.button
-                  whileTap={{ scale: 0.95 }}
-                  type="submit"
-                  className="w-full bg-[#FF0000] hover:bg-[#e60000] p-3 rounded-lg font-semibold mt-2 text-white"
-                >
-                  Upload Avatar
-                </motion.button>
-              </motion.form>
-
-              {/* Cover Image */}
-              <motion.form
-                variants={cardVariants}
-                initial="hidden"
-                animate="visible"
-                onSubmit={handleCoverImageUpload}
-                className="space-y-4 bg-[#181818] p-6 rounded-b-xl shadow-lg"
-                encType="multipart/form-data"
-              >
-                <h3 className="text-xl font-semibold flex justify-between items-center mb-2 text-[#FF0000]">
-                  Update Cover Image
-                  <button
-                    type="button"
-                    onClick={handleDeleteCoverImage}
-                    className="text-sm bg-[#FF0000] hover:bg-[#e60000] px-3 py-1 rounded-lg font-semibold text-white"
-                  >
-                    Delete Cover Image
-                  </button>
-                </h3>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleCoverImageChange}
-                  className="w-full p-2 rounded-lg bg-[#121212] border border-[#FF0000] mb-2 text-white"
-                />
-                <motion.button
-                  whileTap={{ scale: 0.95 }}
-                  type="submit"
-                  className="w-full bg-[#FF0000] hover:bg-[#e60000] p-3 rounded-lg font-semibold mt-2 text-white"
-                >
-                  Upload Cover Image
-                </motion.button>
-              </motion.form>
-            </>
-          )}
-
-          {activeTab === "Password" && (
-            <motion.form
-              variants={cardVariants}
-              initial="hidden"
-              animate="visible"
-              onSubmit={handleChangePassword}
-              className="space-y-4 bg-[#181818] p-6 rounded-b-xl shadow-lg"
-            >
-              <h3 className="text-xl font-semibold mb-2 text-[#FF0000]">Change Password</h3>
-              <input
-                type="password"
-                placeholder="Current Password"
-                className="w-full p-3 rounded-lg bg-[#121212] border border-[#FF0000] mb-2 text-white"
-                value={passwordForm.currentPassword}
-                onChange={(e) =>
-                  setPasswordForm({ ...passwordForm, currentPassword: e.target.value })
-                }
-              />
-              <input
-                type="password"
-                placeholder="New Password"
-                className="w-full p-3 rounded-lg bg-[#121212] border border-[#FF0000] mb-2 text-white"
-                value={passwordForm.newPassword}
-                onChange={(e) =>
-                  setPasswordForm({ ...passwordForm, newPassword: e.target.value })
-                }
-              />
-              <input
-                type="password"
-                placeholder="Confirm Password"
-                className="w-full p-3 rounded-lg bg-[#121212] border border-[#FF0000] mb-2 text-white"
-                value={passwordForm.confirmPassword}
-                onChange={(e) =>
-                  setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })
-                }
-              />
-              <motion.button
-                whileTap={{ scale: 0.95 }}
-                type="submit"
-                className="w-full bg-[#FF0000] hover:bg-[#e60000] p-3 rounded-lg font-semibold mt-2 text-white"
-              >
-                Change Password
-              </motion.button>
-            </motion.form>
-          )}
-
-          {activeTab === "Security" && (
-            <>
-              {/* Forgot Password */}
-              <motion.form
-                variants={cardVariants}
-                initial="hidden"
-                animate="visible"
-                onSubmit={handleForgotPassword}
-                className="space-y-4 bg-[#181818] p-6 rounded-b-xl shadow-lg mb-6"
-              >
-                <h3 className="text-xl font-semibold mb-2 text-[#FF0000]">Forgot Password</h3>
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  className="w-full p-3 rounded-lg bg-[#121212] border border-[#FF0000] mb-2 text-white"
-                  value={forgotEmail}
-                  onChange={(e) => setForgotEmail(e.target.value)}
-                />
-                <motion.button
-                  whileTap={{ scale: 0.95 }}
-                  type="submit"
-                  className="w-full bg-[#FF0000] hover:bg-[#e60000] p-3 rounded-lg font-semibold mt-2 text-white"
-                >
-                  Send Reset Email
-                </motion.button>
-              </motion.form>
-
-              {/* Reset Password */}
-              <motion.form
-                variants={cardVariants}
-                initial="hidden"
-                animate="visible"
-                onSubmit={handleNewPassword}
-                className="space-y-4 bg-[#181818] p-6 rounded-b-xl shadow-lg"
-              >
-                <h3 className="text-xl font-semibold mb-2 text-[#FF0000]">Set New Password</h3>
-                <input
-                  type="text"
-                  placeholder="Reset Token"
-                  className="w-full p-3 rounded-lg bg-[#121212] border border-[#FF0000] mb-2 text-white"
-                  value={resetForm.token}
-                  onChange={(e) =>
-                    setResetForm({ ...resetForm, token: e.target.value })
-                  }
-                />
-                <input
-                  type="password"
-                  placeholder="New Password"
-                  className="w-full p-3 rounded-lg bg-[#121212] border border-[#FF0000] mb-2 text-white"
-                  value={resetForm.password}
-                  onChange={(e) =>
-                    setResetForm({ ...resetForm, password: e.target.value })
-                  }
-                />
-                <input
-                  type="password"
-                  placeholder="Confirm Password"
-                  className="w-full p-3 rounded-lg bg-[#121212] border border-[#FF0000] mb-2 text-white"
-                  value={resetForm.confirmPassword}
-                  onChange={(e) =>
-                    setResetForm({ ...resetForm, confirmPassword: e.target.value })
-                  }
-                />
-                <motion.button
-                  whileTap={{ scale: 0.95 }}
-                  type="submit"
-                  className="w-full bg-[#FF0000] hover:bg-[#e60000] p-3 rounded-lg font-semibold mt-2 text-white"
-                >
-                  Update Password
-                </motion.button>
-              </motion.form>
-            </>
-          )}
-
-          {activeTab === "Logout" && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-center bg-[#181818] p-6 rounded-b-xl shadow-lg"
-            >
-              <motion.button
-                whileTap={{ scale: 0.95 }}
-                onClick={handleLogout}
-                className="bg-[#FF0000] hover:bg-[#e60000] p-3 rounded-lg font-semibold w-full mt-2 text-white"
-              >
-                Logout
-              </motion.button>
-            </motion.div>
-          )}
-        </div>
-      </div>
+<div className="w-full min-h-screen flex flex-col items-center justify-start bg-base-100 text-base-content">
+  <div className="w-full max-w-3xl flex flex-col pt-4 px-2 md:px-0 space-y-4">
+    {/* Tabs */}
+    <div className="tabs tabs-boxed mb-4">
+      {tabs.map((tab) => (
+        <a
+          key={tab}
+          className={`tab tab-lg cursor-pointer ${activeTab === tab ? "tab-active" : ""}`}
+          onClick={() => setActiveTab(tab)}
+        >
+          {tab}
+        </a>
+      ))}
     </div>
+
+    {/* Account Tab */}
+    {activeTab === "Account" && (
+      <motion.form
+        variants={cardVariants}
+        initial="hidden"
+        animate="visible"
+        onSubmit={handleUpdateAccountDetails}
+        className="card bg-base-200 p-6 rounded-lg shadow-md space-y-4"
+      >
+        <h3 className="text-xl font-bold text-error">Update Account</h3>
+        <input
+          type="text"
+          placeholder="Full Name"
+          className="input input-bordered w-full"
+          value={accountForm.fullName}
+          onChange={(e) => setAccountForm({ ...accountForm, fullName: e.target.value })}
+        />
+        <input
+          type="email"
+          placeholder="Email"
+          className="input input-bordered w-full"
+          value={accountForm.email}
+          onChange={(e) => setAccountForm({ ...accountForm, email: e.target.value })}
+        />
+        <motion.button
+          whileTap={{ scale: 0.95 }}
+          type="submit"
+          className="btn btn-error w-full"
+        >
+          Update Account
+        </motion.button>
+      </motion.form>
+    )}
+
+    {/* Profile Tab */}
+    {activeTab === "Profile" && (
+      <>
+        <motion.form
+          variants={cardVariants}
+          initial="hidden"
+          animate="visible"
+          onSubmit={handleAvatarUpload}
+          encType="multipart/form-data"
+          className="card bg-base-200 p-6 rounded-lg shadow-md space-y-4"
+        >
+          <h3 className="text-xl font-bold text-error flex justify-between items-center">
+            Update Avatar
+            <button
+              type="button"
+              className="btn btn-sm btn-error"
+              onClick={handleDeleteAvatar}
+            >
+              Delete
+            </button>
+          </h3>
+          <input
+            type="file"
+            accept="image/*"
+            className="file-input file-input-bordered w-full"
+            onChange={handleAvatarChange}
+          />
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            type="submit"
+            className="btn btn-error w-full"
+          >
+            Upload Avatar
+          </motion.button>
+        </motion.form>
+
+        <motion.form
+          variants={cardVariants}
+          initial="hidden"
+          animate="visible"
+          onSubmit={handleCoverImageUpload}
+          encType="multipart/form-data"
+          className="card bg-base-200 p-6 rounded-lg shadow-md space-y-4"
+        >
+          <h3 className="text-xl font-bold text-error flex justify-between items-center">
+            Update Cover Image
+            <button
+              type="button"
+              className="btn btn-sm btn-error"
+              onClick={handleDeleteCoverImage}
+            >
+              Delete
+            </button>
+          </h3>
+          <input
+            type="file"
+            accept="image/*"
+            className="file-input file-input-bordered w-full"
+            onChange={handleCoverImageChange}
+          />
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            type="submit"
+            className="btn btn-error w-full"
+          >
+            Upload Cover Image
+          </motion.button>
+        </motion.form>
+      </>
+    )}
+
+    {/* Password Tab */}
+    {activeTab === "Password" && (
+      <motion.form
+        variants={cardVariants}
+        initial="hidden"
+        animate="visible"
+        onSubmit={handleChangePassword}
+        className="card bg-base-200 p-6 rounded-lg shadow-md space-y-4"
+      >
+        <h3 className="text-xl font-bold text-error">Change Password</h3>
+        <input
+          type="password"
+          placeholder="Current Password"
+          className="input input-bordered w-full"
+          value={passwordForm.currentPassword}
+          onChange={(e) => setPasswordForm({ ...passwordForm, currentPassword: e.target.value })}
+        />
+        <input
+          type="password"
+          placeholder="New Password"
+          className="input input-bordered w-full"
+          value={passwordForm.newPassword}
+          onChange={(e) => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
+        />
+        <input
+          type="password"
+          placeholder="Confirm Password"
+          className="input input-bordered w-full"
+          value={passwordForm.confirmPassword}
+          onChange={(e) => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
+        />
+        <motion.button
+          whileTap={{ scale: 0.95 }}
+          type="submit"
+          className="btn btn-error w-full"
+        >
+          Change Password
+        </motion.button>
+      </motion.form>
+    )}
+
+    {/* Security Tab */}
+    {activeTab === "Security" && (
+      <>
+        <motion.form
+          variants={cardVariants}
+          initial="hidden"
+          animate="visible"
+          onSubmit={handleForgotPassword}
+          className="card bg-base-200 p-6 rounded-lg shadow-md space-y-4"
+        >
+          <h3 className="text-xl font-bold text-error">Forgot Password</h3>
+          <input
+            type="email"
+            placeholder="Enter your email"
+            className="input input-bordered w-full"
+            value={forgotEmail}
+            onChange={(e) => setForgotEmail(e.target.value)}
+          />
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            type="submit"
+            className="btn btn-error w-full"
+          >
+            Send Reset Email
+          </motion.button>
+        </motion.form>
+
+        <motion.form
+          variants={cardVariants}
+          initial="hidden"
+          animate="visible"
+          onSubmit={handleNewPassword}
+          className="card bg-base-200 p-6 rounded-lg shadow-md space-y-4"
+        >
+          <h3 className="text-xl font-bold text-error">Set New Password</h3>
+          <input
+            type="text"
+            placeholder="Reset Token"
+            className="input input-bordered w-full"
+            value={resetForm.token}
+            onChange={(e) => setResetForm({ ...resetForm, token: e.target.value })}
+          />
+          <input
+            type="password"
+            placeholder="New Password"
+            className="input input-bordered w-full"
+            value={resetForm.password}
+            onChange={(e) => setResetForm({ ...resetForm, password: e.target.value })}
+          />
+          <input
+            type="password"
+            placeholder="Confirm Password"
+            className="input input-bordered w-full"
+            value={resetForm.confirmPassword}
+            onChange={(e) => setResetForm({ ...resetForm, confirmPassword: e.target.value })}
+          />
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            type="submit"
+            className="btn btn-error w-full"
+          >
+            Update Password
+          </motion.button>
+        </motion.form>
+      </>
+    )}
+
+    {/* Logout Tab */}
+    {activeTab === "Logout" && (
+      <motion.div
+        variants={cardVariants}
+        initial="hidden"
+        animate="visible"
+        className="card bg-base-200 p-6 rounded-lg shadow-md text-center"
+      >
+        <motion.button
+          whileTap={{ scale: 0.95 }}
+          onClick={handleLogout}
+          className="btn btn-error w-full"
+        >
+          Logout
+        </motion.button>
+      </motion.div>
+    )}
+  </div>
+</div>
+
   );
 };
 

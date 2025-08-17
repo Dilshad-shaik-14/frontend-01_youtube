@@ -16,7 +16,7 @@ export default function SortableVideoRow({ video, id, playlistId, onRemove, onVi
     <div
       ref={setNodeRef}
       style={style}
-      className="group relative flex items-start gap-4 p-3 rounded-lg hover:bg-[#1b1b1b] border border-transparent hover:border-[#2a2a2a] transition"
+      className="card bg-base-100 border border-transparent group relative flex items-start gap-4 p-3 rounded-lg transition-colors hover:bg-base-200"
     >
       {/* Drag handle */}
       <button
@@ -24,16 +24,32 @@ export default function SortableVideoRow({ video, id, playlistId, onRemove, onVi
         {...listeners}
         onClick={(e) => e.stopPropagation()}
         title="Drag to reorder"
-        className="absolute left-2 top-2 px-2 py-1 rounded bg-[#262626] text-zinc-300 cursor-grab active:cursor-grabbing"
+        className="absolute left-2 top-2 px-2 py-1 rounded bg-base-300 text-base-content cursor-grab active:cursor-grabbing z-20"
+        aria-label="Drag handle"
       >
         ⠿
       </button>
 
-      {/* Thumbnail */}
+      {/* Remove button at top-right of card */}
       <button
-        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          if (window.confirm("Remove this video from the playlist?")) {
+            onRemove(video._id, playlistId);
+          }
+        }}
+        title="Remove video"
+        aria-label="Remove video"
+        className="absolute right-2 top-2 p-1 rounded-full bg-base-300 text-base-content hover:text-error z-30 shadow-sm"
+      >
+        <XCircle size={20} />
+      </button>
+
+      {/* Thumbnail */}
+      <div
+        className="flex-shrink-0 w-[160px] md:w-[200px] aspect-video overflow-hidden rounded-md bg-black cursor-pointer"
         onClick={() => onVideoClick(video)}
-        className="flex-shrink-0 w-[160px] md:w-[200px] aspect-video overflow-hidden rounded-md bg-black"
+        aria-label={video?.title || "Open video"}
       >
         <img
           src={video?.thumbnail || "/default-thumbnail.jpg"}
@@ -41,47 +57,36 @@ export default function SortableVideoRow({ video, id, playlistId, onRemove, onVi
           className="w-full h-full object-cover"
           loading="lazy"
         />
+
+        {/* Duration badge */}
         {video?.duration && (
-          <span className="absolute right-1 bottom-1 text-[11px] md:text-xs px-1.5 py-0.5 rounded bg-black/80 text-white">
+          <span className="absolute right-2 bottom-2 text-[11px] md:text-xs px-1.5 py-0.5 rounded bg-black/80 text-white z-10">
             {video.duration}
           </span>
         )}
-      </button>
+      </div>
 
-      {/* Video Info */}
+      {/* Video Info beside thumbnail */}
       <div className="flex-1 flex flex-col justify-between min-w-0">
         <div className="flex flex-col gap-1">
           <h3
-            className="text-sm md:text-base font-medium text-white hover:underline cursor-pointer line-clamp-2"
+            className="text-sm md:text-base font-medium text-base-content hover:text-error hover:underline cursor-pointer line-clamp-2 transition-colors"
             onClick={() => onVideoClick(video)}
+            title={video?.title}
           >
             {video?.title || "Untitled Video"}
           </h3>
           {video?.description && (
-            <p className="text-xs md:text-sm text-zinc-400 line-clamp-2">
+            <p className="text-xs md:text-sm text-base-content/70 line-clamp-2">
               {video.description}
             </p>
           )}
           {video?.channelName && (
-            <span className="text-xs md:text-sm text-zinc-300 font-medium">
+            <span className="text-xs md:text-sm text-base-content/80 font-medium">
               {video.channelName}
             </span>
           )}
         </div>
-
-        {/* Remove button */}
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            if (window.confirm("Remove this video from the playlist?")) {
-              onRemove(video._id, playlistId);
-            }
-          }}
-          title="Remove video"
-          className="absolute right-3 top-3 p-1 rounded-full bg-[#262626] text-zinc-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition"
-        >
-          <XCircle size={20} />
-        </button>
       </div>
     </div>
   );

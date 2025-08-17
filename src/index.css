@@ -1,6 +1,12 @@
-@import "tailwindcss/preflight";
-@import "tailwindcss/utilities";
+@import "tailwindcss";
 
+@plugin "daisyui" {
+  themes: light --default, black --prefersdark;
+}
+
+@plugin "tailwind-scrollbar";
+
+/* ✅ Custom animation */
 @keyframes shimmer {
   0% { transform: translateX(-100%); }
   100% { transform: translateX(100%); }
@@ -19,4 +25,3 @@
   background: linear-gradient(to right, transparent, rgba(255,255,255,0.4), transparent);
   animation: shimmer 1.5s infinite;
 }
-

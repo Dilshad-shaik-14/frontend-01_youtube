@@ -1,4 +1,5 @@
-import { Moon, Sun, Video } from "lucide-react";
+// Navbar.jsx
+import { Moon, Sun, Video, Search } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleTheme } from "../utils/authSlice";
@@ -19,70 +20,82 @@ export default function Navbar({ toggleSidebar }) {
   };
 
   return (
-    <header className="sticky top-0 z-50 flex items-center justify-between px-4 py-3 bg-white/90 dark:bg-black backdrop-blur-xl shadow-md border-b border-zinc-200 dark:border-zinc-800 transition-colors duration-300">
-      
-      {/* Left Section - Logo + Sidebar Toggle */}
-      <div className="flex items-center gap-4">
-        {/* Sidebar Toggle Button for Mobile */}
-        <button
-          className="md:hidden text-zinc-800 dark:text-white text-2xl hover:scale-110 transition-transform duration-200 active:scale-95"
-          onClick={toggleSidebar}
-        >
-          ☰
-        </button>
-
-        {/* Logo */}
-        <Link
-          to="/"
-          className="flex items-center gap-2 font-bold text-lg text-zinc-900 dark:text-white hover:opacity-90 transition-all"
-        >
-          <Video size={22} className="text-[#FF0000]" />
-          MyTube
-        </Link>
-      </div>
-
-      {/* Center Section - Search Input */}
-      <form
-        onSubmit={handleSearch}
-        className="flex-grow max-w-md mx-4 hidden sm:flex"
+<header className="sticky top-0 z-50 bg-base-100/95 backdrop-blur-lg shadow-md border-b border-base-300 transition-colors duration-300">
+  <div className="flex items-center justify-between px-8 lg:px-14 h-20">
+    
+    {/* Left Section */}
+    <div className="flex items-center gap-5">
+      <button
+        className="btn btn-ghost md:hidden text-2xl p-2 rounded-xl hover:bg-red-600/20 transition"
+        onClick={toggleSidebar}
+        aria-label="Toggle Sidebar"
       >
-        <input
-          type="text"
-          placeholder="Search"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full px-4 py-2 rounded-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 focus:ring-2 focus:ring-[#FF0000] text-sm text-zinc-800 dark:text-white placeholder:text-zinc-500 dark:placeholder:text-zinc-400 shadow-inner transition-all"
-        />
-      </form>
+        ☰
+      </button>
+      <Link
+        to="/"
+        className="flex items-center gap-3 font-extrabold text-2xl hover:text-red-600 transition"
+      >
+        <Video size={28} className="text-red-500 drop-shadow-sm" />
+        <span className="hidden sm:inline tracking-wide">MyTube</span>
+      </Link>
+    </div>
 
-      {/* Right Section - Theme Toggle + Avatar */}
-      <div className="flex items-center gap-4">
-        {/* Theme Switcher */}
-        <button
-          onClick={() => dispatch(toggleTheme())}
-          className="p-2 rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-700 transition duration-300 active:scale-95"
+    {/* Center - Search */}
+    <form
+      onSubmit={handleSearch}
+      className="hidden sm:flex flex-1 max-w-3xl mx-10"
+    >
+      <input
+        type="text"
+        placeholder="Search for videos, channels..."
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        className="input input-bordered w-full h-12 rounded-full px-5 text-base shadow-md focus:ring-2 focus:ring-red-500 transition"
+      />
+    </form>
+
+    {/* Right Section */}
+    <div className="flex items-center gap-4 sm:gap-7">
+      <button
+        onClick={() => {
+          const el = document.getElementById("mobile-search");
+          if (el) el.classList.toggle("hidden");
+        }}
+        className="btn btn-ghost sm:hidden p-2 rounded-full hover:bg-red-600/20"
+        aria-label="Search"
+      >
+        <Search className="w-6 h-6 text-red-500" />
+      </button>
+
+      <button
+        onClick={() => dispatch(toggleTheme())}
+        className="btn btn-ghost btn-circle hover:bg-red-600/20 transition"
+      >
+        {theme === "black" ? (
+          <Sun size={22} className="text-yellow-400" />
+        ) : (
+          <Moon size={22} className="text-red-500" />
+        )}
+      </button>
+
+      {currentUser && (
+        <Link
+          to={`/profile/${currentUser._id}`}
+          className="avatar hover:scale-110 hover:ring-2 hover:ring-red-500 transition duration-200"
         >
-          {theme === "dark" ? (
-            <Sun size={18} className="text-yellow-400" />
-          ) : (
-            <Moon size={18} className="text-zinc-700" />
-          )}
-        </button>
-
-        {/* Avatar */}
-        {currentUser && (
-          <Link
-            to={`/profile/${currentUser._id}`}
-            className="hover:scale-105 transition-transform duration-200"
-          >
+          <div className="w-11 h-11 rounded-full ring ring-base-300 ring-offset-base-100 ring-offset-2">
             <img
               src={currentUser.avatar || "/default-avatar.png"}
               alt={currentUser.userName || "User"}
-              className="w-9 h-9 rounded-full object-cover border-2 border-[#FF0000] shadow-sm"
+              className="rounded-full"
             />
-          </Link>
-        )}
-      </div>
-    </header>
+          </div>
+        </Link>
+      )}
+    </div>
+  </div>
+</header>
+
   );
 }

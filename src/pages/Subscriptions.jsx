@@ -42,24 +42,25 @@ const Subscriptions = () => {
 
   if (!user?._id) {
     return (
-      <div className="text-white p-6 text-lg">
+      <div className="p-6 text-lg text-base-content">
         Please log in to view subscriptions.
       </div>
     );
   }
 
   return (
-    <div className="flex flex-1 min-h-screen bg-[#0f0f0f] text-white">
+    <div className="flex flex-1 min-h-screen bg-base-200 dark:bg-base-300 text-base-content">
       <main className="flex-1 px-6 sm:px-8 lg:px-10 py-8 overflow-auto max-w-[1600px] w-full mx-auto space-y-12">
+        
         {/* My Subscriptions */}
         <section>
-          <h2 className="text-4xl font-bold text-white mb-6 border-b-4 border-red-500 pb-2 w-fit">
+          <h2 className="text-4xl font-bold mb-6 border-b-4 border-red-500 pb-2 w-fit text-base-content">
             My Subscriptions
           </h2>
           {loading ? (
-            <p className="text-zinc-400">Loading subscriptions...</p>
+            <p className="text-base-content/60">Loading subscriptions...</p>
           ) : error ? (
-            <p className="text-red-500">{error}</p>
+            <p className="text-error">{error}</p>
           ) : subscriptions.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
               {subscriptions
@@ -81,19 +82,21 @@ const Subscriptions = () => {
                 ))}
             </div>
           ) : (
-            <p className="text-zinc-500">You haven’t subscribed to any channels.</p>
+            <p className="text-base-content/60">
+              You haven’t subscribed to any channels.
+            </p>
           )}
         </section>
 
         {/* My Subscribers */}
         <section>
-          <h2 className="text-4xl font-bold text-white mb-6 border-b-4 border-red-500 pb-2 w-fit">
+          <h2 className="text-4xl font-bold mb-6 border-b-4 border-red-500 pb-2 w-fit text-base-content">
             My Subscribers
           </h2>
           {loading ? (
-            <p className="text-zinc-400">Loading subscribers...</p>
+            <p className="text-base-content/60">Loading subscribers...</p>
           ) : error ? (
-            <p className="text-red-500">{error}</p>
+            <p className="text-error">{error}</p>
           ) : subscribers.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
               {subscribers
@@ -115,7 +118,9 @@ const Subscriptions = () => {
                 ))}
             </div>
           ) : (
-            <p className="text-zinc-500">No one has subscribed to your channel yet.</p>
+            <p className="text-base-content/60">
+              No one has subscribed to your channel yet.
+            </p>
           )}
         </section>
       </main>

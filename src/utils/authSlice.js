@@ -3,7 +3,7 @@ import { applyTheme } from "./applyTheme";
 
 const initialTheme =
   localStorage.getItem("theme") ||
-  (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  (window.matchMedia("(prefers-color-scheme: dark)").matches ? "black" : "light");
 
 const initialState = {
   currentUser: null,
@@ -12,7 +12,6 @@ const initialState = {
   error: null,
   token: localStorage.getItem("token") || null,
   theme: initialTheme,
-
   loadingResetPassword: false,
   resetPasswordError: null,
   resetPasswordSuccess: null,
@@ -25,7 +24,6 @@ const authSlice = createSlice({
     setLoading: (state, action) => {
       state.loading = action.payload;
     },
-
     setError: (state, action) => {
       state.error = action.payload;
     },
@@ -82,29 +80,27 @@ const authSlice = createSlice({
         state.currentUser = JSON.parse(storedUser);
         state.token = token;
         state.isAuthenticated = true;
-        applyTheme(state.theme);
       }
     },
 
     toggleTheme: (state) => {
-      const newTheme = state.theme === "dark" ? "light" : "dark";
+      const newTheme = state.theme === "black" ? "light" : "black";
       state.theme = newTheme;
-      localStorage.setItem("theme", newTheme); // <-- persist theme
+      localStorage.setItem("theme", newTheme);
+
+      // ✅ Use helper for DaisyUI
       applyTheme(newTheme);
     },
-    
 
-    // Added reset password reducers
+    // Reset password reducers
     setResetPasswordLoading: (state, action) => {
       state.loadingResetPassword = action.payload;
     },
-
     setResetPasswordSuccess: (state, action) => {
       state.resetPasswordSuccess = action.payload;
       state.resetPasswordError = null;
       state.loadingResetPassword = false;
     },
-
     setResetPasswordError: (state, action) => {
       state.resetPasswordError = action.payload;
       state.resetPasswordSuccess = null;

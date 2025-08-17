@@ -79,41 +79,55 @@ export default function ChannelPage() {
             : "N/A"}
         </p>
       </div>
-      {/* Tweets Section */}
-{channel.tweets?.length > 0 && (
-  <div className="max-w-6xl w-full mx-auto px-6 mt-8">
-    <h2 className="text-2xl font-bold mb-4">Tweets</h2>
-    <div className="space-y-4">
-      {channel.tweets.map((tweet) => (
-        <div key={tweet._id} className="p-4 bg-[#1f1f1f] rounded-lg">
-          <p>{tweet.content}</p>
-        </div>
-      ))}
-    </div>
-  </div>
-)}
 
-{/* Videos Section */}
-{channel.videos?.length > 0 && (
-  <div className="max-w-6xl w-full mx-auto px-6 mt-8">
-    <h2 className="text-2xl font-bold mb-4">Videos</h2>
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-      {channel.videos.map((video) => (
-        <div key={video._id} className="bg-[#1f1f1f] rounded-lg overflow-hidden">
-          <video
-            src={video.videoFile}
-            controls
-            className="w-full h-48 object-cover"
-          />
-          <div className="p-4">
-            <h3 className="font-semibold">{video.title}</h3>
+      {/* Tweets Section */}
+      {channel.tweets?.length > 0 && (
+        <div className="max-w-6xl w-full mx-auto px-6 mt-10">
+          <h2 className="text-2xl font-bold mb-4">Tweets</h2>
+          <div className="space-y-4">
+            {channel.tweets.map((tweet) => (
+              <div
+                key={tweet._id}
+                className="p-4 bg-[#1f1f1f] rounded-xl shadow-md hover:bg-[#2a2a2a] transition"
+              >
+                <p className="text-gray-200">{tweet.content}</p>
+                <p className="text-xs text-gray-500 mt-2">
+                  {new Date(tweet.createdAt).toLocaleString()}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
-      ))}
-    </div>
-  </div>
-)}
+      )}
 
+      {/* Videos Section */}
+      {channel.videos?.length > 0 && (
+        <div className="max-w-6xl w-full mx-auto px-6 mt-12 mb-10">
+          <h2 className="text-2xl font-bold mb-4">Videos</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {channel.videos.map((video) => (
+              <div
+                key={video._id}
+                className="bg-[#1f1f1f] rounded-xl overflow-hidden shadow-md hover:scale-[1.02] transition"
+              >
+                <video
+                  src={video.videoFile}
+                  controls
+                  className="w-full h-48 object-cover"
+                />
+                <div className="p-4">
+                  <h3 className="font-semibold text-white truncate">
+                    {video.title}
+                  </h3>
+                  <p className="text-xs text-gray-400 mt-1">
+                    {new Date(video.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

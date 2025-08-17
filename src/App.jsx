@@ -8,22 +8,16 @@ import {
   logoutSuccess,
 } from "./utils/authSlice";
 import { currentUser as fetchCurrentUser } from "./Index/api";
-import { applyTheme } from "./utils/applyTheme";
 
 const App = () => {
   const dispatch = useDispatch();
+  const { token } = useSelector((state) => state.auth);
   const [appReady, setAppReady] = useState(false);
-  const theme = useSelector((state) => state.auth.theme);
-
-  useEffect(() => {
-    applyTheme(theme);
-  }, [theme]);
 
   useEffect(() => {
     const initAuth = async () => {
       dispatch(loadFromStorage());
-      // use the same key as the axios interceptor and authSlice
-      const token = localStorage.getItem("token");
+
       if (!token) {
         setAppReady(true);
         return;
@@ -41,12 +35,12 @@ const App = () => {
     };
 
     initAuth();
-  }, [dispatch]);
+  }, [dispatch, token]);
 
   if (!appReady) {
     return (
-      <div className="h-screen flex items-center justify-center text-zinc-500 dark:text-zinc-400">
-        Checking authentication...
+      <div className="h-screen flex items-center justify-center">
+        <span className="loading loading-spinner loading-lg text-primary"></span>
       </div>
     );
   }

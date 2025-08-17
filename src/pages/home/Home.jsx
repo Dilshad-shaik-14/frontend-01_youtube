@@ -19,7 +19,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [expandedUserId, setExpandedUserId] = useState(null);
-  const [activeVideo, setActiveVideo] = useState(null); // for centered video player
+  const [activeVideo, setActiveVideo] = useState(null);
 
   const user = useSelector((state) => state.auth.currentUser);
 
@@ -46,51 +46,65 @@ export default function Home() {
     if (user?._id) fetchContent();
   }, [user?._id]);
 
-  const SectionWrapper = ({ title, children }) => (
-    <section className="bg-white dark:bg-zinc-900/90 backdrop-blur-lg rounded-3xl px-6 py-8 shadow-2xl border border-zinc-200 dark:border-zinc-700 w-full space-y-6 transition-all duration-300 hover:shadow-3xl">
-      <h2 className="text-2xl sm:text-3xl font-bold text-zinc-900 dark:text-white tracking-tight mb-4 border-b-2 border-red-600 dark:border-red-500 pb-2 w-fit">
-        {title}
-      </h2>
-      {children}
+  // Section wrapper with improved responsive layout
+  const SectionWrapper = ({ title, children, className = "" }) => (
+    <section
+      className={
+        "card bg-base-200 shadow-xl border border-base-300 w-full p-6 sm:p-8 space-y-6 transition-all duration-300 hover:shadow-2xl rounded-2xl flex flex-col " +
+        className
+      }
+    >
+   <h2 className="card-title text-2xl sm:text-3xl font-bold text-base-content border-b-2 border-red-500 pb-2 w-fit">
+      {title}
+    </h2>
+
+
+      <div className="flex-1 flex flex-col justify-center">{children}</div>
     </section>
   );
 
   return (
-    <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-16 bg-gray-50 dark:bg-zinc-900">
+    <div className="max-w-screen-2xl mx-auto px-2 sm:px-6 lg:px-8 py-10 space-y-12 bg-base-100 text-base-content transition-colors duration-300 min-h-[calc(100vh-80px)] flex flex-col">
       {error && (
-        <div className="text-red-600 bg-red-100 p-4 rounded-xl shadow-lg border border-red-200 text-center font-semibold">
-          {error}
+        <div className="alert alert-error shadow-lg">
+          <span>{error}</span>
         </div>
       )}
 
       {/* Videos Section */}
       <SectionWrapper title="Recommended Videos">
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(6)].map((_, i) => (
-              <SkeletonVideoCard key={i} className="h-80" />
+              <div key={i} className="overflow-hidden rounded-xl h-80 flex">
+                <SkeletonVideoCard className="h-full w-full rounded-xl" />
+              </div>
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {videos.map((video) => (
               <EditableVideoCard
                 key={video._id}
                 video={video}
                 editable={false}
-                className="relative overflow-hidden rounded-xl shadow-lg border border-zinc-300 dark:border-zinc-700 hover:shadow-2xl transition-transform duration-300 hover:scale-105 h-80 bg-white dark:bg-zinc-800 group cursor-pointer"
+                className="card bg-base-100 border border-base-300 shadow-md hover:shadow-lg transition-transform duration-300 hover:scale-105 h-80 cursor-pointer overflow-hidden rounded-xl relative flex flex-col"
                 onClick={() => setActiveVideo(video)}
               >
-                <span className="absolute bottom-2 right-2 bg-black/80 text-white text-sm sm:text-base px-2 py-1 rounded-md font-semibold">
+                {/* video duration badge */}
+                <span className="absolute bottom-2 right-2 bg-base-300/80 text-base-content text-sm sm:text-base px-2 py-1 rounded-md font-semibold z-10">
                   {video.duration || "0:00"}
                 </span>
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 via-transparent to-transparent p-4">
-                  <h3 className="text-white font-bold text-base sm:text-lg line-clamp-2">
+                {/* bottom gradient/text block */}
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-base-300/90 via-transparent to-transparent p-4">
+                  <h3 className="font-bold text-base sm:text-lg line-clamp-2 text-base-content">
                     {video.title || "Untitled Video"}
                   </h3>
-                  <p className="text-gray-300 text-xs sm:text-sm">
+                  <p className="text-base-content/70 text-xs sm:text-sm">
                     {video.channelName || "Unknown Channel"} •{" "}
-                    {video.views ? `${video.views} views` : "0 views"}
+                    {video.views
+                      ? `${video.views} views`
+                      : "0 views"}
                   </p>
                 </div>
               </EditableVideoCard>
@@ -104,7 +118,9 @@ export default function Home() {
         {loading ? (
           <div className="space-y-4">
             {[...Array(4)].map((_, i) => (
-              <SkeletonTweetCard key={i} className="h-60" />
+              <div key={i} className="overflow-hidden rounded-xl h-60 flex">
+                <SkeletonTweetCard className="h-full w-full rounded-xl" />
+              </div>
             ))}
           </div>
         ) : (
@@ -119,19 +135,21 @@ export default function Home() {
                     setTweets(res?.data?.tweets || [])
                   );
                 }}
-                className="p-6 bg-white dark:bg-zinc-800 rounded-xl shadow-lg border border-zinc-300 dark:border-zinc-700 hover:shadow-2xl transition-shadow duration-300 text-base sm:text-lg"
+                className="card bg-base-100 border border-base-300 shadow-md hover:shadow-lg p-6 text-base sm:text-lg rounded-xl overflow-hidden flex flex-col"
               />
             ))}
           </div>
         )}
       </SectionWrapper>
 
-      {/* Suggested Users */}
+      {/* Suggested Users Section */}
       <SectionWrapper title="Suggested Users">
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {[...Array(6)].map((_, i) => (
-              <SkeletonCard key={i} className="h-56" />
+              <div key={i} className="overflow-hidden rounded-xl h-56 flex">
+                <SkeletonCard className="h-full w-full rounded-xl" />
+              </div>
             ))}
           </div>
         ) : (
@@ -142,11 +160,9 @@ export default function Home() {
                 user={user}
                 isExpanded={expandedUserId === user._id}
                 onToggleExpand={() =>
-                  setExpandedUserId((prev) =>
-                    prev === user._id ? null : user._id
-                  )
+                  setExpandedUserId((prev) => (prev === user._id ? null : user._id))
                 }
-                className="p-4 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 shadow hover:shadow-lg transition-shadow duration-300"
+                className="card bg-base-100 border border-base-300 shadow-md hover:shadow-lg p-4 rounded-xl overflow-hidden flex flex-col"
               />
             ))}
           </div>
@@ -167,13 +183,13 @@ export default function Home() {
               src={activeVideo.videoUrl}
               controls
               autoPlay
-              className="w-full h-auto rounded-xl shadow-2xl"
+              className="w-full h-auto rounded-xl shadow-2xl overflow-hidden"
             />
             <button
-              className="absolute top-4 right-4 text-white text-3xl font-bold"
+              className="btn btn-circle btn-error absolute top-4 right-4"
               onClick={() => setActiveVideo(null)}
             >
-              &times;
+              ✕
             </button>
           </div>
         </div>
