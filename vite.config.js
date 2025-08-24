@@ -1,16 +1,19 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
 
-export default defineConfig({
-  server: {
-    proxy: {
-      '/api': {
-        target: 'https://dsbackend.vercel.app/api/v1', // deployed backend
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, '') // remove /api before sending
+export default defineConfig(({ mode }) => {
+  const isDev = mode === "development";
+  return {
+    plugins: [react(), tailwindcss()],
+    server: isDev ? {
+      proxy: {
+        '/api': {
+          target: process.env.VITE_URI,
+          changeOrigin: true,
+          rewrite: path => path.replace(/^\/api/, '')
+        }
       }
-    }
-  },
-  plugins: [react(), tailwindcss()]
-})
+    } : undefined
+  };
+});
