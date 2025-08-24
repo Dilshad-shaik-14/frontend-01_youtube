@@ -1,6 +1,8 @@
 import axios from "axios";
 
 const baseURL = import.meta.env.VITE_URI;
+console.log("API Base URL:", baseURL);
+
 
 const attachAuthToken = (config) => {
   const token = localStorage.getItem("token");
