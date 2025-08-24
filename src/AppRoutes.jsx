@@ -18,7 +18,7 @@ import Settings from "./pages/settings/Settings";
 import ResetPassword from "./pages/ResetPassword";
 import UserDashboard from "./pages/userDashboard";
 import ChannelPage from "./pages/ChannelPage";
-
+import SearchVideoPage from "./pages/SearchVideoPage";
 
 const ProtectedRoute = ({ children }) => {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -142,6 +142,7 @@ const AppRoutes = () => {
 
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/channel/:userName" element={<ChannelPage />} />
+       <Route path="/search" element={<SearchVideoPage />} />
 
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>

@@ -48,6 +48,14 @@ const PlaylistVideoList = ({ videos = [], playlistId, refresh }) => {
     }
   };
 
+  // New callback: update single video after edit
+  const handleVideoUpdate = (updatedVideo) => {
+    setVideoItems((prev) =>
+      prev.map((v) => (v._id === updatedVideo._id ? updatedVideo : v))
+    );
+    refresh?.(updatedVideo); // optional: propagate to parent
+  };
+
   if (!videoItems?.length) {
     return (
       <div className="card bg-base-100 dark:bg-base-200 border border-base-300 dark:border-base-700 text-base-content text-sm p-6 rounded-lg">
@@ -69,6 +77,7 @@ const PlaylistVideoList = ({ videos = [], playlistId, refresh }) => {
                 playlistId={playlistId}
                 onRemove={handleRemove}
                 onVideoClick={setSelectedVideo}
+                onVideoUpdate={handleVideoUpdate} // <-- pass down the new callback
               />
             ))}
           </div>
@@ -81,5 +90,6 @@ const PlaylistVideoList = ({ videos = [], playlistId, refresh }) => {
     </>
   );
 };
+
 
 export default PlaylistVideoList;

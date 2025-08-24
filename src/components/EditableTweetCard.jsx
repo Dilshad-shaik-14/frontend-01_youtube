@@ -34,6 +34,7 @@ export default function EditableTweetCard({ tweet, onRefresh, editable = false }
   const handleDelete = async () => {
     await deleteTweet(tweet._id);
     setShowConfirm(false);
+    onRefresh?.();
   };
 
   const handleLikeToggle = async () => {
@@ -43,7 +44,7 @@ export default function EditableTweetCard({ tweet, onRefresh, editable = false }
       const res = await toggleTweetLike(tweet._id);
       const updated = res?.data?.tweet;
       if (updated?.likes) {
-        setLiked(updated.isLikedByCurrentUser ?? updated.likes.includes(user._id));
+        setLiked(updated.isLikedByCurrentUser ?? updated.likes.includes(tweet.owner._id));
         setLikeCount(updated.likes.length);
       }
     } catch (error) {
@@ -77,9 +78,9 @@ export default function EditableTweetCard({ tweet, onRefresh, editable = false }
           </div>
         </div>
 
-        {/* Edit/Delete Controls */}
+        {/* Edit/Delete Controls (hover) */}
         {editable && (
-          <div className="hidden group-hover:flex gap-2">
+          <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
             <button
               onClick={() => setEditing(true)}
               className="bg-base-200/70 p-1.5 rounded hover:text-blue-500 shadow"
@@ -166,7 +167,7 @@ export default function EditableTweetCard({ tweet, onRefresh, editable = false }
               <button
                 onClick={handleUpdate}
                 disabled={updating}
-                className="w-full py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                className="w-full py-2 bg-red-600 text-white rounded hover:bg-red-700"
               >
                 {updating ? "Updating..." : "Save Changes"}
               </button>

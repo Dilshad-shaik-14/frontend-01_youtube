@@ -105,14 +105,20 @@ export const publishAVideo = (credentials) =>
 export const getVideoById = (videoId) =>
   handleApiResponse(apiClient.get(`/videos/${videoId}`));
 
+export const getVideoByTitle = (title) =>
+  handleApiResponse(apiClient.get(`/videos/title/${encodeURIComponent(title)}`));
+
 export const getVideoDetails = (videoId) =>
   handleApiResponse(apiClient.get(`/videos/details/${videoId}`));
 
 export const deleteVideo = (videoId) =>
   handleApiResponse(apiClient.delete(`/videos/${videoId}`));
 
-export const updateVideo = (videoId, formData, onUploadProgress) =>
-  handleApiResponse(apiClient2.patch(`/videos/${videoId}`, formData, { onUploadProgress }));
+export const updateVideo = (id, formData, onUploadProgress) =>
+  apiClient2.patch(`/videos/${id}`, formData, {
+    onUploadProgress,
+    headers: { "Content-Type": "multipart/form-data" }, // important for file upload
+  }).then((res) => res.data.data);  
 
 export const togglePublishStatus = (videoId) =>
   handleApiResponse(apiClient.patch(`/videos/toggle/publish/${videoId}`));

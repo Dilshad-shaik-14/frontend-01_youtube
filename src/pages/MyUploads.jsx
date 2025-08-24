@@ -72,7 +72,11 @@ export default function MyUploads() {
       const updated = await toggleTweetLike(id);
       const updatedTweet = updated?.data?.tweet;
       if (!updatedTweet) return;
-      setTweets((prev) => prev.map((t) => (t._id === id ? updatedTweet : t)));
+      setTweets((prev) =>
+        prev.map((t) =>
+          t._id.toString() === id.toString() ? updatedTweet : t
+        )
+      );
     } catch (err) {
       console.error("Failed to toggle like:", err);
     }
@@ -105,14 +109,34 @@ export default function MyUploads() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {videos.map((video) =>
             video?._id ? (
-              <EditableVideoCard
-                key={video._id}
-                video={video}
-                onClick={() => handleVideoClick(video)}
-                onDelete={handleDeleteVideo}
-                onRefresh={fetchUploads}
-                editable={true}
-              />
+             <EditableVideoCard
+  key={video._id}
+  video={video}
+  onClick={() => handleVideoClick(video)}
+  onDelete={handleDeleteVideo}
+  onRefresh={(updatedVideo) => {
+    console.log("📌 onRefresh received:", updatedVideo);
+
+    if (updatedVideo && updatedVideo._id) {
+      setVideos((prev) => {
+        const exists = prev.some((v) => v._id.toString() === updatedVideo._id.toString());
+        if (exists) {
+          // 🔄 Replace existing video
+          return prev.map((v) =>
+            v._id.toString() === updatedVideo._id.toString() ? updatedVideo : v
+          );
+        } else {
+          // 🆕 Append if new
+          return [updatedVideo, ...prev];
+        }
+      });
+    } else {
+      console.warn("⚠️ No updatedVideo returned, refetching...");
+      fetchUploads();
+    }
+  }}
+  editable={true}
+/>
             ) : null
           )}
         </div>
@@ -131,7 +155,7 @@ export default function MyUploads() {
                   tweet={tweet}
                   onDelete={handleDeleteTweet}
                   onRefresh={fetchUploads}
-                  isEditable={true}
+                  editable={true}
                   onToggleLike={handleToggleTweetLike}
                 />
               </div>

@@ -9,6 +9,8 @@ const Subscriptions = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  const [expandedCard, setExpandedCard] = useState(null); // track expanded card
+
   const user = useSelector((state) => state.auth.currentUser);
 
   useEffect(() => {
@@ -48,13 +50,17 @@ const Subscriptions = () => {
     );
   }
 
+  const handleToggleExpand = (id) => {
+    setExpandedCard((prev) => (prev === id ? null : id));
+  };
+
   return (
     <div className="flex flex-1 min-h-screen bg-base-200 dark:bg-base-300 text-base-content">
-      <main className="flex-1 px-6 sm:px-8 lg:px-10 py-8 overflow-auto max-w-[1600px] w-full mx-auto space-y-12">
+      <main className="flex-1 px-4 sm:px-6 md:px-8 lg:px-10 py-8 overflow-auto max-w-[1600px] w-full mx-auto space-y-12">
         
         {/* My Subscriptions */}
         <section>
-          <h2 className="text-4xl font-bold mb-6 border-b-4 border-red-500 pb-2 w-fit text-base-content">
+          <h2 className="text-3xl sm:text-4xl font-bold mb-6 border-b-4 border-red-500 pb-2 w-fit text-base-content">
             My Subscriptions
           </h2>
           {loading ? (
@@ -62,7 +68,7 @@ const Subscriptions = () => {
           ) : error ? (
             <p className="text-error">{error}</p>
           ) : subscriptions.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
               {subscriptions
                 .filter((item) => item?.channel?._id)
                 .map((item) => (
@@ -75,9 +81,12 @@ const Subscriptions = () => {
                       avatar: item.channel.avatar,
                       coverImage: item.channel.coverImage,
                       email: item.channel.email,
+                      createdAt: item.channel.createdAt,
                       isSubscribed: true,
                     }}
                     showSubscribe={true}
+                    isExpanded={expandedCard === item.channel._id}
+                    onToggleExpand={() => handleToggleExpand(item.channel._id)}
                   />
                 ))}
             </div>
@@ -90,7 +99,7 @@ const Subscriptions = () => {
 
         {/* My Subscribers */}
         <section>
-          <h2 className="text-4xl font-bold mb-6 border-b-4 border-red-500 pb-2 w-fit text-base-content">
+          <h2 className="text-3xl sm:text-4xl font-bold mb-6 border-b-4 border-red-500 pb-2 w-fit text-base-content">
             My Subscribers
           </h2>
           {loading ? (
@@ -98,7 +107,7 @@ const Subscriptions = () => {
           ) : error ? (
             <p className="text-error">{error}</p>
           ) : subscribers.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
               {subscribers
                 .filter((item) => item?.subscriber?._id)
                 .map((item) => (
@@ -111,9 +120,12 @@ const Subscriptions = () => {
                       avatar: item.subscriber.avatar,
                       coverImage: item.subscriber.coverImage,
                       email: item.subscriber.email,
+                      createdAt: item.subscriber.createdAt, 
                       isSubscribed: false,
                     }}
                     showSubscribe={false}
+                    isExpanded={expandedCard === item.subscriber._id}
+                    onToggleExpand={() => handleToggleExpand(item.subscriber._id)}
                   />
                 ))}
             </div>
