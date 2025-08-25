@@ -15,15 +15,13 @@ const attachAuthToken = (config) => {
 
 const apiClient = axios.create({
   baseURL: baseURL,
-  //headers: { "Content-Type": "application/json" },
-  withCredentials: true,
+  headers: { "Content-Type": "application/json" },
 });
 
 
 const apiClient2 = axios.create({
   baseURL: baseURL,
- // headers: { "Content-Type": "multipart/form-data" },
-  withCredentials: true,
+ headers: { "Content-Type": "multipart/form-data" },
 });
 
 
