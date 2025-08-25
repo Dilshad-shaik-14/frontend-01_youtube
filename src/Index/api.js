@@ -23,121 +23,169 @@ const handleApiResponse = (apiCall) =>
   });
 
 export const login = (credentials) =>
-  handleApiResponse(apiClient.post(`/api/v1/users/login`, credentials));
+  handleApiResponse(apiClient.post(`/users/login`, credentials));
 
 export const register = (credentials) =>
-  handleApiResponse(apiClient2.post(`/api/v1/users/register`, credentials));
+  handleApiResponse(apiClient2.post(`/users/register`, credentials));
 
 export const logout = () =>
-  handleApiResponse(apiClient.post(`/api/v1/users/logout`, {}));
+  handleApiResponse(apiClient.post(`/users/logout`, {}));
 
 export const forgetPassword = (credentials) =>
-  handleApiResponse(apiClient.post(`/api/v1/users/forget-password`, { email: credentials.email }));
+  handleApiResponse(apiClient.post(`/users/forget-password`, { email: credentials.email }));
 
 export const resetPassword = (credentials) =>
-  handleApiResponse(apiClient.post(`/api/v1/users/reset-password`, credentials));
+  handleApiResponse(apiClient.post(`/users/reset-password`, credentials));
 
 export const refreshToken = () =>
-  handleApiResponse(apiClient.post(`/api/v1/users/refresh-token`, {}));
+  handleApiResponse(apiClient.post(`/users/refresh-token`, {}));
 
 export const changeCurrentPassword = (credentials) =>
-  handleApiResponse(apiClient.post(`/api/v1/users/change-password`, credentials));
+  handleApiResponse(apiClient.post(`/users/change-password`, credentials));
 
 export const currentUser = () =>
-  handleApiResponse(apiClient.get(`/api/v1/users/current-user`));
+  handleApiResponse(apiClient.get(`/users/current-user`));
 
 export const updateAccountDetails = (credentials) =>
-  handleApiResponse(apiClient.patch(`/api/v1/users/update-account`, credentials));
+  handleApiResponse(apiClient.patch(`/users/update-account`, credentials));
 
 export const updateAvatar = (credentials) =>
-  handleApiResponse(apiClient2.patch(`/api/v1/users/avatar-update`, credentials));
+  handleApiResponse(apiClient2.patch(`/users/avatar-update`, credentials));
 
 export const updateCoverImage = (credentials) =>
-  handleApiResponse(apiClient2.patch(`/api/v1/users/coverImage-update`, credentials));
+  handleApiResponse(apiClient2.patch(`/users/coverImage-update`, credentials));
 
 export const getUserChannelProfile = (userName) =>
-  handleApiResponse(apiClient.get(`/api/v1/users/c/${userName}`));
+  handleApiResponse(apiClient.get(`/users/c/${userName}`));
 
 export const getWatchHistory = () =>
-  handleApiResponse(apiClient.get(`/api/v1/users/watch-history`));
+  handleApiResponse(apiClient.get(`/users/watch-history`));
 
 export const deleteHistory = () =>
-  handleApiResponse(apiClient.delete(`/api/v1/users/delete-watchhistory`));
+  handleApiResponse(apiClient.delete(`/users/delete-watchhistory`));
 
 export const deleteAvatar = () =>
-  handleApiResponse(apiClient.delete(`/api/v1/users/delete-avatar`));
+  handleApiResponse(apiClient.delete(`/users/delete-avatar`));
 
 export const deleteCoverImage = () =>
-  handleApiResponse(apiClient.delete(`/api/v1/users/delete-coverImage`));
+  handleApiResponse(apiClient.delete(`/users/delete-coverImage`));
 
 export const getRegisteredUsers = ({ limit = 10, page = 1 }) =>
-  handleApiResponse(apiClient.get(`/api/v1/users/registered-users`, { params: { page, limit } }));
+  handleApiResponse(apiClient.get(`/users/registered-users`, { params: { page, limit } }));
 
 export const suggestUsers = () =>
-  handleApiResponse(apiClient.get(`/api/v1/users/suggestions`));
+  handleApiResponse(apiClient.get(`/users/suggestions`));
 
 export const getAllVideos = ({ limit = 10, page = 1, query = null, username = null }) =>
-  handleApiResponse(apiClient.get(`/api/v1/videos/`, { params: { page, query, username, limit } }));
+  handleApiResponse(apiClient.get(`/videos/`, { params: { page, query, username, limit } }));
 
 export const publishAVideo = (credentials) =>
-  handleApiResponse(apiClient2.post(`/api/v1/videos/`, credentials));
+  handleApiResponse(apiClient2.post(`/videos/`, credentials));
 
 export const getVideoById = (videoId) =>
-  handleApiResponse(apiClient.get(`/api/v1/videos/${videoId}`));
+  handleApiResponse(apiClient.get(`/videos/${videoId}`));
+
+export const getVideoByTitle = (title) =>
+  handleApiResponse(apiClient.get(`/videos/title/${encodeURIComponent(title)}`));
 
 export const getVideoDetails = (videoId) =>
-  handleApiResponse(apiClient.get(`/api/v1/videos/details/${videoId}`));
+  handleApiResponse(apiClient.get(`/videos/details/${videoId}`));
 
 export const deleteVideo = (videoId) =>
-  handleApiResponse(apiClient.delete(`/api/v1/videos/${videoId}`));
+  handleApiResponse(apiClient.delete(`/videos/${videoId}`));
 
 export const updateVideo = (id, formData, onUploadProgress) =>
-  apiClient2.patch(`/api/v1/videos/${id}`, formData, { onUploadProgress, headers: { "Content-Type": "multipart/form-data" } }).then(res => res.data.data);
+  apiClient2.patch(`/videos/${id}`, formData, {
+    onUploadProgress,
+    headers: { "Content-Type": "multipart/form-data" },
+  }).then((res) => res.data.data);
 
 export const togglePublishStatus = (videoId) =>
-  handleApiResponse(apiClient.patch(`/api/v1/videos/toggle/publish/${videoId}`));
+  handleApiResponse(apiClient.patch(`/videos/toggle/publish/${videoId}`));
 
 export const createTweet = (credentials) =>
-  handleApiResponse(apiClient.post(`/api/v1/tweets/`, credentials));
+  handleApiResponse(apiClient.post(`/tweets/`, credentials));
 
 export const getTweets = ({ page = 1 }) =>
-  handleApiResponse(apiClient.get(`/api/v1/tweets/`, { params: { page } }));
+  handleApiResponse(apiClient.get(`/tweets/`, { params: { page } }));
 
 export const getUserTweets = (userId) =>
-  handleApiResponse(apiClient.get(`/api/v1/tweets/user/${userId}`));
+  handleApiResponse(apiClient.get(`/tweets/user/${userId}`));
 
 export const updateTweet = (tweetId, credentials) =>
-  handleApiResponse(apiClient.patch(`/api/v1/tweets/${tweetId}`, credentials));
+  handleApiResponse(apiClient.patch(`/tweets/${tweetId}`, credentials));
 
 export const deleteTweet = (tweetId) =>
-  handleApiResponse(apiClient.delete(`/api/v1/tweets/${tweetId}`));
+  handleApiResponse(apiClient.delete(`/tweets/${tweetId}`));
+
+export const getAllTweets = ({ page = 1, limit = 10 }) =>
+  handleApiResponse(apiClient.get(`/tweets/`, { params: { page, limit } }));
 
 export const toggleSubscription = (channelId) =>
-  handleApiResponse(apiClient.post(`/api/v1/subscriptions/toggle/${channelId}`));
+  handleApiResponse(apiClient.post(`/subscriptions/toggle/${channelId}`));
 
 export const getSubscribedChannels = (userId) =>
-  handleApiResponse(apiClient.get(`/api/v1/subscriptions/user/${userId}/channels`));
+  handleApiResponse(apiClient.get(`/subscriptions/user/${userId}/channels`));
 
 export const getChannelSubscribers = (channelId) =>
-  handleApiResponse(apiClient.get(`/api/v1/subscriptions/channel/${channelId}/subscribers`));
+  handleApiResponse(apiClient.get(`/subscriptions/channel/${channelId}/subscribers`));
+
+export const getPlaylistById = (playlistId) =>
+  handleApiResponse(apiClient.get(`/playlist/${playlistId}`));
+
+export const createPlaylist = (data, isMultipart = false) =>
+  handleApiResponse(apiClient2.post(`/playlist`, data, { headers: isMultipart ? { "Content-Type": "multipart/form-data" } : {} }));
+
+export const updatePlaylist = (id, data, isMultipart = false) =>
+  handleApiResponse(apiClient2.patch(`/playlist/${id}`, data, { headers: isMultipart ? { "Content-Type": "multipart/form-data" } : {} }));
+
+export const deletePlaylist = (playlistId) =>
+  handleApiResponse(apiClient.delete(`/playlist/${playlistId}`));
+
+export const addVideoToPlaylist = (videoId, playlistId) =>
+  handleApiResponse(apiClient.patch(`/playlist/add/${videoId}/${playlistId}`));
+
+export const removeVideoFromPlaylist = (videoId, playlistId) =>
+  handleApiResponse(apiClient.delete(`/playlist/remove/${videoId}/${playlistId}`));
+
+export const getUserPlaylists = (userId) =>
+  handleApiResponse(apiClient.get(`/playlist/user/${userId}`));
+
+export const toggleVideoLike = (videoId) =>
+  handleApiResponse(apiClient.post(`/likes/toggle/v/${videoId}`));
+
+export const toggleCommentLike = (commentId) =>
+  handleApiResponse(apiClient.post(`/likes/toggle/c/${commentId}`));
+
+export const toggleTweetLike = (tweetId) =>
+  handleApiResponse(apiClient.post(`/likes/toggle/t/${tweetId}`));
+
+export const getLikedVideos = () =>
+  handleApiResponse(apiClient.get(`/likes/videos`));
+
+export const getLikedTweets = () =>
+  handleApiResponse(apiClient.get(`/likes/tweets`));
+
+export const getLikedComments = () =>
+  handleApiResponse(apiClient.get(`/likes/comments`));
 
 export const healthCheck = () =>
-  handleApiResponse(apiClient.get(`/api/v1/healthcheck`));
+  handleApiResponse(apiClient.get(`/healthcheck`));
 
 export const getChannelStats = (channel) =>
-  handleApiResponse(apiClient.get(`/api/v1/dashboard/stats/${channel}`));
+  handleApiResponse(apiClient.get(`/dashboard/stats/${channel}`));
 
 export const getChannelVideos = (channel) =>
-  handleApiResponse(apiClient.get(`/api/v1/dashboard/videos/${channel}`));
+  handleApiResponse(apiClient.get(`/dashboard/videos/${channel}`));
 
 export const getVideoComments = ({ videoId, page, limit = 10 }) =>
-  handleApiResponse(apiClient.get(`/api/v1/comments/${videoId}`, { params: { page, limit } }));
+  handleApiResponse(apiClient.get(`/comments/${videoId}`, { params: { page, limit } }));
 
 export const addComment = (videoId, content) =>
-  apiClient.post(`/api/v1/comments/${videoId}`, { content });
+  apiClient.post(`/comments/${videoId}`, { content });
 
 export const deleteComment = (commentId) =>
-  handleApiResponse(apiClient.delete(`/api/v1/comments/c/${commentId}`));
+  handleApiResponse(apiClient.delete(`/comments/c/${commentId}`));
 
 export const updateComment = (commentId, content) =>
-  handleApiResponse(apiClient.patch(`/api/v1/comments/c/${commentId}`, { content }));
+  handleApiResponse(apiClient.patch(`/comments/c/${commentId}`, { content }));
