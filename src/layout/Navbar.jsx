@@ -90,8 +90,8 @@ export default function Navbar({ toggleSidebar }) {
               D&amp;S
               {/* Subscript */}
               <span
-                className="absolute text-sm text-red-500"
-                style={{ bottom: -10, left: "110%", transform: "translateX(-10%)" }}
+                className="absolute text-sm text-red-500 pb-2"
+                style={{ bottom: -10, left: "110%", transform: "translateX(-10%)", fontSize: "0.875rem" }}
               >
                 Clipit.Saveit
               </span>
