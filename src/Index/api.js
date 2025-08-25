@@ -1,9 +1,20 @@
 import axios from "axios";
 
-const urls = (import.meta.env.VITE_URI || "").split(",").map(u => u.trim());
-const baseURL = import.meta.env.MODE === "development" ? urls[0] : urls[1];
+const raw = import.meta.env.VITE_URI || "";
+const urls = raw.split(",").map(u => u.trim()).filter(Boolean);
 
-console.log("API Base URL:", baseURL);
+let baseURL;
+if (urls.length === 0) {
+  console.warn("VITE_URI is not set. Falling back to http://localhost:8000");
+  baseURL = "http://localhost:8000";
+} else if (urls.length === 1) {
+  baseURL = urls[0];
+} else {
+  // urls.length >= 2
+  baseURL = import.meta.env.MODE === "development" ? urls[0] : urls[1];
+}
+
+console.log("[apiClient] MODE:", import.meta.env.MODE, " -> baseURL:", baseURL);
 
 const attachAuthToken = (config) => {
   const token = localStorage.getItem("token");
