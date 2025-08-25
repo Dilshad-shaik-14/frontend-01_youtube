@@ -35,7 +35,7 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
       {/* Sidebar */}
 <aside
   className={`fixed md:static top-20 md:top-0 left-0 z-50 
-  h-[calc(100vh-5rem)] md:h-full w-full max-w-[240px] md:max-w-[280px] 
+  h-[calc(100vh-5rem)] md:h-full w-50 sm:w-64
   flex flex-col
   bg-base-100/95 backdrop-blur-md
   shadow-lg border-r border-base-300
