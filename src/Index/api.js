@@ -1,49 +1,29 @@
 import axios from "axios";
 
 const baseURL = import.meta.env.VITE_URI;
-console.log("API Base URL:", baseURL);
-
-
-const attachAuthToken = (config) => {
-  const token = localStorage.getItem("token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-};
-
 
 const apiClient = axios.create({
-  baseURL: baseURL,
+  baseURL,
   headers: { "Content-Type": "application/json" },
 });
 
-
 const apiClient2 = axios.create({
-  baseURL: baseURL,
- headers: { "Content-Type": "multipart/form-data" },
+  baseURL,
+  headers: { "Content-Type": "multipart/form-data" },
 });
-
-
-apiClient.interceptors.request.use(attachAuthToken, (error) => Promise.reject(error));
-apiClient2.interceptors.request.use(attachAuthToken, (error) => Promise.reject(error));
-
 
 const handleApiResponse = (apiCall) =>
   new Promise((resolve, reject) => {
     apiCall
       .then((res) => resolve(res.data))
       .catch((error) => {
-        const errorMessage = error.response?.data?.message || "Unknown error";
-        reject(errorMessage);
+        const message = error.response?.data?.message || "Unknown error";
+        reject(message);
       });
   });
 
-export const login = (credentials) => {
-  console.log("Login API URL:", `${baseURL}/api/v1/users/login`);
-  console.log("Login payload:", credentials);
-  return handleApiResponse(apiClient.post(`/api/v1/users/login`, credentials));
-};
+export const login = (credentials) =>
+  handleApiResponse(apiClient.post(`/api/v1/users/login`, credentials));
 
 export const register = (credentials) =>
   handleApiResponse(apiClient2.post(`/api/v1/users/register`, credentials));
@@ -105,9 +85,6 @@ export const publishAVideo = (credentials) =>
 export const getVideoById = (videoId) =>
   handleApiResponse(apiClient.get(`/api/v1/videos/${videoId}`));
 
-export const getVideoByTitle = (title) =>
-  handleApiResponse(apiClient.get(`/api/v1/videos/title/${encodeURIComponent(title)}`));
-
 export const getVideoDetails = (videoId) =>
   handleApiResponse(apiClient.get(`/api/v1/videos/details/${videoId}`));
 
@@ -115,10 +92,7 @@ export const deleteVideo = (videoId) =>
   handleApiResponse(apiClient.delete(`/api/v1/videos/${videoId}`));
 
 export const updateVideo = (id, formData, onUploadProgress) =>
-  apiClient2.patch(`/api/v1/videos/${id}`, formData, {
-    onUploadProgress,
-    headers: { "Content-Type": "multipart/form-data" }, // important for file upload
-  }).then((res) => res.data.data);  
+  apiClient2.patch(`/api/v1/videos/${id}`, formData, { onUploadProgress, headers: { "Content-Type": "multipart/form-data" } }).then(res => res.data.data);
 
 export const togglePublishStatus = (videoId) =>
   handleApiResponse(apiClient.patch(`/api/v1/videos/toggle/publish/${videoId}`));
@@ -138,9 +112,6 @@ export const updateTweet = (tweetId, credentials) =>
 export const deleteTweet = (tweetId) =>
   handleApiResponse(apiClient.delete(`/api/v1/tweets/${tweetId}`));
 
-export const getAllTweets = ({ page = 1, limit = 10 }) =>
-  handleApiResponse(apiClient.get(`/api/v1/tweets/`, { params: { page, limit } }));
-
 export const toggleSubscription = (channelId) =>
   handleApiResponse(apiClient.post(`/api/v1/subscriptions/toggle/${channelId}`));
 
@@ -149,57 +120,6 @@ export const getSubscribedChannels = (userId) =>
 
 export const getChannelSubscribers = (channelId) =>
   handleApiResponse(apiClient.get(`/api/v1/subscriptions/channel/${channelId}/subscribers`));
-
-
-export const getPlaylistById = (playlistId) =>
-  handleApiResponse(apiClient.get(`/api/v1/playlist/${playlistId}`));
-
-
-export const createPlaylist = (data, isMultipart = false) =>
-  handleApiResponse(
-    apiClient2.post(`/api/v1/playlist`, data, {
-      headers: isMultipart ? { "Content-Type": "multipart/form-data" } : {},
-    })
-  );
-
-export const updatePlaylist = (id, data, isMultipart = false) =>
-  handleApiResponse(
-    apiClient2.patch(`/api/v1/playlist/${id}`, data, {
-      headers: isMultipart ? { "Content-Type": "multipart/form-data" } : {},
-    })
-  );
-
-
-
-export const deletePlaylist = (playlistId) =>
-  handleApiResponse(apiClient.delete(`/api/v1/playlist/${playlistId}`));
-
-export const addVideoToPlaylist = (videoId, playlistId) =>
-  handleApiResponse(apiClient.patch(`/api/v1/playlist/add/${videoId}/${playlistId}`));
-
-export const removeVideoFromPlaylist = (videoId, playlistId) =>
-  handleApiResponse(apiClient.delete(`/api/v1/playlist/remove/${videoId}/${playlistId}`));
-
-export const getUserPlaylists = (userId) =>
-  handleApiResponse(apiClient.get(`/api/v1/playlist/user/${userId}`));
-
-export const toggleVideoLike = (videoId) =>
-  handleApiResponse(apiClient.post(`/api/v1/likes/toggle/v/${videoId}`));
-
-export const toggleCommentLike = (commentId) =>
-  handleApiResponse(apiClient.post(`/api/v1/likes/toggle/c/${commentId}`));
-
-export const toggleTweetLike = (tweetId) =>
-  handleApiResponse(apiClient.post(`/api/v1/likes/toggle/t/${tweetId}`));
-
-export const getLikedVideos = () =>
-  handleApiResponse(apiClient.get(`/api/v1/likes/videos`));
-
-export const getLikedTweets = () =>
-  handleApiResponse(apiClient.get('/api/v1/likes/tweets'));
-
-export const getLikedComments = () =>
-  handleApiResponse(apiClient.get('/api/v1/likes/comments'));
 
 export const healthCheck = () =>
   handleApiResponse(apiClient.get(`/api/v1/healthcheck`));
