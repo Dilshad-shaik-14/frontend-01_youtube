@@ -12,6 +12,18 @@ const apiClient2 = axios.create({
   headers: { "Content-Type": "multipart/form-data" },
 });
 
+const attachAuthToken = (config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+};
+
+apiClient.interceptors.request.use(attachAuthToken, (error) => Promise.reject(error));
+apiClient2.interceptors.request.use(attachAuthToken, (error) => Promise.reject(error));
+
+
 const handleApiResponse = (apiCall) =>
   new Promise((resolve, reject) => {
     apiCall
