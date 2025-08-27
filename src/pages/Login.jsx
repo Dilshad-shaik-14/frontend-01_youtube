@@ -148,9 +148,12 @@ export default function Login() {
   };
 
   const handleSubmit = (e) => {
-    if (isLogin) handleLogin(e);
-    else handleRegister(e);
-  };
+  e.preventDefault(); // prevent default submit behavior
+  if (loading) return; // prevent multiple submissions
+  if (isLogin) handleLogin(e);
+  else handleRegister(e);
+};
+
 
   return (
     <div
