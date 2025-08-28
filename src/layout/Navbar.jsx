@@ -13,40 +13,46 @@ export default function Navbar({ toggleSidebar }) {
   const [results, setResults] = useState([]);
 
 const handleInputChange = async (e) => {
-  let value = e.target.value;
+  const value = e.target.value;
+  setSearchQuery(value);
 
-  setSearchQuery(value); 
-
-  const searchValue = value.startsWith("@") ? value.slice(1) : value;
-
-  if (!searchValue.trim()) {
+  if (!value.trim()) {
     setResults([]);
     return;
   }
 
   try {
-    const res = await getVideoByTitle(searchValue.trim());
+    // always search videos while typing
+    const res = await getVideoByTitle(value.trim());
     setResults(Array.isArray(res.data) ? res.data : [res.data]);
   } catch {
     setResults([]);
   }
 };
 
-const handleSearch = (e) => {
+const handleSearch = async (e) => {
   e.preventDefault();
   if (!searchQuery.trim()) return;
 
-  if (searchQuery.startsWith("@")) {
-    const channelName = searchQuery.slice(1).trim();
-    if (channelName) navigate(`/channel/${channelName}`);
-  } else {
-    navigate(`/search?title=${encodeURIComponent(searchQuery.trim())}`);
+  try {
+    // 1️⃣ Try channel first
+    const channelRes = await getUserChannelProfile(searchQuery.trim());
+    if (channelRes?.data) {
+      navigate(`/channel/${channelRes.data.userName}`);
+      setSearchQuery("");
+      setResults([]);
+      return;
+    }
+  } catch {
+    // ignore 404 from channel
   }
+
+  // 2️⃣ If not channel → fallback to videos
+  navigate(`/search?title=${encodeURIComponent(searchQuery.trim())}`);
 
   setSearchQuery("");
   setResults([]);
 };
-
 
 
   const renderDropdown = (extraClass = "") => {
