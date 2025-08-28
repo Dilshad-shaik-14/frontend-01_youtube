@@ -34,8 +34,8 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
 
       {/* Sidebar */}
 <aside
-  className={`fixed md:static top-[5rem] md:top-0 left-0 z-50 
-  h-[calc(100vh-5rem)] md:h-full w-50 sm:w-64
+  className={`fixed md:static inset-y-0 top-20 md:top-0 left-0 z-50
+  w-50 sm:w-64
   flex flex-col
   bg-base-100/95 backdrop-blur-md
   shadow-lg border-r border-base-300
@@ -44,6 +44,7 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
   md:translate-x-0`}
   aria-label="Sidebar Navigation"
 >
+
 
   <nav className="menu flex-1 overflow-y-auto px-4 py-6 space-y-2">
     {navLinks.map(({ to, icon, label }) => (
