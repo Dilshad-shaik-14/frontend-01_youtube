@@ -169,14 +169,14 @@ export default function Login() {
         {darkMode ? <Sun size={18} /> : <Moon size={18} />}
       </button>
 
-      <motion.div
+  <motion.div
   initial={{ opacity: 0, y: 30 }}
   animate={{ opacity: 1, y: 0 }}
   transition={{ duration: 0.6 }}
-  className={`w-full px-4 sm:px-6 py-6 sm:py-8 rounded-2xl shadow-lg border
+  className={`w-full mx-2 sm:mx-4 px-4 sm:px-6 py-6 sm:py-8 rounded-2xl shadow-lg border
     ${darkMode ? "bg-white/10 border-zinc-700" : "bg-black/5 border-zinc-300"}
     backdrop-blur-md
-    max-w-sm sm:max-w-md md:max-w-lg
+    max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl
   `}
 >
   <h2 className="text-center text-xl sm:text-2xl font-bold mb-3 text-red-500">
