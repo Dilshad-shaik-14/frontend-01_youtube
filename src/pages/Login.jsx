@@ -169,195 +169,197 @@ export default function Login() {
         {darkMode ? <Sun size={18} /> : <Moon size={18} />}
       </button>
 
-      {/* Auth Card */}
       <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className={`w-full max-w-md px-6 py-8 rounded-2xl shadow-lg border ${
-          darkMode
-            ? "bg-white/10 border-zinc-700"
-            : "bg-black/5 border-zinc-300"
-        } backdrop-blur-md`}
-      >
-        <h2 className="text-center text-2xl font-bold mb-2 text-red-500">
-          {isLogin ? "Welcome Back" : "Create Account"}
-        </h2>
+  initial={{ opacity: 0, y: 30 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.6 }}
+  className={`w-full px-4 sm:px-6 py-6 sm:py-8 rounded-2xl shadow-lg border
+    ${darkMode ? "bg-white/10 border-zinc-700" : "bg-black/5 border-zinc-300"}
+    backdrop-blur-md
+    max-w-sm sm:max-w-md md:max-w-lg
+  `}
+>
+  <h2 className="text-center text-xl sm:text-2xl font-bold mb-3 text-red-500">
+    {isLogin ? "Welcome Back" : "Create Account"}
+  </h2>
 
-        {error && (
-          <p className="text-center text-sm text-red-400 mb-4">{error}</p>
-        )}
+  {error && (
+    <p className="text-center text-xs sm:text-sm text-red-400 mb-4">{error}</p>
+  )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {isLogin ? (
-            <>
-              {/* Email or Username */}
-              <div>
-                <label className="text-xs mb-1 block">Email or Username</label>
-                <input
-                  type="text"
-                  value={email || userName}
-                  onChange={(e) => {
-                    if (e.target.value.includes("@")) {
-                      setEmail(e.target.value);
-                      setUserName("");
-                    } else {
-                      setUserName(e.target.value);
-                      setEmail("");
-                    }
-                  }}
-                  className="w-full px-3 py-2 rounded-md text-sm bg-zinc-800 text-white"
-                  required
-                />
-              </div>
-
-              {/* Password */}
-              <div>
-                <label className="text-xs mb-1 block">Password</label>
-                <div className="relative">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full px-3 py-2 rounded-md text-sm bg-zinc-800 text-white"
-                    required
-                  />
-                  <span
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute top-2.5 right-3 cursor-pointer text-zinc-400"
-                  >
-                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                  </span>
-                </div>
-              </div>
-
-              {/* Forgot Password Button */}
-              <div className="flex justify-end mb-4">
-                <button
-                  type="button"
-                  onClick={handleForgotPassword}
-                  className="text-red-400 hover:underline text-xs"
-                  disabled={loading}
-                >
-                  Forgot Password?
-                </button>
-              </div>
-
-              {/* Submit */}
-              <button
-                type="submit"
-                className="w-full py-2 bg-red-600 hover:bg-red-700 text-white rounded-md font-medium"
-                disabled={loading}
-              >
-                {loading ? "Logging in..." : "Login"}
-              </button>
-            </>
-          ) : registerStep === 1 ? (
-            <>
-              {/* Full Name */}
-              <input
-                type="text"
-                placeholder="Full Name"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                className="w-full px-3 py-2 rounded-md text-sm bg-zinc-800 text-white"
-                required
-              />
-              {/* Username */}
-              <input
-                type="text"
-                placeholder="Username"
-                value={userName}
-                onChange={(e) => setUserName(e.target.value)}
-                className="w-full px-3 py-2 rounded-md text-sm bg-zinc-800 text-white"
-                required
-              />
-              {/* Email */}
-              <input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-3 py-2 rounded-md text-sm bg-zinc-800 text-white"
-                required
-              />
-              {/* Password */}
-              <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-3 py-2 rounded-md text-sm bg-zinc-800 text-white"
-                required
-              />
-
-              <button
-                type="submit"
-                className="w-full py-2 bg-red-600 hover:bg-red-700 text-white rounded-md font-medium"
-              >
-                Next
-              </button>
-            </>
-          ) : (
-            <>
-              {/* Avatar Upload */}
-              <div>
-                <label className="text-xs">Avatar</label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => setAvatar(e.target.files[0])}
-                  className="w-full text-xs text-white"
-                  required
-                />
-              </div>
-
-              {/* Cover Image */}
-              <div>
-                <label className="text-xs">Cover Image (optional)</label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => setCoverImage(e.target.files[0])}
-                  className="w-full text-xs text-white"
-                />
-              </div>
-
-              <div className="flex justify-between gap-2">
-                <button
-                  type="button"
-                  onClick={() => setRegisterStep(1)}
-                  className="w-1/2 py-2 bg-zinc-600 text-white rounded-md"
-                >
-                  Back
-                </button>
-                <button
-                  type="submit"
-                  className="w-1/2 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md"
-                  disabled={loading}
-                >
-                  {loading ? "Registering..." : "Register"}
-                </button>
-              </div>
-            </>
-          )}
-        </form>
-
-        {/* Toggle link */}
-        <p className="text-xs text-center mt-4 text-zinc-400">
-          {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
-          <button
-            onClick={() => {
-              setIsLogin(!isLogin);
-              setRegisterStep(1);
-              dispatch(setError(""));
+  <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
+    {isLogin ? (
+      <>
+        {/* Email or Username */}
+        <div>
+          <label className="text-xs sm:text-sm mb-1 block">
+            Email or Username
+          </label>
+          <input
+            type="text"
+            value={email || userName}
+            onChange={(e) => {
+              if (e.target.value.includes("@")) {
+                setEmail(e.target.value);
+                setUserName("");
+              } else {
+                setUserName(e.target.value);
+                setEmail("");
+              }
             }}
-            className="text-red-400 hover:underline"
+            className="w-full px-3 py-2 rounded-md text-sm sm:text-base bg-zinc-800 text-white"
+            required
+          />
+        </div>
+
+        {/* Password */}
+        <div>
+          <label className="text-xs sm:text-sm mb-1 block">Password</label>
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-3 py-2 rounded-md text-sm sm:text-base bg-zinc-800 text-white"
+              required
+            />
+            <span
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute top-2.5 right-3 cursor-pointer text-zinc-400"
+            >
+              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+            </span>
+          </div>
+        </div>
+
+        {/* Forgot Password Button */}
+        <div className="flex justify-end mb-3 sm:mb-4">
+          <button
+            type="button"
+            onClick={handleForgotPassword}
+            className="text-red-400 hover:underline text-xs sm:text-sm"
+            disabled={loading}
           >
-            {isLogin ? "Register" : "Login"}
+            Forgot Password?
           </button>
-        </p>
-      </motion.div>
+        </div>
+
+        {/* Submit */}
+        <button
+          type="submit"
+          className="w-full py-2 sm:py-3 bg-red-600 hover:bg-red-700 text-white rounded-md font-medium text-sm sm:text-base"
+          disabled={loading}
+        >
+          {loading ? "Logging in..." : "Login"}
+        </button>
+      </>
+    ) : registerStep === 1 ? (
+      <>
+        {/* Full Name */}
+        <input
+          type="text"
+          placeholder="Full Name"
+          value={fullName}
+          onChange={(e) => setFullName(e.target.value)}
+          className="w-full px-3 py-2 rounded-md text-sm sm:text-base bg-zinc-800 text-white"
+          required
+        />
+        {/* Username */}
+        <input
+          type="text"
+          placeholder="Username"
+          value={userName}
+          onChange={(e) => setUserName(e.target.value)}
+          className="w-full px-3 py-2 rounded-md text-sm sm:text-base bg-zinc-800 text-white"
+          required
+        />
+        {/* Email */}
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="w-full px-3 py-2 rounded-md text-sm sm:text-base bg-zinc-800 text-white"
+          required
+        />
+        {/* Password */}
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="w-full px-3 py-2 rounded-md text-sm sm:text-base bg-zinc-800 text-white"
+          required
+        />
+
+        <button
+          type="submit"
+          className="w-full py-2 sm:py-3 bg-red-600 hover:bg-red-700 text-white rounded-md font-medium text-sm sm:text-base"
+        >
+          Next
+        </button>
+      </>
+    ) : (
+      <>
+        {/* Avatar Upload */}
+        <div>
+          <label className="text-xs sm:text-sm">Avatar</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => setAvatar(e.target.files[0])}
+            className="w-full text-xs sm:text-sm text-white"
+            required
+          />
+        </div>
+
+        {/* Cover Image */}
+        <div>
+          <label className="text-xs sm:text-sm">Cover Image (optional)</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => setCoverImage(e.target.files[0])}
+            className="w-full text-xs sm:text-sm text-white"
+          />
+        </div>
+
+        <div className="flex flex-col sm:flex-row justify-between gap-2">
+          <button
+            type="button"
+            onClick={() => setRegisterStep(1)}
+            className="w-full sm:w-1/2 py-2 sm:py-3 bg-zinc-600 text-white rounded-md text-sm sm:text-base"
+          >
+            Back
+          </button>
+          <button
+            type="submit"
+            className="w-full sm:w-1/2 py-2 sm:py-3 bg-red-600 hover:bg-red-700 text-white rounded-md text-sm sm:text-base"
+            disabled={loading}
+          >
+            {loading ? "Registering..." : "Register"}
+          </button>
+        </div>
+      </>
+    )}
+  </form>
+
+  {/* Toggle link */}
+  <p className="text-xs sm:text-sm text-center mt-3 sm:mt-4 text-zinc-400">
+    {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
+    <button
+      onClick={() => {
+        setIsLogin(!isLogin);
+        setRegisterStep(1);
+        dispatch(setError(""));
+      }}
+      className="text-red-400 hover:underline"
+    >
+      {isLogin ? "Register" : "Login"}
+    </button>
+  </p>
+</motion.div>
+
     </div>
   );
 }
