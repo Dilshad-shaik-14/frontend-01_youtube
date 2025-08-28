@@ -53,8 +53,10 @@ export const updateAvatar = (credentials) =>
   handleApiResponse(apiClient2.patch(`/api/v1/users/avatar-update`, credentials));
 export const updateCoverImage = (credentials) =>
   handleApiResponse(apiClient2.patch(`/api/v1/users/coverImage-update`, credentials));
+
 export const getUserChannelProfile = (userName) =>
-  handleApiResponse(apiClient.get(`/api/v1/users/c/${userName}`));
+  handleApiResponse(apiClient.get(`/api/v1/users/c/${encodeURIComponent(userName.replace(/^@/, ""))}`));
+
 export const getWatchHistory = () =>
   handleApiResponse(apiClient.get(`/api/v1/users/watch-history`));
 export const deleteHistory = () =>

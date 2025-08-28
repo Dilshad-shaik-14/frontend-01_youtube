@@ -15,20 +15,17 @@ export default function Navbar({ toggleSidebar }) {
 const handleInputChange = async (e) => {
   let value = e.target.value;
 
-  // Strip @ at the beginning if user is typing channel name
-  if (value.startsWith("@")) {
-    value = value.slice(1);
-  }
+  setSearchQuery(value); 
 
-  setSearchQuery(e.target.value); // keep original text in input
+  const searchValue = value.startsWith("@") ? value.slice(1) : value;
 
-  if (!value.trim()) {
+  if (!searchValue.trim()) {
     setResults([]);
     return;
   }
 
   try {
-    const res = await getVideoByTitle(value.trim());
+    const res = await getVideoByTitle(searchValue.trim());
     setResults(Array.isArray(res.data) ? res.data : [res.data]);
   } catch {
     setResults([]);
@@ -49,6 +46,7 @@ const handleSearch = (e) => {
   setSearchQuery("");
   setResults([]);
 };
+
 
 
   const renderDropdown = (extraClass = "") => {
