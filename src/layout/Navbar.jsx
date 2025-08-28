@@ -12,37 +12,44 @@ export default function Navbar({ toggleSidebar }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [results, setResults] = useState([]);
 
-  const handleInputChange = async (e) => {
-    const value = e.target.value;
-    setSearchQuery(value);
+const handleInputChange = async (e) => {
+  let value = e.target.value;
 
-    if (!value.trim()) {
-      setResults([]);
-      return;
-    }
+  // Strip @ at the beginning if user is typing channel name
+  if (value.startsWith("@")) {
+    value = value.slice(1);
+  }
 
-    try {
-      const res = await getVideoByTitle(value.trim());
-      setResults(Array.isArray(res.data) ? res.data : [res.data]);
-    } catch {
-      setResults([]);
-    }
-  };
+  setSearchQuery(e.target.value); // keep original text in input
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    if (!searchQuery.trim()) return;
-
-    if (searchQuery.startsWith("@")) {
-      const channelName = searchQuery.slice(1).trim();
-      if (channelName) navigate(`/channel/${channelName}`);
-    } else {
-      navigate(`/search?title=${encodeURIComponent(searchQuery.trim())}`);
-    }
-
-    setSearchQuery("");
+  if (!value.trim()) {
     setResults([]);
-  };
+    return;
+  }
+
+  try {
+    const res = await getVideoByTitle(value.trim());
+    setResults(Array.isArray(res.data) ? res.data : [res.data]);
+  } catch {
+    setResults([]);
+  }
+};
+
+const handleSearch = (e) => {
+  e.preventDefault();
+  if (!searchQuery.trim()) return;
+
+  if (searchQuery.startsWith("@")) {
+    const channelName = searchQuery.slice(1).trim();
+    if (channelName) navigate(`/channel/${channelName}`);
+  } else {
+    navigate(`/search?title=${encodeURIComponent(searchQuery.trim())}`);
+  }
+
+  setSearchQuery("");
+  setResults([]);
+};
+
 
   const renderDropdown = (extraClass = "") => {
     if (!results.length) return null;
