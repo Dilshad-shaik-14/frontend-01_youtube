@@ -34,7 +34,7 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
 
       {/* Sidebar */}
 <aside
-  className={`fixed md:static top-[5rem] md:top-0 bottom-0 left-0 z-50
+  className={`fixed top-[5rem] md:top-[5rem] bottom-0 left-0 z-50
   w-50 sm:w-64
   flex flex-col
   bg-base-100/95 backdrop-blur-md
@@ -50,7 +50,6 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
     ))}
   </nav>
 </aside>
-
     </>
   );
 }
