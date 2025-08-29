@@ -21,11 +21,13 @@ export default function Layout() {
           : "bg-[#ffffff] text-[#000000]"
       }`}
     >
-      {/* Navbar fixed at top */}
-      <Navbar toggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+      {/* Navbar (sticky only) */}
+      <div className="sticky top-0 z-50">
+        <Navbar toggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+      </div>
 
-      {/* Content area (with top padding for navbar height) */}
-      <div className="flex flex-1 pt-16 overflow-hidden">
+      {/* Layout with sidebar + content */}
+      <div className="flex flex-1">
         {/* Sidebar */}
         <Sidebar
           isOpen={sidebarOpen}
@@ -34,11 +36,10 @@ export default function Layout() {
 
         {/* Main Content */}
         <main
-          className={`flex-1 overflow-y-auto transition-colors duration-300
-            ${theme === "black" ? "bg-[#000000]" : "bg-[#ffffff]"}
-            md:ml-64`} // offset on desktop for sidebar
+          className={`flex-1 overflow-y-auto transition-colors duration-300 ${
+            theme === "black" ? "bg-[#000000]" : "bg-[#ffffff]"
+          }`}
         >
-          {/* wrapper ensures content fits full width */}
           <div className="w-full max-w-[1200px] mx-auto px-4 py-6">
             <Outlet />
           </div>
