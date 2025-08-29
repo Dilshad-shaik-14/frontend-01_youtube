@@ -1,4 +1,3 @@
-// Sidebar.jsx (same logic, only minor cleanup)
 import { NavLink } from "react-router-dom";
 import {
   Home,
@@ -33,23 +32,23 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
       )}
 
       {/* Sidebar */}
-<aside
-  className={`fixed top-[5rem] md:top-[5rem] bottom-0 left-0 z-50
-  w-50 sm:w-64
-  flex flex-col
-  bg-base-100/95 backdrop-blur-md
-  shadow-lg border-r border-base-300
-  transform transition-transform duration-300 ease-in-out
-  ${isOpen ? "translate-x-0" : "-translate-x-full"} 
-  md:translate-x-0`}
-  aria-label="Sidebar Navigation"
->
-  <nav className="menu flex-1 overflow-y-auto px-4 py-6 space-y-2">
-    {navLinks.map(({ to, icon, label }) => (
-      <SidebarLink key={to} to={to} icon={icon} label={label} />
-    ))}
-  </nav>
-</aside>
+      <aside
+        className={`fixed top-16 bottom-0 left-0 z-50
+        w-56 sm:w-64
+        flex flex-col
+        bg-base-100/95 backdrop-blur-md
+        shadow-lg border-r border-base-300
+        transform transition-transform duration-300 ease-in-out
+        ${isOpen ? "translate-x-0" : "-translate-x-full"} 
+        md:translate-x-0`}
+        aria-label="Sidebar Navigation"
+      >
+        <nav className="menu flex-1 overflow-y-auto px-4 py-6 space-y-2">
+          {navLinks.map(({ to, icon, label }) => (
+            <SidebarLink key={to} to={to} icon={icon} label={label} />
+          ))}
+        </nav>
+      </aside>
     </>
   );
 }

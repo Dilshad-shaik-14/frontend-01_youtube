@@ -12,48 +12,47 @@ export default function Navbar({ toggleSidebar }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [results, setResults] = useState([]);
 
-const handleInputChange = async (e) => {
-  const value = e.target.value;
-  setSearchQuery(value);
+  const handleInputChange = async (e) => {
+    const value = e.target.value;
+    setSearchQuery(value);
 
-  if (!value.trim()) {
-    setResults([]);
-    return;
-  }
-
-  try {
-    // always search videos while typing
-    const res = await getVideoByTitle(value.trim());
-    setResults(Array.isArray(res.data) ? res.data : [res.data]);
-  } catch {
-    setResults([]);
-  }
-};
-
-const handleSearch = async (e) => {
-  e.preventDefault();
-  if (!searchQuery.trim()) return;
-
-  try {
-    // 1️⃣ Try channel first
-    const channelRes = await getUserChannelProfile(searchQuery.trim());
-    if (channelRes?.data) {
-      navigate(`/channel/${channelRes.data.userName}`);
-      setSearchQuery("");
+    if (!value.trim()) {
       setResults([]);
       return;
     }
-  } catch {
-    // ignore 404 from channel
-  }
 
-  // 2️⃣ If not channel → fallback to videos
-  navigate(`/search?title=${encodeURIComponent(searchQuery.trim())}`);
+    try {
+      // always search videos while typing
+      const res = await getVideoByTitle(value.trim());
+      setResults(Array.isArray(res.data) ? res.data : [res.data]);
+    } catch {
+      setResults([]);
+    }
+  };
 
-  setSearchQuery("");
-  setResults([]);
-};
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    if (!searchQuery.trim()) return;
 
+    try {
+      // 1️⃣ Try channel first
+      const channelRes = await getUserChannelProfile(searchQuery.trim());
+      if (channelRes?.data) {
+        navigate(`/channel/${channelRes.data.userName}`);
+        setSearchQuery("");
+        setResults([]);
+        return;
+      }
+    } catch {
+      // ignore 404 from channel
+    }
+
+    // 2️⃣ If not channel → fallback to videos
+    navigate(`/search?title=${encodeURIComponent(searchQuery.trim())}`);
+
+    setSearchQuery("");
+    setResults([]);
+  };
 
   const renderDropdown = (extraClass = "") => {
     if (!results.length) return null;
@@ -102,7 +101,12 @@ const handleSearch = async (e) => {
               {/* Subscript */}
               <span
                 className="absolute text-sm text-red-500 pb-2"
-                style={{ bottom: -10, left: "110%", transform: "translateX(-10%)", fontSize: "0.875rem" }}
+                style={{
+                  bottom: -10,
+                  left: "110%",
+                  transform: "translateX(-10%)",
+                  fontSize: "0.875rem",
+                }}
               >
                 Clipit.Saveit
               </span>

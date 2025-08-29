@@ -1,14 +1,11 @@
-// Layout.jsx (main refactor to match image layout)
 import React, { useEffect, useState } from "react";
 import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
 import { Outlet } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { toggleTheme } from "../utils/authSlice";
+import { useSelector } from "react-redux";
 import { applyTheme } from "../utils/applyTheme";
 
 export default function Layout() {
-  const dispatch = useDispatch();
   const theme = useSelector((state) => state.auth.theme);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -27,9 +24,8 @@ export default function Layout() {
       {/* Navbar fixed at top */}
       <Navbar toggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
 
-      {/* Content below navbar */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
+      <div className="flex flex-1 pt-16 overflow-hidden">
+        {/* Sidebar (mobile + desktop) */}
         <Sidebar
           isOpen={sidebarOpen}
           toggleSidebar={() => setSidebarOpen(false)}
