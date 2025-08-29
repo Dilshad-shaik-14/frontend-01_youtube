@@ -79,8 +79,7 @@ export default function Navbar({ toggleSidebar }) {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-base-100/95 backdrop-blur-lg shadow-md border-b border-base-300 transition-colors duration-300">
-      <div className="flex items-center justify-between px-6 lg:px-10 h-16">
+<header className="fixed top-0 left-0 right-0 z-50 bg-base-100/95 backdrop-blur-lg shadow-md border-b border-base-300 transition-colors duration-300">      <div className="flex items-center justify-between px-6 lg:px-10 h-16">
         {/* Left Section - Logo with subscript */}
         <div className="flex items-center gap-4 relative">
           <button
