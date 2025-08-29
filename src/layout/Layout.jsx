@@ -15,18 +15,18 @@ export default function Layout() {
 
   return (
     <div
-      className={`flex flex-col h-screen transition-colors duration-300 ${
+      className={`flex flex-col min-h-screen transition-colors duration-300 ${
         theme === "black"
           ? "bg-[#000000] text-[#ffffff]"
           : "bg-[#ffffff] text-[#000000]"
       }`}
     >
-      {/* Sticky Navbar */}
-      <div className="sticky top-0 z-50">
+      {/* Fixed Navbar */}
+      <div className="fixed top-0 left-0 right-0 z-50">
         <Navbar toggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
       </div>
 
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 pt-[5rem]"> 
         {/* Sidebar */}
         <Sidebar
           isOpen={sidebarOpen}
@@ -37,7 +37,7 @@ export default function Layout() {
         <main
           className={`flex-1 overflow-y-auto transition-colors duration-300 
             ${theme === "black" ? "bg-[#000000]" : "bg-[#ffffff]"}
-            md:ml-64   /* push content to the right of sidebar on desktop */
+            md:ml-64   /* push content beside sidebar */
           `}
         >
           <div className="w-full max-w-[1200px] mx-auto px-4 py-6">
