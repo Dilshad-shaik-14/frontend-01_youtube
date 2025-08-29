@@ -1,8 +1,8 @@
-import React, { useEffect, useState, useDispatch } from "react";
+import React, { useEffect, useState,  } from "react";
 import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
 import { Outlet } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { applyTheme } from "../utils/applyTheme";
 
 export default function Layout() {
