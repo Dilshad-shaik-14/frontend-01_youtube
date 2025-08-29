@@ -24,8 +24,9 @@ export default function Layout() {
       {/* Navbar fixed at top */}
       <Navbar toggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
 
+      {/* Content area */}
       <div className="flex flex-1 pt-16 overflow-hidden">
-        {/* Sidebar (mobile + desktop) */}
+        {/* Sidebar */}
         <Sidebar
           isOpen={sidebarOpen}
           toggleSidebar={() => setSidebarOpen(false)}
@@ -33,9 +34,9 @@ export default function Layout() {
 
         {/* Main Content */}
         <main
-          className={`flex-1 overflow-y-auto p-4 transition-colors duration-300 ${
-            theme === "black" ? "bg-[#000000]" : "bg-[#ffffff]"
-          }`}
+          className={`flex-1 overflow-y-auto p-4 transition-colors duration-300
+            ${theme === "black" ? "bg-[#000000]" : "bg-[#ffffff]"}
+            md:ml-64`} // shifts content right on desktop to align with sidebar
         >
           <Outlet />
         </main>
