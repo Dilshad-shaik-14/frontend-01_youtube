@@ -60,7 +60,7 @@ const SectionWrapper = ({ title, children, className = "" }) => (
 
     {/* Scrollable content container */}
     <div className="flex-1 relative overflow-hidden">
-      <div className="h-[420px] sm:h-[480px] overflow-y-auto pr-2 custom-scroll">
+    <div className="h-[600px] sm:h-[720px] overflow-y-auto pr-2 custom-scroll">
         {children}
       </div>
 
