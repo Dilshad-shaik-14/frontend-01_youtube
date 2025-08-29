@@ -21,10 +21,8 @@ export default function Layout() {
           : "bg-[#ffffff] text-[#000000]"
       }`}
     >
-      {/* Navbar (sticky only) */}
-      <div className="sticky top-0 z-50">
-        <Navbar toggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
-      </div>
+      {/* Navbar (already sticky inside Navbar.jsx, no extra wrapper) */}
+      <Navbar toggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
 
       {/* Layout with sidebar + content */}
       <div className="flex flex-1">
