@@ -36,12 +36,14 @@ export default function Layout() {
 
         {/* Main Content */}
         <main
-          className={`flex-1 overflow-y-auto p-4 transition-colors duration-300 ml-48 sm:ml-64
-            ${theme === "black" ? "bg-[#000000]" : "bg-[#ffffff]"}
-          `}
-        >
-          <Outlet />
-        </main>
+  className={`flex-1 overflow-y-auto p-4 transition-colors duration-300 
+    md:ml-48 md:sm:ml-64
+    ${theme === "black" ? "bg-[#000000]" : "bg-[#ffffff]"}
+  `}
+>
+  <Outlet />
+</main>
+
       </div>
     </div>
   );
