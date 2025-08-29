@@ -21,10 +21,9 @@ export default function Layout() {
           : "bg-[#ffffff] text-[#000000]"
       }`}
     >
-      {/* Navbar (already sticky inside Navbar.jsx, no extra wrapper) */}
+      {/* Navbar (already sticky inside Navbar.jsx) */}
       <Navbar toggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
 
-      {/* Layout with sidebar + content */}
       <div className="flex flex-1">
         {/* Sidebar */}
         <Sidebar
@@ -34,9 +33,10 @@ export default function Layout() {
 
         {/* Main Content */}
         <main
-          className={`flex-1 overflow-y-auto transition-colors duration-300 ${
-            theme === "black" ? "bg-[#000000]" : "bg-[#ffffff]"
-          }`}
+          className={`flex-1 overflow-y-auto transition-colors duration-300 
+            ${theme === "black" ? "bg-[#000000]" : "bg-[#ffffff]"}
+            md:ml-64   /* 👈 shifts content to the right on desktop */
+          `}
         >
           <div className="w-full max-w-[1200px] mx-auto px-4 py-6">
             <Outlet />
