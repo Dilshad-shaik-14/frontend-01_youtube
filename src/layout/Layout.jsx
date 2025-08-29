@@ -1,4 +1,5 @@
-import React, { useEffect, useState,  } from "react";
+// Layout.jsx
+import React, { useEffect, useState } from "react";
 import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
 import { Outlet } from "react-router-dom";
@@ -25,7 +26,7 @@ export default function Layout() {
       {/* Fixed Navbar */}
       <Navbar toggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
 
-      {/* Body wrapper (pushes content below navbar) */}
+      {/* Body wrapper */}
       <div className="flex flex-1 pt-16 overflow-hidden">
         {/* Sidebar */}
         <Sidebar
@@ -35,9 +36,9 @@ export default function Layout() {
 
         {/* Main Content */}
         <main
-          className={`flex-1 overflow-y-auto p-4 transition-colors duration-300 ${
-            theme === "black" ? "bg-[#000000]" : "bg-[#ffffff]"
-          }`}
+          className={`flex-1 overflow-y-auto p-4 transition-colors duration-300 ml-48 sm:ml-64
+            ${theme === "black" ? "bg-[#000000]" : "bg-[#ffffff]"}
+          `}
         >
           <Outlet />
         </main>
@@ -45,4 +46,3 @@ export default function Layout() {
     </div>
   );
 }
-
