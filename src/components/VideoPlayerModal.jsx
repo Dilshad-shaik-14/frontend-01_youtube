@@ -128,49 +128,51 @@ export default function VideoPlayerModal({ video, onClose }) {
                 </div>
               )}
 
-              <div className="p-4 space-y-3 border-t border-[#303030] overflow-auto">
-                <h2 className="text-xl font-bold">{fullVideo?.title}</h2>
+              <div className="p-6 space-y-4 border-t border-[#303030] overflow-y-auto min-h-[220px]">
+  <h2 className="text-xl font-bold">{fullVideo?.title}</h2>
 
-                <div className="flex items-center gap-3">
-                  <img
-                    src={fullVideo?.owner?.avatar || "/default-avatar.png"}
-                    className="w-10 h-10 rounded-full border border-[#303030]"
-                    alt="User avatar"
-                  />
-                  <div>
-                    <p className="text-base font-semibold">
-                      {fullVideo?.owner?.fullName || "Anonymous"}
-                    </p>
-                    <p className="text-sm text-gray-400">
-                      @{fullVideo?.owner?.userName || "user"}
-                    </p>
-                  </div>
-                </div>
+  <div className="flex items-center gap-3">
+    <img
+      src={fullVideo?.owner?.avatar || "/default-avatar.png"}
+      className="w-10 h-10 rounded-full border border-[#303030]"
+      alt="User avatar"
+    />
+    <div>
+      <p className="text-base font-semibold">
+        {fullVideo?.owner?.fullName || "Anonymous"}
+      </p>
+      <p className="text-sm text-gray-400">
+        @{fullVideo?.owner?.userName || "user"}
+      </p>
+    </div>
+  </div>
 
-                <p className="text-sm text-gray-200">
-                  {fullVideo?.description}
-                </p>
-                <p className="text-xs text-gray-400">
-                  Duration: {durationText} | Views: {fullVideo?.views || 0}
-                </p>
+  <p className="text-sm text-gray-200 leading-relaxed">
+    {fullVideo?.description}
+  </p>
 
-                <div className="flex gap-4 mt-2">
-                  <button
-                    onClick={handleLikeToggle}
-                    className={`px-4 py-2 rounded-full flex items-center gap-2 transition-all duration-200 hover:scale-105 ${
-                      isLiked
-                        ? "bg-red-600 text-white"
-                        : "bg-[#303030] text-gray-300 hover:bg-[#404040]"
-                    }`}
-                  >
-                    <ThumbsUp size={18} /> {likeCount}
-                  </button>
+  <p className="text-xs text-gray-400">
+    Duration: {durationText} | Views: {fullVideo?.views || 0}
+  </p>
 
-                  <button className="px-4 py-2 rounded-full bg-[#303030] text-gray-300 hover:bg-[#404040] flex items-center gap-2 transition-all duration-200 hover:scale-105">
-                    <Share2 size={18} /> Share
-                  </button>
-                </div>
-              </div>
+  <div className="flex gap-4 mt-3">
+    <button
+      onClick={handleLikeToggle}
+      className={`px-4 py-2 rounded-full flex items-center gap-2 transition-all duration-200 hover:scale-105 ${
+        isLiked
+          ? "bg-red-600 text-white"
+          : "bg-[#303030] text-gray-300 hover:bg-[#404040]"
+      }`}
+    >
+      <ThumbsUp size={18} /> {likeCount}
+    </button>
+
+    <button className="px-4 py-2 rounded-full bg-[#303030] text-gray-300 hover:bg-[#404040] flex items-center gap-2 transition-all duration-200 hover:scale-105">
+      <Share2 size={18} /> Share
+    </button>
+  </div>
+</div>
+
             </div>
 
             {/* Right Section - Comments */}

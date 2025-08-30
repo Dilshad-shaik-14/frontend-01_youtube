@@ -9,7 +9,7 @@ import {
   getChannelStats,
   getChannelVideos,
 } from "../Index/api";
-import VideoPlayerModal from "../components/VideoPlayerModal";
+import VideoPlayerModal from "../components/VideoPlayerModal"; 
 
 const UserDashboard = () => {
   const { currentUser } = useSelector((state) => state.auth);
