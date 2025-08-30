@@ -6,6 +6,7 @@ import { updateVideo, deleteVideo } from "../Index/api";
 import VideoPlayerModal from "./VideoPlayerModal";
 import { useDropzone } from "react-dropzone";
 import toast from "react-hot-toast";
+import { uploadThumbnailToCloudinary, uploadVideoToCloudinary } from "../utils/cloudinary";
 
 const formatDuration = (seconds) => {
   if (!seconds || isNaN(seconds)) return "0:00";
