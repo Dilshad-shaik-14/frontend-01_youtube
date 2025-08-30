@@ -11,6 +11,9 @@ import {
 } from "../Index/api";
 import VideoPlayerModal from "../components/VideoPlayerModal";
 
+const FALLBACK_AVATAR = "https://via.placeholder.com/150";
+const FALLBACK_COVER = "https://via.placeholder.com/1200x400";
+
 const UserDashboard = () => {
   const { currentUser } = useSelector((state) => state.auth);
   const userName = currentUser?.userName || "";
@@ -22,20 +25,18 @@ const UserDashboard = () => {
   const [watchHistory, setWatchHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState(false);
-
-  // Video modal state
   const [selectedVideo, setSelectedVideo] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       if (!userName || !channelId) {
-        toast.error("User not logged in or username/channel ID missing");
+        toast.error("User not logged in or missing info");
         setLoading(false);
         return;
       }
+
       try {
         setLoading(true);
-
         const [channelRes, statsRes, videosRes, historyRes] = await Promise.all([
           getUserChannelProfile(userName),
           getChannelStats(channelId),
@@ -43,14 +44,18 @@ const UserDashboard = () => {
           getWatchHistory(),
         ]);
 
-        setChannel(channelRes.data);
-        setChannelStats(statsRes.data);
-        setChannelVideos(videosRes.data.videos);
-        setWatchHistory(historyRes.data);
+        const channelData = channelRes.data || {};
+        // guarantee avatar and cover
+        channelData.avatar = channelData.avatar || FALLBACK_AVATAR;
+        channelData.coverImage = channelData.coverImage || FALLBACK_COVER;
+
+        setChannel(channelData);
+        setChannelStats(statsRes.data || {});
+        setChannelVideos(videosRes.data?.videos || []);
+        setWatchHistory(historyRes.data || []);
       } catch (err) {
-        toast.error(
-          err.response?.data?.message || err.message || "Failed to load data"
-        );
+        console.error(err);
+        toast.error(err?.response?.data?.message || "Failed to load data");
       } finally {
         setLoading(false);
       }
@@ -60,12 +65,7 @@ const UserDashboard = () => {
   }, [userName, channelId]);
 
   const handleDeleteHistory = async () => {
-    if (
-      !window.confirm(
-        "Are you sure you want to delete your entire watch history? This action cannot be undone."
-      )
-    )
-      return;
+    if (!window.confirm("Delete entire watch history? This cannot be undone.")) return;
 
     try {
       setDeleting(true);
@@ -73,9 +73,7 @@ const UserDashboard = () => {
       setWatchHistory([]);
       toast.success("Watch history deleted successfully");
     } catch (err) {
-      toast.error(
-        err.response?.data?.message || err.message || "Failed to delete history"
-      );
+      toast.error(err?.response?.data?.message || "Failed to delete history");
     } finally {
       setDeleting(false);
     }
@@ -83,60 +81,40 @@ const UserDashboard = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-base-200 dark:bg-base-300 text-base-content text-xl font-semibold select-none">
+      <div className="flex items-center justify-center h-screen text-xl font-semibold">
         Loading your dashboard...
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-base-200 dark:bg-base-300 text-base-content px-10 py-14 max-w-[1440px] mx-auto space-y-12">
+    <div className="min-h-screen px-10 py-14 max-w-[1440px] mx-auto space-y-12">
       {/* Channel Profile */}
       {channel && (
-        <motion.section
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-base-100 dark:bg-base-200 rounded-2xl shadow-lg overflow-hidden"
-        >
+        <motion.section initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} className="rounded-2xl shadow-lg overflow-hidden">
           {/* Cover Banner */}
           <div
-            className="w-full h-40 sm:h-44 bg-cover bg-center border-b-4 border-error cursor-pointer hover:brightness-105 transition duration-300"
-            style={{ backgroundImage: `url(${channel.coverImage || "/default-cover.jpg"})` }}
+            className="w-full h-40 sm:h-44 bg-cover bg-center border-b-4 border-red-500"
+            style={{ backgroundImage: `url(${channel.coverImage})` }}
             aria-label="Channel Cover Image"
           />
 
           <div className="flex flex-col sm:flex-row items-center sm:items-start px-10 py-5 gap-6">
             <motion.img
-              src={channel.avatar || "/default-avatar.png"}
+              src={channel.avatar}
               alt={`${channel.fullName} avatar`}
-              className="w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover border-4 border-error shadow"
-              whileHover={{ scale: 1.08 }}
-              transition={{ type: "spring", stiffness: 300 }}
+              className="w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover border-4 border-red-500 shadow"
             />
 
             <div className="flex-1 select-text">
-              <h1 className="text-3xl sm:text-4xl font-extrabold tracking-wide">
-                {channel.fullName}
-              </h1>
-              <p className="text-md sm:text-lg text-gray-500 font-semibold mt-1">@{channel.userName}</p>
-              <p className="mt-2 text-gray-400 text-sm sm:text-base">{channel.email}</p>
+              <h1 className="text-3xl sm:text-4xl font-extrabold">{channel.fullName || "No Name"}</h1>
+              <p className="text-gray-500 font-semibold mt-1">@{channel.userName || "unknown"}</p>
+              <p className="mt-2 text-gray-400 text-sm">{channel.email || "No Email"}</p>
 
               <div className="mt-5 flex flex-wrap gap-6 font-semibold text-lg">
                 <StatCard label="Subscribers" value={channel.subscribersCount || 0} compact />
                 <StatCard label="Subscriptions" value={channel.subscribedToCount || 0} compact />
               </div>
-
-              {typeof channel.isSubscribed === "boolean" && (
-                <div
-                  className={`mt-5 inline-block px-5 py-1 rounded-full font-semibold select-none text-base sm:text-lg ${
-                    channel.isSubscribed
-                      ? "bg-error text-base-100 shadow-md"
-                      : "bg-gray-400 text-base-content"
-                  } transition duration-300`}
-                >
-                  {channel.isSubscribed ? "Subscribed" : "Not Subscribed"}
-                </div>
-              )}
             </div>
           </div>
         </motion.section>
@@ -144,143 +122,68 @@ const UserDashboard = () => {
 
       {/* Channel Stats */}
       {channelStats && (
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-base-100 dark:bg-base-200 rounded-2xl shadow-lg p-6 sm:p-8"
-        >
-          <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-error uppercase tracking-widest">
-            Channel Stats
-          </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-10 text-center">
-            <StatCard label="Total Views" value={channelStats.totalViews} compact />
-            <StatCard label="Total Likes" value={channelStats.totalLikes} compact />
-            <StatCard label="Subscribers" value={channelStats.totalSubscribers} compact />
-            <StatCard label="Videos Uploaded" value={channelStats.totalVideos} compact />
+        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="rounded-2xl shadow-lg p-6 sm:p-8">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-red-500 uppercase tracking-widest">Channel Stats</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
+            <StatCard label="Total Views" value={channelStats.totalViews || 0} compact />
+            <StatCard label="Total Likes" value={channelStats.totalLikes || 0} compact />
+            <StatCard label="Subscribers" value={channelStats.totalSubscribers || 0} compact />
+            <StatCard label="Videos Uploaded" value={channelStats.totalVideos || 0} compact />
           </div>
         </motion.section>
       )}
 
       {/* Channel Videos */}
       <section>
-        <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-error uppercase tracking-wide">
-          My Uploaded Videos
-        </h2>
-        {channelVideos.length === 0 ? (
-          <p className="text-gray-500 text-base sm:text-lg select-none">
-            You have not uploaded any videos yet.
-          </p>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 sm:gap-6">
-            {channelVideos.map((video) => (
-              <motion.div
-                key={video._id}
-                whileHover={{ scale: 1.04 }}
-                className="bg-base-100 dark:bg-base-200 rounded-xl shadow-md cursor-pointer overflow-hidden transition-transform duration-300"
-                title={video.title}
-                onClick={() => setSelectedVideo(video)} // OPEN VIDEO MODAL
-              >
-                <img
-                  src={video.thumbnail}
-                  alt={video.title}
-                  className="w-full h-36 sm:h-40 object-cover border-b-4 border-error transition duration-300 hover:brightness-110"
-                />
-                <div className="p-4 sm:p-5">
-                  <h3 className="text-lg sm:text-xl font-semibold mb-1 truncate">
-                    {video.title}
-                  </h3>
-                  <div className="mt-2 text-gray-500 text-xs sm:text-sm flex justify-between font-mono tracking-wide">
-                    <span>{video.views?.toLocaleString() || 0} views</span>
-                    <span>{new Date(video.createdAt).toLocaleDateString()}</span>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        )}
+        <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-red-500 uppercase tracking-wide">My Uploaded Videos</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 sm:gap-6">
+          {channelVideos.length > 0 ? channelVideos.map((video) => (
+            <motion.div key={video._id} whileHover={{ scale: 1.04 }} className="rounded-xl shadow-md overflow-hidden">
+              <img src={video.thumbnail || FALLBACK_COVER} alt={video.title || "No title"} className="w-full h-36 sm:h-40 object-cover" />
+              <div className="p-4 sm:p-5">
+                <h3 className="text-lg sm:text-xl font-semibold truncate">{video.title || "Untitled"}</h3>
+                <p className="text-gray-500 text-xs sm:text-sm">{new Date(video.createdAt || Date.now()).toLocaleDateString()}</p>
+              </div>
+            </motion.div>
+          )) : <p>No uploaded videos yet.</p>}
+        </div>
       </section>
 
       {/* Watch History */}
       <section>
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl sm:text-3xl font-bold text-error uppercase tracking-wide">
-            Watch History
-          </h2>
+          <h2 className="text-2xl sm:text-3xl font-bold text-red-500 uppercase tracking-wide">Watch History</h2>
           <button
             onClick={handleDeleteHistory}
             disabled={deleting || watchHistory.length === 0}
-            className={`px-4 sm:px-5 py-2 sm:py-3 rounded-xl font-semibold transition duration-300 shadow-md ${
-              deleting || watchHistory.length === 0
-                ? "bg-gray-400 cursor-not-allowed text-gray-700"
-                : "bg-error hover:bg-error-focus text-base-100"
-            }`}
+            className={`px-4 py-2 rounded-xl font-semibold ${deleting || watchHistory.length === 0 ? "bg-gray-400 cursor-not-allowed" : "bg-red-500 text-white"}`}
           >
             {deleting ? "Deleting..." : "Delete Watch History"}
           </button>
         </div>
-
-        {watchHistory.length === 0 ? (
-          <p className="text-gray-500 text-base sm:text-lg select-none">
-            Your watch history is empty.
-          </p>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 sm:gap-6">
-            {watchHistory.map((video) => (
-              <motion.div
-                key={video._id}
-                whileHover={{ scale: 1.04 }}
-                className="bg-base-100 dark:bg-base-200 rounded-xl shadow-md cursor-pointer overflow-hidden transition-transform duration-300"
-                title={video.title}
-                onClick={() => setSelectedVideo(video)} // OPEN VIDEO MODAL
-              >
-                <img
-                  src={video.thumbnail}
-                  alt={video.title}
-                  className="w-full h-36 sm:h-40 object-cover border-b-4 border-error transition duration-300 hover:brightness-110"
-                />
-                <div className="p-4 sm:p-5">
-                  <h3 className="text-lg sm:text-xl font-semibold mb-1 truncate">{video.title}</h3>
-                  <div className="flex items-center space-x-3 text-gray-500 text-xs sm:text-sm font-mono tracking-wide">
-                    <img
-                      src={video.owner?.avatar || "/default-avatar.png"}
-                      alt={video.owner?.fullName}
-                      className="w-6 sm:w-7 h-6 sm:h-7 rounded-full object-cover border-2 border-error shadow-sm transition-transform duration-300 hover:scale-110"
-                    />
-                    <span>{video.owner?.fullName}</span>
-                  </div>
-                  <div className="mt-2 text-gray-500 text-xs sm:text-sm flex justify-between font-mono tracking-wide">
-                    <span>{video.views?.toLocaleString() || 0} views</span>
-                    <span>{new Date(video.createdAt).toLocaleDateString()}</span>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        )}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 sm:gap-6">
+          {watchHistory.length > 0 ? watchHistory.map((video) => (
+            <motion.div key={video._id} whileHover={{ scale: 1.04 }} className="rounded-xl shadow-md overflow-hidden">
+              <img src={video.thumbnail || FALLBACK_COVER} alt={video.title || "No title"} className="w-full h-36 sm:h-40 object-cover" />
+              <div className="p-4 sm:p-5 flex items-center gap-2">
+                <img src={video.owner?.avatar || FALLBACK_AVATAR} alt={video.owner?.fullName || "User"} className="w-6 h-6 rounded-full object-cover" />
+                <span>{video.owner?.fullName || "Unknown"}</span>
+              </div>
+            </motion.div>
+          )) : <p>Your watch history is empty.</p>}
+        </div>
       </section>
 
-      {/* Video Player Modal */}
-      {selectedVideo && (
-        <VideoPlayerModal
-          video={selectedVideo}
-          onClose={() => setSelectedVideo(null)}
-        />
-      )}
+      {/* Video Modal */}
+      {selectedVideo && <VideoPlayerModal video={selectedVideo} onClose={() => setSelectedVideo(null)} />}
     </div>
   );
 };
 
-// StatCard remains unchanged
 const StatCard = ({ label, value, compact }) => (
-  <div
-    className={`bg-base-200 dark:bg-base-300 rounded-2xl shadow-md p-5 cursor-default select-none transition-transform duration-300 hover:scale-105`}
-  >
-    <p className={`font-extrabold text-error ${compact ? "text-3xl" : "text-4xl"}`}>
-      {value.toLocaleString()}
-    </p>
-    <p className={`mt-1 text-gray-500 uppercase tracking-wider font-semibold ${compact ? "text-sm" : "text-base"}`}>
-      {label}
-    </p>
+  <div className="rounded-2xl shadow-md p-5 cursor-default">
+    <p className={`font-extrabold text-red-500 ${compact ? "text-3xl" : "text-4xl"}`}>{value?.toLocaleString() || 0}</p>
+    <p className={`mt-1 text-gray-500 uppercase tracking-wider font-semibold ${compact ? "text-sm" : "text-base"}`}>{label}</p>
   </div>
 );
 
