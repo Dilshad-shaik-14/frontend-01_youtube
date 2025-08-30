@@ -26,38 +26,43 @@ const UserDashboard = () => {
   // Video modal state
   const [selectedVideo, setSelectedVideo] = useState(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!userName || !channelId) {
-        toast.error("User not logged in or username/channel ID missing");
-        setLoading(false);
-        return;
-      }
-      try {
-        setLoading(true);
+useEffect(() => {
+  const fetchData = async () => {
+    const trimmedUserName = currentUser?.userName?.trim(); // ✅ Trim whitespace/newlines
+    const channelId = currentUser?._id;
 
-        const [channelRes, statsRes, videosRes, historyRes] = await Promise.all([
-          getUserChannelProfile(userName),
-          getChannelStats(channelId),
-          getChannelVideos(channelId),
-          getWatchHistory(),
-        ]);
+    if (!trimmedUserName || !channelId) {
+      toast.error("User not logged in or username/channel ID missing");
+      setLoading(false);
+      return;
+    }
 
-        setChannel(channelRes.data);
-        setChannelStats(statsRes.data);
-        setChannelVideos(videosRes.data.videos);
-        setWatchHistory(historyRes.data);
-      } catch (err) {
-        toast.error(
-          err.response?.data?.message || err.message || "Failed to load data"
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
+    try {
+      setLoading(true);
 
-    fetchData();
-  }, [userName, channelId]);
+      const [channelRes, statsRes, videosRes, historyRes] = await Promise.all([
+        getUserChannelProfile(trimmedUserName), // use trimmed username
+        getChannelStats(channelId),
+        getChannelVideos(channelId),
+        getWatchHistory(),
+      ]);
+
+      setChannel(channelRes.data);
+      setChannelStats(statsRes.data);
+      setChannelVideos(videosRes.data.videos);
+      setWatchHistory(historyRes.data);
+    } catch (err) {
+      toast.error(
+        err.response?.data?.message || err.message || "Failed to load data"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchData();
+}, [currentUser]);
+
 
   const handleDeleteHistory = async () => {
     if (
