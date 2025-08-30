@@ -23,42 +23,49 @@ const UserDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState(false);
 
+  // Video modal state
   const [selectedVideo, setSelectedVideo] = useState(null);
 
   useEffect(() => {
-    const fetchDashboardData = async () => {
+    const fetchData = async () => {
       if (!userName || !channelId) {
-        toast.error("User not logged in or missing info");
+        toast.error("User not logged in or username/channel ID missing");
         setLoading(false);
         return;
       }
-
       try {
         setLoading(true);
 
-        const [channelData, statsData, videosData, historyData] = await Promise.all([
+        const [channelRes, statsRes, videosRes, historyRes] = await Promise.all([
           getUserChannelProfile(userName),
           getChannelStats(channelId),
           getChannelVideos(channelId),
           getWatchHistory(),
         ]);
 
-        setChannel(channelData || {});
-        setChannelStats(statsData || {});
-        setChannelVideos(videosData?.videos || []);
-        setWatchHistory(historyData || []);
+        setChannel(channelRes.data);
+        setChannelStats(statsRes.data);
+        setChannelVideos(videosRes.data.videos);
+        setWatchHistory(historyRes.data);
       } catch (err) {
-        toast.error(err.response?.data?.message || err.message || "Failed to load dashboard data");
+        toast.error(
+          err.response?.data?.message || err.message || "Failed to load data"
+        );
       } finally {
         setLoading(false);
       }
     };
 
-    fetchDashboardData();
+    fetchData();
   }, [userName, channelId]);
 
   const handleDeleteHistory = async () => {
-    if (!window.confirm("Are you sure you want to delete your entire watch history?")) return;
+    if (
+      !window.confirm(
+        "Are you sure you want to delete your entire watch history? This action cannot be undone."
+      )
+    )
+      return;
 
     try {
       setDeleting(true);
@@ -66,7 +73,9 @@ const UserDashboard = () => {
       setWatchHistory([]);
       toast.success("Watch history deleted successfully");
     } catch (err) {
-      toast.error(err.response?.data?.message || err.message || "Failed to delete history");
+      toast.error(
+        err.response?.data?.message || err.message || "Failed to delete history"
+      );
     } finally {
       setDeleting(false);
     }
@@ -99,7 +108,7 @@ const UserDashboard = () => {
           <div className="flex flex-col sm:flex-row items-center sm:items-start px-10 py-5 gap-6">
             <motion.img
               src={channel.avatar || "/default-avatar.png"}
-              alt={`${channel.fullName || "User"} avatar`}
+              alt={`${channel.fullName} avatar`}
               className="w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover border-4 border-error shadow"
               whileHover={{ scale: 1.08 }}
               transition={{ type: "spring", stiffness: 300 }}
@@ -107,12 +116,10 @@ const UserDashboard = () => {
 
             <div className="flex-1 select-text">
               <h1 className="text-3xl sm:text-4xl font-extrabold tracking-wide">
-                {channel.fullName || "Unknown"}
+                {channel.fullName}
               </h1>
-              <p className="text-md sm:text-lg text-gray-500 font-semibold mt-1">
-                @{channel.userName || "unknown"}
-              </p>
-              <p className="mt-2 text-gray-400 text-sm sm:text-base">{channel.email || "No email"}</p>
+              <p className="text-md sm:text-lg text-gray-500 font-semibold mt-1">@{channel.userName}</p>
+              <p className="mt-2 text-gray-400 text-sm sm:text-base">{channel.email}</p>
 
               <div className="mt-5 flex flex-wrap gap-6 font-semibold text-lg">
                 <StatCard label="Subscribers" value={channel.subscribersCount || 0} compact />
@@ -146,10 +153,10 @@ const UserDashboard = () => {
             Channel Stats
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-10 text-center">
-            <StatCard label="Total Views" value={channelStats.totalViews || 0} compact />
-            <StatCard label="Total Likes" value={channelStats.totalLikes || 0} compact />
-            <StatCard label="Subscribers" value={channelStats.totalSubscribers || 0} compact />
-            <StatCard label="Videos Uploaded" value={channelStats.totalVideos || 0} compact />
+            <StatCard label="Total Views" value={channelStats.totalViews} compact />
+            <StatCard label="Total Likes" value={channelStats.totalLikes} compact />
+            <StatCard label="Subscribers" value={channelStats.totalSubscribers} compact />
+            <StatCard label="Videos Uploaded" value={channelStats.totalVideos} compact />
           </div>
         </motion.section>
       )}
@@ -160,7 +167,9 @@ const UserDashboard = () => {
           My Uploaded Videos
         </h2>
         {channelVideos.length === 0 ? (
-          <p className="text-gray-500 text-base sm:text-lg select-none">You have not uploaded any videos yet.</p>
+          <p className="text-gray-500 text-base sm:text-lg select-none">
+            You have not uploaded any videos yet.
+          </p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 sm:gap-6">
             {channelVideos.map((video) => (
@@ -168,19 +177,21 @@ const UserDashboard = () => {
                 key={video._id}
                 whileHover={{ scale: 1.04 }}
                 className="bg-base-100 dark:bg-base-200 rounded-xl shadow-md cursor-pointer overflow-hidden transition-transform duration-300"
-                title={video.title || "No title"}
-                onClick={() => setSelectedVideo(video)}
+                title={video.title}
+                onClick={() => setSelectedVideo(video)} // OPEN VIDEO MODAL
               >
                 <img
-                  src={video.thumbnail || "/default-cover.jpg"}
-                  alt={video.title || "No title"}
+                  src={video.thumbnail}
+                  alt={video.title}
                   className="w-full h-36 sm:h-40 object-cover border-b-4 border-error transition duration-300 hover:brightness-110"
                 />
                 <div className="p-4 sm:p-5">
-                  <h3 className="text-lg sm:text-xl font-semibold mb-1 truncate">{video.title || "No title"}</h3>
+                  <h3 className="text-lg sm:text-xl font-semibold mb-1 truncate">
+                    {video.title}
+                  </h3>
                   <div className="mt-2 text-gray-500 text-xs sm:text-sm flex justify-between font-mono tracking-wide">
-                    <span>{(video.views || 0).toLocaleString()} views</span>
-                    <span>{new Date(video.createdAt || Date.now()).toLocaleDateString()}</span>
+                    <span>{video.views?.toLocaleString() || 0} views</span>
+                    <span>{new Date(video.createdAt).toLocaleDateString()}</span>
                   </div>
                 </div>
               </motion.div>
@@ -192,7 +203,9 @@ const UserDashboard = () => {
       {/* Watch History */}
       <section>
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl sm:text-3xl font-bold text-error uppercase tracking-wide">Watch History</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold text-error uppercase tracking-wide">
+            Watch History
+          </h2>
           <button
             onClick={handleDeleteHistory}
             disabled={deleting || watchHistory.length === 0}
@@ -207,7 +220,9 @@ const UserDashboard = () => {
         </div>
 
         {watchHistory.length === 0 ? (
-          <p className="text-gray-500 text-base sm:text-lg select-none">Your watch history is empty.</p>
+          <p className="text-gray-500 text-base sm:text-lg select-none">
+            Your watch history is empty.
+          </p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 sm:gap-6">
             {watchHistory.map((video) => (
@@ -215,27 +230,27 @@ const UserDashboard = () => {
                 key={video._id}
                 whileHover={{ scale: 1.04 }}
                 className="bg-base-100 dark:bg-base-200 rounded-xl shadow-md cursor-pointer overflow-hidden transition-transform duration-300"
-                title={video.title || "No title"}
-                onClick={() => setSelectedVideo(video)}
+                title={video.title}
+                onClick={() => setSelectedVideo(video)} // OPEN VIDEO MODAL
               >
                 <img
-                  src={video.thumbnail || "/default-cover.jpg"}
-                  alt={video.title || "No title"}
+                  src={video.thumbnail}
+                  alt={video.title}
                   className="w-full h-36 sm:h-40 object-cover border-b-4 border-error transition duration-300 hover:brightness-110"
                 />
                 <div className="p-4 sm:p-5">
-                  <h3 className="text-lg sm:text-xl font-semibold mb-1 truncate">{video.title || "No title"}</h3>
+                  <h3 className="text-lg sm:text-xl font-semibold mb-1 truncate">{video.title}</h3>
                   <div className="flex items-center space-x-3 text-gray-500 text-xs sm:text-sm font-mono tracking-wide">
                     <img
                       src={video.owner?.avatar || "/default-avatar.png"}
-                      alt={video.owner?.fullName || "User"}
+                      alt={video.owner?.fullName}
                       className="w-6 sm:w-7 h-6 sm:h-7 rounded-full object-cover border-2 border-error shadow-sm transition-transform duration-300 hover:scale-110"
                     />
-                    <span>{video.owner?.fullName || "Unknown"}</span>
+                    <span>{video.owner?.fullName}</span>
                   </div>
                   <div className="mt-2 text-gray-500 text-xs sm:text-sm flex justify-between font-mono tracking-wide">
-                    <span>{(video.views || 0).toLocaleString()} views</span>
-                    <span>{new Date(video.createdAt || Date.now()).toLocaleDateString()}</span>
+                    <span>{video.views?.toLocaleString() || 0} views</span>
+                    <span>{new Date(video.createdAt).toLocaleDateString()}</span>
                   </div>
                 </div>
               </motion.div>
@@ -244,15 +259,24 @@ const UserDashboard = () => {
         )}
       </section>
 
-      {selectedVideo && <VideoPlayerModal video={selectedVideo} onClose={() => setSelectedVideo(null)} />}
+      {/* Video Player Modal */}
+      {selectedVideo && (
+        <VideoPlayerModal
+          video={selectedVideo}
+          onClose={() => setSelectedVideo(null)}
+        />
+      )}
     </div>
   );
 };
 
+// StatCard remains unchanged
 const StatCard = ({ label, value, compact }) => (
-  <div className="bg-base-200 dark:bg-base-300 rounded-2xl shadow-md p-5 cursor-default select-none transition-transform duration-300 hover:scale-105">
+  <div
+    className={`bg-base-200 dark:bg-base-300 rounded-2xl shadow-md p-5 cursor-default select-none transition-transform duration-300 hover:scale-105`}
+  >
     <p className={`font-extrabold text-error ${compact ? "text-3xl" : "text-4xl"}`}>
-      {(value || 0).toLocaleString()}
+      {value.toLocaleString()}
     </p>
     <p className={`mt-1 text-gray-500 uppercase tracking-wider font-semibold ${compact ? "text-sm" : "text-base"}`}>
       {label}
