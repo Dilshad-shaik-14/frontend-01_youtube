@@ -102,6 +102,7 @@ export default function VideoPlayerModal({ video, onClose }) {
           transition={{ duration: 0.3, ease: "easeInOut" }}
         >
           <div className="relative w-full max-w-[90rem] max-h-[95vh] bg-[#181818] text-white rounded-xl shadow-2xl overflow-hidden flex flex-col md:flex-row">
+            
             {/* Close Button */}
             <button
               onClick={onClose}
@@ -112,6 +113,8 @@ export default function VideoPlayerModal({ video, onClose }) {
 
             {/* Left Section - Video & Info */}
             <div className="w-full md:w-2/3 aspect-video md:aspect-[16/9] flex flex-col max-h-[80vh]">
+              
+              {/* Video Player */}
               {loading ? (
                 <div className="flex-1 flex items-center justify-center">
                   Loading video...
@@ -128,55 +131,57 @@ export default function VideoPlayerModal({ video, onClose }) {
                 </div>
               )}
 
+              {/* Video Details */}
               <div className="p-6 space-y-4 border-t border-[#303030] overflow-y-auto min-h-[220px]">
-  <h2 className="text-xl font-bold">{fullVideo?.title}</h2>
+                <h2 className="text-xl font-bold">{fullVideo?.title}</h2>
 
-  <div className="flex items-center gap-3">
-    <img
-      src={fullVideo?.owner?.avatar || "/default-avatar.png"}
-      className="w-10 h-10 rounded-full border border-[#303030]"
-      alt="User avatar"
-    />
-    <div>
-      <p className="text-base font-semibold">
-        {fullVideo?.owner?.fullName || "Anonymous"}
-      </p>
-      <p className="text-sm text-gray-400">
-        @{fullVideo?.owner?.userName || "user"}
-      </p>
-    </div>
-  </div>
+                <div className="flex items-center gap-3">
+                  <img
+                    src={fullVideo?.owner?.avatar || "/default-avatar.png"}
+                    className="w-10 h-10 rounded-full border border-[#303030]"
+                    alt="User avatar"
+                  />
+                  <div>
+                    <p className="text-base font-semibold">
+                      {fullVideo?.owner?.fullName || "Anonymous"}
+                    </p>
+                    <p className="text-sm text-gray-400">
+                      @{fullVideo?.owner?.userName || "user"}
+                    </p>
+                  </div>
+                </div>
 
-  <p className="text-sm text-gray-200 leading-relaxed">
-    {fullVideo?.description}
-  </p>
+                <p className="text-sm text-gray-200 leading-relaxed">
+                  {fullVideo?.description}
+                </p>
 
-  <p className="text-xs text-gray-400">
-    Duration: {durationText} | Views: {fullVideo?.views || 0}
-  </p>
+                <p className="text-xs text-gray-400">
+                  Duration: {durationText} | Views: {fullVideo?.views || 0}
+                </p>
 
-  <div className="flex gap-4 mt-3">
-    <button
-      onClick={handleLikeToggle}
-      className={`px-4 py-2 rounded-full flex items-center gap-2 transition-all duration-200 hover:scale-105 ${
-        isLiked
-          ? "bg-red-600 text-white"
-          : "bg-[#303030] text-gray-300 hover:bg-[#404040]"
-      }`}
-    >
-      <ThumbsUp size={18} /> {likeCount}
-    </button>
+                <div className="flex gap-4 mt-3">
+                  <button
+                    onClick={handleLikeToggle}
+                    className={`px-4 py-2 rounded-full flex items-center gap-2 transition-all duration-200 hover:scale-105 ${
+                      isLiked
+                        ? "bg-red-600 text-white"
+                        : "bg-[#303030] text-gray-300 hover:bg-[#404040]"
+                    }`}
+                  >
+                    <ThumbsUp size={18} /> {likeCount}
+                  </button>
 
-    <button className="px-4 py-2 rounded-full bg-[#303030] text-gray-300 hover:bg-[#404040] flex items-center gap-2 transition-all duration-200 hover:scale-105">
-      <Share2 size={18} /> Share
-    </button>
-  </div>
-</div>
-
+                  <button className="px-4 py-2 rounded-full bg-[#303030] text-gray-300 hover:bg-[#404040] flex items-center gap-2 transition-all duration-200 hover:scale-105">
+                    <Share2 size={18} /> Share
+                  </button>
+                </div>
+              </div>
             </div>
 
             {/* Right Section - Comments */}
             <div className="w-full md:w-1/3 bg-[#0f0f0f] border-l border-[#303030] p-4 flex flex-col max-h-[95vh]">
+              
+              {/* Add Comment */}
               <textarea
                 rows={2}
                 placeholder="Add a comment..."
@@ -198,6 +203,7 @@ export default function VideoPlayerModal({ video, onClose }) {
                 {isPostingComment ? "Posting..." : "Post"}
               </button>
 
+              {/* Comments List */}
               <div className="mt-4 overflow-y-auto flex-1 scrollbar-thin scrollbar-thumb-[#303030] hover:scrollbar-thumb-[#404040] scrollbar-track-transparent pr-1">
                 {comments.length === 0 ? (
                   <p className="text-sm text-gray-500">No comments yet.</p>
@@ -222,7 +228,9 @@ export default function VideoPlayerModal({ video, onClose }) {
                           </p>
                         </div>
                       </div>
+
                       <p className="text-sm mt-1 text-gray-200">{c.content}</p>
+
                       <button
                         onClick={() => handleCommentLike(c._id, i)}
                         className={`mt-2 text-xs px-3 py-1 rounded-full flex items-center gap-1 transition-all duration-200 hover:scale-105 ${
