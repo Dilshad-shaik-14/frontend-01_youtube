@@ -39,47 +39,48 @@ export default function EditableVideoCard({ video, onRefresh, editable }) {
     }
   }, [video]);
 
-  const handleUpdate = async () => {
-    try {
-      setUpdating(true);
-      setUploadProgress(0);
+const handleUpdate = async () => {
+  try {
+    setUpdating(true);
+    setUploadProgress(0);
 
-      const formData = new FormData();
-      formData.append("title", editData.title);
-      formData.append("description", editData.description);
+    const formData = new FormData();
+    formData.append("title", editData.title.trim());
+    formData.append("description", editData.description.trim());
 
-      if (editData.thumbnail instanceof File) {
-        formData.append("thumbnail", editData.thumbnail);
-      }
-      if (editData.videoFile instanceof File) {
-        formData.append("videoFile", editData.videoFile);
-      }
-
-      const updatedVideo = await updateVideo(
-        video._id,
-        formData,
-        (progressEvent) => {
-          if (!progressEvent?.total) return;
-          const percent = Math.round(
-            (progressEvent.loaded * 100) / progressEvent.total
-          );
-          setUploadProgress(percent);
-        }
-      );
-
-      toast.success("Video updated successfully 🎉");
-      setEditing(false);
-      setUploadProgress(0);
-
-      // ✅ Always send latest updated video back
-      onRefresh?.(updatedVideo);
-    } catch (err) {
-      console.error("Update failed:", err);
-      toast.error("Failed to update video ❌");
-    } finally {
-      setUpdating(false);
+    // ✅ Only append real File objects
+    if (editData.thumbnail instanceof File) {
+      formData.append("thumbnail", editData.thumbnail);
     }
-  };
+    if (editData.videoFile instanceof File) {
+      formData.append("videoFile", editData.videoFile);
+    }
+
+    const updatedVideo = await updateVideo(
+      video._id,
+      formData,
+      (progressEvent) => {
+        if (!progressEvent?.total) return;
+        const percent = Math.round(
+          (progressEvent.loaded * 100) / progressEvent.total
+        );
+        setUploadProgress(percent);
+      }
+    );
+
+    toast.success("Video updated successfully 🎉");
+    setEditing(false);
+    setUploadProgress(0);
+
+    onRefresh?.(updatedVideo); // ✅ return updated video to parent
+  } catch (err) {
+    console.error("Update failed:", err);
+    toast.error("Failed to update video ❌");
+  } finally {
+    setUpdating(false);
+  }
+};
+
 
   const handleDelete = async () => {
     try {
