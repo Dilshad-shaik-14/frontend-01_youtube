@@ -23,7 +23,6 @@ const UserDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState(false);
 
-  // Video modal state
   const [selectedVideo, setSelectedVideo] = useState(null);
 
   useEffect(() => {
@@ -35,7 +34,6 @@ const UserDashboard = () => {
       }
       try {
         setLoading(true);
-
         const [channelRes, statsRes, videosRes, historyRes] = await Promise.all([
           getUserChannelProfile(userName),
           getChannelStats(channelId),
@@ -100,17 +98,18 @@ const UserDashboard = () => {
         >
           {/* Cover Banner */}
           <div
-            className="w-full h-40 sm:h-44 bg-cover bg-center border-b-4 border-error cursor-pointer hover:brightness-105 transition duration-300"
-            style={{ backgroundImage: `url(${channel.coverImage})` }}
+            className="w-full h-40 sm:h-44 bg-cover bg-center border-b-4 border-error transition duration-300"
+            style={{
+              backgroundImage: `url(${
+                channel.coverImage || "/default-cover.jpg"
+              })`,
+            }}
             aria-label="Channel Cover Image"
-            onError={(e) =>
-              (e.currentTarget.style.backgroundImage = "url(/default-cover.jpg)")
-            }
           />
 
           <div className="flex flex-col sm:flex-row items-center sm:items-start px-10 py-5 gap-6">
             <motion.img
-              src={channel.avatar}
+              src={channel.avatar || "/default-avatar.png"}
               alt={`${channel.fullName} avatar`}
               className="w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover border-4 border-error shadow"
               whileHover={{ scale: 1.08 }}
@@ -125,11 +124,21 @@ const UserDashboard = () => {
               <p className="text-md sm:text-lg text-gray-500 font-semibold mt-1">
                 @{channel.userName}
               </p>
-              <p className="mt-2 text-gray-400 text-sm sm:text-base">{channel.email}</p>
+              <p className="mt-2 text-gray-400 text-sm sm:text-base">
+                {channel.email}
+              </p>
 
               <div className="mt-5 flex flex-wrap gap-6 font-semibold text-lg">
-                <StatCard label="Subscribers" value={channel.subscribersCount || 0} compact />
-                <StatCard label="Subscriptions" value={channel.subscribedToCount || 0} compact />
+                <StatCard
+                  label="Subscribers"
+                  value={channel.subscribersCount || 0}
+                  compact
+                />
+                <StatCard
+                  label="Subscriptions"
+                  value={channel.subscribedToCount || 0}
+                  compact
+                />
               </div>
 
               {typeof channel.isSubscribed === "boolean" && (
@@ -187,9 +196,10 @@ const UserDashboard = () => {
                 onClick={() => setSelectedVideo(video)}
               >
                 <img
-                  src={video.thumbnail}
+                  src={video.thumbnail || "/default-thumbnail.jpg"}
                   alt={video.title}
-                  className="w-full h-36 sm:h-40 object-cover border-b-4 border-error transition duration-300 hover:brightness-110"
+                  className="w-full h-36 sm:h-40 object-cover border-b-4 border-error"
+                  onError={(e) => (e.currentTarget.src = "/default-thumbnail.jpg")}
                 />
                 <div className="p-4 sm:p-5">
                   <h3 className="text-lg sm:text-xl font-semibold mb-1 truncate">
@@ -240,9 +250,12 @@ const UserDashboard = () => {
                 onClick={() => setSelectedVideo(video)}
               >
                 <img
-                  src={video.thumbnail}
+                  src={video.thumbnail || "/default-thumbnail.jpg"}
                   alt={video.title}
-                  className="w-full h-36 sm:h-40 object-cover border-b-4 border-error transition duration-300 hover:brightness-110"
+                  className="w-full h-36 sm:h-40 object-cover border-b-4 border-error"
+                  onError={(e) =>
+                    (e.currentTarget.src = "/default-thumbnail.jpg")
+                  }
                 />
                 <div className="p-4 sm:p-5">
                   <h3 className="text-lg sm:text-xl font-semibold mb-1 truncate">
@@ -250,9 +263,9 @@ const UserDashboard = () => {
                   </h3>
                   <div className="flex items-center space-x-3 text-gray-500 text-xs sm:text-sm font-mono tracking-wide">
                     <img
-                      src={video.owner?.avatar}
+                      src={video.owner?.avatar || "/default-avatar.png"}
                       alt={video.owner?.fullName}
-                      className="w-6 sm:w-7 h-6 sm:h-7 rounded-full object-cover border-2 border-error shadow-sm transition-transform duration-300 hover:scale-110"
+                      className="w-6 sm:w-7 h-6 sm:h-7 rounded-full object-cover border-2 border-error shadow-sm"
                       onError={(e) => (e.currentTarget.src = "/default-avatar.png")}
                     />
                     <span>{video.owner?.fullName}</span>
@@ -270,18 +283,22 @@ const UserDashboard = () => {
 
       {/* Video Player Modal */}
       {selectedVideo && (
-        <VideoPlayerModal video={selectedVideo} onClose={() => setSelectedVideo(null)} />
+        <VideoPlayerModal
+          video={selectedVideo}
+          onClose={() => setSelectedVideo(null)}
+        />
       )}
     </div>
   );
 };
 
-// StatCard remains unchanged
 const StatCard = ({ label, value, compact }) => (
-  <div
-    className={`bg-base-200 dark:bg-base-300 rounded-2xl shadow-md p-5 cursor-default select-none transition-transform duration-300 hover:scale-105`}
-  >
-    <p className={`font-extrabold text-error ${compact ? "text-3xl" : "text-4xl"}`}>
+  <div className="bg-base-200 dark:bg-base-300 rounded-2xl shadow-md p-5 cursor-default select-none transition-transform duration-300 hover:scale-105">
+    <p
+      className={`font-extrabold text-error ${
+        compact ? "text-3xl" : "text-4xl"
+      }`}
+    >
       {value.toLocaleString()}
     </p>
     <p
