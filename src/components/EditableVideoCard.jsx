@@ -44,35 +44,36 @@ const handleUpdate = async () => {
     setUpdating(true);
     setUploadProgress(0);
 
-    const formData = new FormData();
-    formData.append("title", editData.title.trim());
-    formData.append("description", editData.description.trim());
+    let thumbnailUrl = video.thumbnail;
+    let videoUrl = video.videoFile;
 
-    // ✅ Only append real File objects
+    // ✅ Upload new thumbnail if file was changed
     if (editData.thumbnail instanceof File) {
-      formData.append("thumbnail", editData.thumbnail);
-    }
-    if (editData.videoFile instanceof File) {
-      formData.append("videoFile", editData.videoFile);
+      thumbnailUrl = await uploadThumbnailToCloudinary(editData.thumbnail);
     }
 
-    const updatedVideo = await updateVideo(
-      video._id,
-      formData,
-      (progressEvent) => {
-        if (!progressEvent?.total) return;
-        const percent = Math.round(
-          (progressEvent.loaded * 100) / progressEvent.total
-        );
-        setUploadProgress(percent);
-      }
-    );
+    // ✅ Upload new video if file was changed
+    if (editData.videoFile instanceof File) {
+      videoUrl = await uploadVideoToCloudinary(editData.videoFile);
+    }
+
+    // ✅ Prepare payload with Cloudinary URLs
+    const payload = {
+      title: editData.title.trim(),
+      description: editData.description.trim(),
+      thumbnail: thumbnailUrl,
+      videoFile: videoUrl,
+    };
+
+    // ✅ Call backend updateVideo with Cloudinary URLs
+    const updatedVideo = await updateVideo(video._id, payload);
 
     toast.success("Video updated successfully 🎉");
     setEditing(false);
     setUploadProgress(0);
 
-    onRefresh?.(updatedVideo.data); 
+    // ⛔️ If updateVideo returns wrapped response, pass only `updatedVideo.data`
+    onRefresh?.(updatedVideo.data || updatedVideo);
   } catch (err) {
     console.error("Update failed:", err);
     toast.error("Failed to update video ❌");
@@ -80,6 +81,7 @@ const handleUpdate = async () => {
     setUpdating(false);
   }
 };
+
 
 
   const handleDelete = async () => {
