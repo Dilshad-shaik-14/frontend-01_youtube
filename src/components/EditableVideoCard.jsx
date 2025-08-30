@@ -72,7 +72,7 @@ const handleUpdate = async () => {
     setEditing(false);
     setUploadProgress(0);
 
-    onRefresh?.(updatedVideo); // ✅ return updated video to parent
+    onRefresh?.(updatedVideo.data); 
   } catch (err) {
     console.error("Update failed:", err);
     toast.error("Failed to update video ❌");
