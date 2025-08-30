@@ -25,39 +25,41 @@ const UserDashboard = () => {
 
   // Video modal state
   const [selectedVideo, setSelectedVideo] = useState(null);
+useEffect(() => {
+  const fetchDashboardData = async () => {
+    if (!userName || !channelId) {
+      toast.error("User not logged in or missing info");
+      setLoading(false);
+      return;
+    }
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!userName || !channelId) {
-        toast.error("User not logged in or username/channel ID missing");
-        setLoading(false);
-        return;
-      }
-      try {
-        setLoading(true);
+    try {
+      setLoading(true);
 
-        const [channelRes, statsRes, videosRes, historyRes] = await Promise.all([
-          getUserChannelProfile(userName),
-          getChannelStats(channelId),
-          getChannelVideos(channelId),
-          getWatchHistory(),
-        ]);
+      // Fetch all data in parallel
+      const [channelData, statsData, videosData, historyData] = await Promise.all([
+        getUserChannelProfile(userName), // returns channel object directly
+        getChannelStats(channelId),       // check if this returns data directly
+        getChannelVideos(channelId),      // check if this returns data directly
+        getWatchHistory(),                // returns history array
+      ]);
 
-        setChannel(channelRes.data);
-        setChannelStats(statsRes.data);
-        setChannelVideos(videosRes.data.videos);
-        setWatchHistory(historyRes.data);
-      } catch (err) {
-        toast.error(
-          err.response?.data?.message || err.message || "Failed to load data"
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
+      // Set state
+      setChannel(channelData);              // channel object
+      setChannelStats(statsData);           // stats object
+      setChannelVideos(videosData.videos || videosData); // videos array
+      setWatchHistory(historyData || []);   // history array
+    } catch (err) {
+      toast.error(err.message || "Failed to load dashboard data");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchData();
-  }, [userName, channelId]);
+  fetchDashboardData();
+}, [userName, channelId]);
+
+
 
   const handleDeleteHistory = async () => {
     if (
