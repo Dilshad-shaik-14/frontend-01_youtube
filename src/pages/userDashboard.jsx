@@ -9,7 +9,7 @@ import {
   getChannelStats,
   getChannelVideos,
 } from "../Index/api";
-import VideoPlayerModal from "../components/VideoPlayerModal"; 
+import VideoPlayerModal from "../components/VideoPlayerModal";
 
 const UserDashboard = () => {
   const { currentUser } = useSelector((state) => state.auth);
@@ -22,7 +22,6 @@ const UserDashboard = () => {
   const [watchHistory, setWatchHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState(false);
-
   const [selectedVideo, setSelectedVideo] = useState(null);
 
   useEffect(() => {
@@ -96,21 +95,20 @@ const UserDashboard = () => {
           animate={{ opacity: 1, y: 0 }}
           className="bg-base-100 dark:bg-base-200 rounded-2xl shadow-lg overflow-hidden"
         >
-          {/* Cover Banner */}
+          {/* Cover Image */}
           <div
             className="w-full h-40 sm:h-44 bg-cover bg-center border-b-4 border-error transition duration-300"
             style={{
-              backgroundImage: `url(${
-                channel.coverImage || "/default-cover.jpg"
-              })`,
+              backgroundImage: `url(${channel?.coverImage?.trim() || "/default-cover.jpg"})`,
             }}
             aria-label="Channel Cover Image"
           />
 
+          {/* Avatar & Info */}
           <div className="flex flex-col sm:flex-row items-center sm:items-start px-10 py-5 gap-6">
             <motion.img
-              src={channel.avatar || "/default-avatar.png"}
-              alt={`${channel.fullName} avatar`}
+              src={channel?.avatar?.trim() || "/default-avatar.png"}
+              alt={`${channel?.fullName || "User"} avatar`}
               className="w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover border-4 border-error shadow"
               whileHover={{ scale: 1.08 }}
               transition={{ type: "spring", stiffness: 300 }}
@@ -119,29 +117,21 @@ const UserDashboard = () => {
 
             <div className="flex-1 select-text">
               <h1 className="text-3xl sm:text-4xl font-extrabold tracking-wide">
-                {channel.fullName}
+                {channel?.fullName || "Unnamed User"}
               </h1>
               <p className="text-md sm:text-lg text-gray-500 font-semibold mt-1">
-                @{channel.userName}
+                @{channel?.userName || "unknown"}
               </p>
               <p className="mt-2 text-gray-400 text-sm sm:text-base">
-                {channel.email}
+                {channel?.email || ""}
               </p>
 
               <div className="mt-5 flex flex-wrap gap-6 font-semibold text-lg">
-                <StatCard
-                  label="Subscribers"
-                  value={channel.subscribersCount || 0}
-                  compact
-                />
-                <StatCard
-                  label="Subscriptions"
-                  value={channel.subscribedToCount || 0}
-                  compact
-                />
+                <StatCard label="Subscribers" value={channel?.subscribersCount || 0} compact />
+                <StatCard label="Subscriptions" value={channel?.subscribedToCount || 0} compact />
               </div>
 
-              {typeof channel.isSubscribed === "boolean" && (
+              {typeof channel?.isSubscribed === "boolean" && (
                 <div
                   className={`mt-5 inline-block px-5 py-1 rounded-full font-semibold select-none text-base sm:text-lg ${
                     channel.isSubscribed
@@ -253,9 +243,7 @@ const UserDashboard = () => {
                   src={video.thumbnail || "/default-thumbnail.jpg"}
                   alt={video.title}
                   className="w-full h-36 sm:h-40 object-cover border-b-4 border-error"
-                  onError={(e) =>
-                    (e.currentTarget.src = "/default-thumbnail.jpg")
-                  }
+                  onError={(e) => (e.currentTarget.src = "/default-thumbnail.jpg")}
                 />
                 <div className="p-4 sm:p-5">
                   <h3 className="text-lg sm:text-xl font-semibold mb-1 truncate">
@@ -263,12 +251,12 @@ const UserDashboard = () => {
                   </h3>
                   <div className="flex items-center space-x-3 text-gray-500 text-xs sm:text-sm font-mono tracking-wide">
                     <img
-                      src={video.owner?.avatar || "/default-avatar.png"}
-                      alt={video.owner?.fullName}
+                      src={video.owner?.avatar?.trim() || "/default-avatar.png"}
+                      alt={video.owner?.fullName || "User"}
                       className="w-6 sm:w-7 h-6 sm:h-7 rounded-full object-cover border-2 border-error shadow-sm"
                       onError={(e) => (e.currentTarget.src = "/default-avatar.png")}
                     />
-                    <span>{video.owner?.fullName}</span>
+                    <span>{video.owner?.fullName || "Unknown"}</span>
                   </div>
                   <div className="mt-2 text-gray-500 text-xs sm:text-sm flex justify-between font-mono tracking-wide">
                     <span>{video.views?.toLocaleString() || 0} views</span>
@@ -299,7 +287,7 @@ const StatCard = ({ label, value, compact }) => (
         compact ? "text-3xl" : "text-4xl"
       }`}
     >
-      {value.toLocaleString()}
+      {value?.toLocaleString() || 0}
     </p>
     <p
       className={`mt-1 text-gray-500 uppercase tracking-wider font-semibold ${
