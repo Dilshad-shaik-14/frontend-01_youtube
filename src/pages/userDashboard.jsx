@@ -38,17 +38,26 @@ useEffect(() => {
 
       // Fetch all data in parallel
       const [channelData, statsData, videosData, historyData] = await Promise.all([
-        getUserChannelProfile(userName), // returns channel object directly
-        getChannelStats(channelId),       // check if this returns data directly
-        getChannelVideos(channelId),      // check if this returns data directly
-        getWatchHistory(),                // returns history array
+        getUserChannelProfile(userName), // returns channel object
+        getChannelStats(channelId),      // stats object
+        getChannelVideos(channelId),     // might return { videos: [...] } or []
+        getWatchHistory(),               // history array
       ]);
 
-      // Set state
-      setChannel(channelData);              // channel object
-      setChannelStats(statsData);           // stats object
-      setChannelVideos(videosData.videos || videosData); // videos array
-      setWatchHistory(historyData || []);   // history array
+      // Ensure arrays before using .map
+      const safeVideos = Array.isArray(videosData?.videos)
+        ? videosData.videos
+        : Array.isArray(videosData)
+        ? videosData
+        : [];
+
+      const safeHistory = Array.isArray(historyData) ? historyData : [];
+
+      // Set state safely
+      setChannel(channelData || {});
+      setChannelStats(statsData || {});
+      setChannelVideos(safeVideos);
+      setWatchHistory(safeHistory);
     } catch (err) {
       toast.error(err.message || "Failed to load dashboard data");
     } finally {
@@ -58,8 +67,6 @@ useEffect(() => {
 
   fetchDashboardData();
 }, [userName, channelId]);
-
-
 
   const handleDeleteHistory = async () => {
     if (
