@@ -27,8 +27,8 @@ export default function Home() {
     const fetchContent = async () => {
       try {
         const [videoRes, tweetRes, userRes] = await Promise.all([
-          getAllVideos({ limit: 6, page: 1 }),
-          getAllTweets({ limit: 4, page: 1, userId: user?._id }),
+          getAllVideos({ limit: 20, page: 1 }),
+          getAllTweets({ limit: 10, page: 1, userId: user?._id }),
           suggestUsers(),
         ]);
 
