@@ -24,10 +24,19 @@ apiClient.interceptors.request.use(attachAuthToken, (error) => Promise.reject(er
 apiClient2.interceptors.request.use(attachAuthToken, (error) => Promise.reject(error));
 
 const handleApiResponse = (apiCall) =>
-  new Promise((resolve, reject) => {
-    apiCall
-      .then((res) => resolve(res.data))
-      .catch((error) => reject(error.response?.data?.message || "Unknown error"));
+  apiCall.then((res) => res.data).catch((error) => {
+    const responseData = error.response?.data;
+    const responseMessage =
+      typeof responseData === "string"
+        ? responseData
+        : responseData?.message || responseData?.error;
+    const message =
+      responseMessage ||
+      (error.response
+        ? `Request failed with status ${error.response.status}`
+        : error.message || "Network request failed");
+
+    throw new Error(message);
   });
 
 // Auth
